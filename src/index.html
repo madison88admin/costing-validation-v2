@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Costing Validation</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- SheetJS Library for Excel file reading -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</head>
+
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <img src="../public/M88LOGO.png" alt="M88 Logo">
+            </div>
+            <h1 class="header-title">Costing Validation</h1>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Tab Navigation -->
+        <div class="tabs-wrapper">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="v1">Excel V1</button>
+                <button class="tab-btn" data-tab="v2">Excel V2</button>
+                <button class="tab-btn" data-tab="v3">Excel V3</button>
+            </div>
+        </div>
+
+        <div class="container">
+            <!-- Tab Content V1 -->
+            <div class="tab-content active" id="tab-v1">
+                <div class="upload-section">
+                    <div id="obDropZone-v1" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Drag & Drop Files Here</h2>
+                            <p class="drop-subtitle">or click to browse</p>
+                            <p class="file-label">OB Excel File/s</p>
+                            <input type="file" id="obFileInput-v1" accept=".xlsx,.xls,.csv" multiple hidden>
+                            <button class="browse-btn">Browse Files</button>
+                            <div class="file-list" id="obFileList-v1"></div>
+                        </div>
+                    </div>
+
+                    <div id="bcbdDropZone-v1" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Drag & Drop Files Here</h2>
+                            <p class="drop-subtitle">or click to browse</p>
+                            <p class="file-label">Buyer CBD File/s</p>
+                            <input type="file" id="bcbdFileInput-v1" accept=".xlsx,.xls,.csv" multiple hidden>
+                            <button class="browse-btn">Browse Files</button>
+                            <div class="file-list" id="bcbdFileList-v1"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generate-section">
+                    <button class="generate-btn" data-version="v1">Generate Results</button>
+                </div>
+
+                <div class="results-section">
+                    <h2 class="results-title">Results</h2>
+                    <div class="results-content" id="results-v1"></div>
+                </div>
+            </div>
+
+            <!-- Tab Content V2 -->
+            <div class="tab-content" id="tab-v2">
+                <div class="upload-section">
+                    <div id="obDropZone-v2" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Drag & Drop Files Here</h2>
+                            <p class="drop-subtitle">or click to browse</p>
+                            <p class="file-label">OB Excel File/s</p>
+                            <input type="file" id="obFileInput-v2" accept=".xlsx,.xls,.csv" multiple hidden>
+                            <button class="browse-btn">Browse Files</button>
+                            <div class="file-list" id="obFileList-v2"></div>
+                        </div>
+                    </div>
+
+                    <div id="bcbdDropZone-v2" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Drag & Drop Files Here</h2>
+                            <p class="drop-subtitle">or click to browse</p>
+                            <p class="file-label">Buyer CBD File/s</p>
+                            <input type="file" id="bcbdFileInput-v2" accept=".xlsx,.xls,.csv" multiple hidden>
+                            <button class="browse-btn">Browse Files</button>
+                            <div class="file-list" id="bcbdFileList-v2"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generate-section">
+                    <button class="generate-btn" data-version="v2">Generate Results</button>
+                </div>
+
+                <div class="results-section">
+                    <h2 class="results-title">Results</h2>
+                    <div class="results-content" id="results-v2"></div>
+                </div>
+            </div>
+
+            <!-- Tab Content V3 -->
+            <div class="tab-content" id="tab-v3">
+                <div class="upload-section">
+                    <div id="obDropZone-v3" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Drag & Drop Files Here</h2>
+                            <p class="drop-subtitle">or click to browse</p>
+                            <p class="file-label">OB Excel File/s</p>
+                            <input type="file" id="obFileInput-v3" accept=".xlsx,.xls,.csv" multiple hidden>
+                            <button class="browse-btn">Browse Files</button>
+                            <div class="file-list" id="obFileList-v3"></div>
+                        </div>
+                    </div>
+
+                    <div id="bcbdDropZone-v3" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Drag & Drop Files Here</h2>
+                            <p class="drop-subtitle">or click to browse</p>
+                            <p class="file-label">Buyer CBD File/s</p>
+                            <input type="file" id="bcbdFileInput-v3" accept=".xlsx,.xls,.csv" multiple hidden>
+                            <button class="browse-btn">Browse Files</button>
+                            <div class="file-list" id="bcbdFileList-v3"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generate-section">
+                    <button class="generate-btn" data-version="v3">Generate Results</button>
+                </div>
+
+                <div class="results-section">
+                    <h2 class="results-title">Results</h2>
+                    <div class="results-content" id="results-v3"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="excelV1.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>

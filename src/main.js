@@ -1,0 +1,283 @@
+/**
+ * Costing Validation - Main JavaScript
+ * Core logic for drag-and-drop Excel file handling with multiple versions
+ */
+
+class ExcelFileHandler {
+    constructor(version) {
+        this.version = version;
+        this.obFiles = [];
+        this.bcbdFiles = [];
+        this.initializeElements();
+        this.attachEventListeners();
+    }
+
+    initializeElements() {
+        this.obDropZone = document.getElementById(`obDropZone-${this.version}`);
+        this.obFileInput = document.getElementById(`obFileInput-${this.version}`);
+        this.obFileList = document.getElementById(`obFileList-${this.version}`);
+        this.bcbdDropZone = document.getElementById(`bcbdDropZone-${this.version}`);
+        this.bcbdFileInput = document.getElementById(`bcbdFileInput-${this.version}`);
+        this.bcbdFileList = document.getElementById(`bcbdFileList-${this.version}`);
+    }
+
+    attachEventListeners() {
+        this.setupDropZone(this.obDropZone, this.obFileInput, 'ob');
+        this.setupDropZone(this.bcbdDropZone, this.bcbdFileInput, 'bcbd');
+        
+        // Prevent default drag behavior on document
+        document.addEventListener('dragover', (e) => e.preventDefault());
+        document.addEventListener('drop', (e) => e.preventDefault());
+    }
+
+    setupDropZone(dropZone, fileInput, type) {
+        dropZone.addEventListener('dragover', (e) => this.handleDragOver(e, dropZone));
+        dropZone.addEventListener('dragleave', (e) => this.handleDragLeave(e, dropZone));
+        dropZone.addEventListener('drop', (e) => this.handleDrop(e, dropZone, type));
+        dropZone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', (e) => this.handleFileSelect(e, type));
+    }
+
+    handleDragOver(e, dropZone) {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.add('drag-over');
+    }
+
+    handleDragLeave(e, dropZone) {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.remove('drag-over');
+    }
+
+    handleDrop(e, dropZone, type) {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.remove('drag-over');
+        
+        const files = Array.from(e.dataTransfer.files);
+        if (files.length > 0) {
+            this.processFiles(files, type);
+        }
+    }
+
+    handleFileSelect(e, type) {
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+            this.processFiles(files, type);
+        }
+    }
+
+    processFiles(files, type) {
+        const fileArray = type === 'ob' ? this.obFiles : this.bcbdFiles;
+        
+        files.forEach(file => {
+            if (!this.isValidFileType(file)) {
+                alert(`Invalid file type: ${file.name}. Please select .xlsx, .xls, or .csv files.`);
+                return;
+            }
+
+            // Check for duplicates
+            if (!fileArray.some(f => f.name === file.name && f.size === file.size)) {
+                fileArray.push(file);
+            }
+        });
+
+        this.updateFileList(type);
+        console.log(`${this.version.toUpperCase()} - ${type.toUpperCase()} files:`, fileArray);
+    }
+
+    updateFileList(type) {
+        const fileList = type === 'ob' ? this.obFileList : this.bcbdFileList;
+        const files = type === 'ob' ? this.obFiles : this.bcbdFiles;
+        const dropZone = type === 'ob' ? this.obDropZone : this.bcbdDropZone;
+
+        fileList.innerHTML = '';
+
+        files.forEach((file, index) => {
+            const fileItem = this.createFileItem(file, type, index);
+            fileList.appendChild(fileItem);
+        });
+
+        dropZone.classList.toggle('has-file', files.length > 0);
+    }
+
+    createFileItem(file, type, index) {
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+
+        const fileContent = document.createElement('div');
+        fileContent.className = 'file-item-content';
+
+        const fileIcon = document.createElement('span');
+        fileIcon.className = 'file-item-icon';
+        fileIcon.innerHTML = '✓';
+
+        const fileName = document.createElement('span');
+        fileName.className = 'file-item-name';
+        fileName.textContent = file.name;
+        fileName.title = file.name;
+
+        fileContent.appendChild(fileIcon);
+        fileContent.appendChild(fileName);
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'file-item-remove';
+        removeBtn.textContent = 'Remove';
+        removeBtn.onclick = (e) => {
+            e.stopPropagation();
+            this.removeFile(type, index);
+        };
+
+        fileItem.appendChild(fileContent);
+        fileItem.appendChild(removeBtn);
+        
+        return fileItem;
+    }
+
+    removeFile(type, index) {
+        if (type === 'ob') {
+            this.obFiles.splice(index, 1);
+        } else {
+            this.bcbdFiles.splice(index, 1);
+        }
+
+        this.updateFileList(type);
+        console.log(`File removed from ${this.version.toUpperCase()} - ${type.toUpperCase()}`);
+    }
+
+    isValidFileType(file) {
+        const validTypes = [
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'application/vnd.ms-excel',
+            'text/csv'
+        ];
+        
+        const validExtensions = ['.xlsx', '.xls', '.csv'];
+        const fileName = file.name.toLowerCase();
+        
+        return validTypes.includes(file.type) || 
+               validExtensions.some(ext => fileName.endsWith(ext));
+    }
+
+    getOBFiles() {
+        return this.obFiles;
+    }
+
+    getBCBDFiles() {
+        return this.bcbdFiles;
+    }
+
+    areBothFilesLoaded() {
+        return this.obFiles.length > 0 && this.bcbdFiles.length > 0;
+    }
+
+    reset() {
+        this.obFiles = [];
+        this.bcbdFiles = [];
+        this.obFileInput.value = '';
+        this.bcbdFileInput.value = '';
+        this.updateFileList('ob');
+        this.updateFileList('bcbd');
+    }
+}
+
+// Tab Management
+class TabManager {
+    constructor() {
+        this.tabs = document.querySelectorAll('.tab-btn');
+        this.tabContents = document.querySelectorAll('.tab-content');
+        this.attachEventListeners();
+    }
+
+    attachEventListeners() {
+        this.tabs.forEach(tab => {
+            tab.addEventListener('click', () => this.switchTab(tab.dataset.tab));
+        });
+    }
+
+    switchTab(tabId) {
+        this.tabs.forEach(tab => tab.classList.remove('active'));
+        this.tabContents.forEach(content => content.classList.remove('active'));
+
+        const selectedTab = document.querySelector(`[data-tab="${tabId}"]`);
+        const selectedContent = document.getElementById(`tab-${tabId}`);
+
+        if (selectedTab && selectedContent) {
+            selectedTab.classList.add('active');
+            selectedContent.classList.add('active');
+        }
+
+        console.log(`Switched to ${tabId.toUpperCase()}`);
+    }
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    window.tabManager = new TabManager();
+    window.excelHandlerV1 = new ExcelFileHandler('v1');
+    window.excelHandlerV2 = new ExcelFileHandler('v2');
+    window.excelHandlerV3 = new ExcelFileHandler('v3');
+
+    document.querySelectorAll('.generate-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const version = e.target.dataset.version;
+            handleGenerateResults(version);
+        });
+    });
+
+    console.log('Costing Validation initialized with 3 versions');
+});
+
+async function handleGenerateResults(version) {
+    const handler = window[`excelHandler${version.toUpperCase()}`];
+    
+    if (!handler.areBothFilesLoaded()) {
+        alert('Please upload both OB and BCBD files before generating results.');
+        return;
+    }
+
+    const obFiles = handler.getOBFiles();
+    const bcbdFiles = handler.getBCBDFiles();
+
+    console.log(`Generating results for ${version.toUpperCase()}...`);
+    console.log('OB Files:', obFiles);
+    console.log('BCBD Files:', bcbdFiles);
+
+    const resultsContent = document.getElementById(`results-${version}`);
+    
+    // Show loading state
+    resultsContent.innerHTML = `
+        <div style="text-align: center; padding: 2rem; color: #2b4a6c;">
+            <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">
+                Processing ${obFiles.length} OB file(s) and ${bcbdFiles.length} BCBD file(s)...
+            </p>
+            <p style="color: #7a92ab;">
+                Please wait while we scan the files...
+            </p>
+        </div>
+    `;
+
+    // Process based on version
+    if (version === 'v1' && window.excelV1Processor) {
+        const results = await window.excelV1Processor.processFiles(obFiles, bcbdFiles);
+        resultsContent.innerHTML = results;
+    } else {
+        // Placeholder for V2 and V3
+        resultsContent.innerHTML = `
+            <div style="text-align: center; padding: 2rem; color: #2b4a6c;">
+                <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">
+                    Processing ${obFiles.length} OB file(s) and ${bcbdFiles.length} BCBD file(s)...
+                </p>
+                <p style="color: #7a92ab;">
+                    Template-specific processing logic for ${version.toUpperCase()} will be implemented here.
+                </p>
+            </div>
+        `;
+    }
+}
+
+// Export for use in other modules
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = { ExcelFileHandler, TabManager };
+}

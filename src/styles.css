@@ -1,0 +1,446 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ===== BASE STYLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #d6e0ea;
+    color: #2b4a6c;
+    min-height: 100vh;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== HEADER ===== */
+.header {
+    position: sticky;
+    top: 0;
+    background-color: #2b4a6c;
+    color: white;
+    padding: 1rem 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+}
+
+.logo img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+}
+
+.header-title {
+    flex: 1;
+    text-align: center;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+/* ===== MAIN CONTENT & CONTAINER ===== */
+.main-content {
+    padding: 2rem 2rem;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 16px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 12px rgba(43, 74, 108, 0.08);
+    border: 2px solid #2b4a6c;
+}
+
+/* ===== TABS ===== */
+.tabs-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.tabs {
+    display: flex;
+    gap: 0;
+    padding-left: 0;
+    margin-bottom: -2px;
+}
+
+.tab-btn {
+    background-color: #e8eef5;
+    color: #7a92ab;
+    border: 2px solid #2b4a6c;
+    border-bottom: none;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    padding: 0.5rem 1.5rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: -2px;
+}
+
+.tab-btn:hover {
+    background-color: #d9e3f0;
+    color: #2b4a6c;
+}
+
+.tab-btn.active {
+    background-color: white;
+    color: #2b4a6c;
+    border-bottom: 2px solid white;
+    z-index: 1;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* ===== UPLOAD SECTION ===== */
+.upload-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.drop-zone {
+    border: 3px dashed #8fa9c4;
+    border-radius: 12px;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    background-color: #f8fafc;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    height: 480px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.drop-zone:hover {
+    border-color: #2b4a6c;
+    background-color: #f0f4f8;
+}
+
+.drop-zone.drag-over {
+    border-color: #304865;
+    background-color: #e8eef5;
+    border-style: solid;
+    transform: scale(1.01);
+}
+
+.drop-zone.has-file {
+    border-color: #4a9d6f;
+    background-color: #f0f9f4;
+}
+
+.drop-zone-content {
+    pointer-events: none;
+    width: 100%;
+}
+
+/* Drop Zone Text Elements */
+.drop-title {
+    color: #2b4a6c;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.drop-subtitle {
+    color: #7a92ab;
+    font-size: 0.75rem;
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+}
+
+.file-label {
+    color: #304865;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+}
+
+.file-badge {
+    display: inline-block;
+    background-color: #c5d5e4;
+    color: #2b4a6c;
+    padding: 0.35rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+}
+
+/* ===== BUTTONS ===== */
+.browse-btn {
+    background-color: #7a92ab;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    pointer-events: all;
+    box-shadow: 0 2px 6px rgba(43, 74, 108, 0.15);
+}
+
+.browse-btn:hover {
+    background-color: #304865;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(43, 74, 108, 0.25);
+}
+
+.browse-btn:active {
+    transform: translateY(0);
+}
+
+.generate-btn {
+    background-color: #2b4a6c;
+    color: white;
+    border: none;
+    padding: 0.75rem 2.5rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(43, 74, 108, 0.2);
+    letter-spacing: 0.02em;
+}
+
+.generate-btn:hover {
+    background-color: #304865;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(43, 74, 108, 0.3);
+}
+
+.generate-btn:active {
+    transform: translateY(0);
+}
+
+.generate-btn:disabled {
+    background-color: #c5d5e4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* ===== FILE LIST ===== */
+.file-list {
+    margin-top: 1.5rem;
+    width: 100%;
+    max-height: 200px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    pointer-events: all;
+    padding-right: 0.5rem;
+}
+
+.file-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.file-list::-webkit-scrollbar-track {
+    background: #e0e8f0;
+    border-radius: 3px;
+}
+
+.file-list::-webkit-scrollbar-thumb {
+    background: #7a92ab;
+    border-radius: 3px;
+}
+
+.file-list::-webkit-scrollbar-thumb:hover {
+    background: #304865;
+}
+
+.file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #e8f2ff;
+    border: 1px solid #b8d4f1;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+}
+
+.file-item:hover {
+    background-color: #d9ebff;
+    border-color: #a0c4e8;
+}
+
+.file-item-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+}
+
+.file-item-icon {
+    color: #2b4a6c;
+    flex-shrink: 0;
+}
+
+.file-item-name {
+    color: #2b4a6c;
+    font-size: 0.9rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.file-item-remove {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    pointer-events: all;
+}
+
+.file-item-remove:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
+}
+
+.file-item-remove:active {
+    transform: scale(0.98);
+}
+
+/* ===== GENERATE & RESULTS SECTIONS ===== */
+.generate-section {
+    text-align: center;
+    padding: 2rem 0;
+    border-top: 1px solid #e0e8f0;
+    border-bottom: 1px solid #e0e8f0;
+    margin-bottom: 2.5rem;
+}
+
+.results-section {
+    margin-top: 2rem;
+}
+
+.results-title {
+    color: #2b4a6c;
+    font-size: 1.3rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.03em;
+}
+
+.results-content {
+    background-color: #f8fafc;
+    border-radius: 10px;
+    padding: 2rem;
+    min-height: 200px;
+    border: 1px solid #e0e8f0;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 1024px) {
+    .upload-section {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .container {
+        padding: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 1rem;
+    }
+
+    .header-title {
+        font-size: 1.2rem;
+    }
+
+    .logo {
+        font-size: 1rem;
+        padding: 0.3rem 0.6rem;
+    }
+
+    .main-content {
+        padding: 2rem 1rem;
+    }
+
+    .container {
+        padding: 1.5rem;
+    }
+
+    .drop-zone {
+        padding: 2rem 1rem;
+        min-height: 320px;
+    }
+
+    .drop-title {
+        font-size: 1.2rem;
+    }
+
+    .generate-btn {
+        padding: 0.9rem 2.5rem;
+        font-size: 1rem;
+    }
+
+    .results-title {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-content {
+        gap: 0.5rem;
+    }
+
+    .header-title {
+        font-size: 1rem;
+    }
+
+    .drop-zone {
+        min-height: 280px;
+    }
+}
