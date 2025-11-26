@@ -528,8 +528,9 @@ class ExcelV1Processor {
                                 </div>
                             </td>
                             <td style="padding: 0.875rem 1rem;">
-                                <span style="display: inline-block; background-color: #d1fae5; color: #065f46; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem;">
-                                    ✓ FOUND
+                                <span style="display: inline-flex; align-items: center; gap: 6px; background-color: #d1fae5; color: #065f46; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">
+                                    <span style="font-size: 1em;">✓</span>
+                                    <span>FOUND</span>
                                 </span>
                             </td>
                             <td style="padding: 0.875rem 1rem;">${formatSMVComparison(result.cellValues.standardMinuteValue, location.smv)}</td>
@@ -561,8 +562,9 @@ class ExcelV1Processor {
                                 </div>
                             </td>
                             <td style="padding: 0.875rem 1rem;">
-                                <span style="display: inline-block; background-color: #fee2e2; color: #991b1b; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 600; font-size: 0.85rem;">
-                                    ✗ NOT FOUND
+                                <span style="display: inline-flex; align-items: center; gap: 6px; background-color: #fee2e2; color: #991b1b; padding: 0.4rem 0.8rem; border-radius: 6px; font-weight: 600; font-size: 0.8rem;">
+                                    <span style="font-size: 1em;">✗</span>
+                                    <span>NOT FOUND</span>
                                 </span>
                             </td>
                             <td colspan="5" style="text-align: center; color: #849bba; padding: 0.875rem 1rem;">-</td>

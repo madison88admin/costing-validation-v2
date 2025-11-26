@@ -1,0 +1,370 @@
+/* Dark Mode Styles */
+body.dark-mode {
+    background: #1a1f2e;
+    transition: background 0.3s ease;
+}
+
+body.dark-mode .header {
+    background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 100%);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode .container {
+    background: #242b3d;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    border-color: #3d4a5f;
+}
+
+body.dark-mode h1,
+body.dark-mode h2,
+body.dark-mode h3 {
+    color: #d6e0ea;
+}
+
+body.dark-mode .drop-zone {
+    background: #2d3548;
+    border-color: #3d4a5f;
+}
+
+body.dark-mode .drop-zone:hover {
+    background: #353d52;
+    border-color: #4a5a75;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .drop-zone.drag-over {
+    background: #353d52;
+    border-color: #4a5a75;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .drop-title {
+    color: #d6e0ea;
+}
+
+body.dark-mode .drop-subtitle {
+    color: #849bba;
+}
+
+body.dark-mode .file-label {
+    color: #d6e0ea;
+}
+
+body.dark-mode .cell-info {
+    background: #353d52;
+    color: #d6e0ea;
+}
+
+body.dark-mode .file-item {
+    background: #353d52;
+    border-color: #3d4a5f;
+}
+
+body.dark-mode .file-item:hover {
+    background: #3d4a5f;
+    border-color: #4a5a75;
+}
+
+body.dark-mode .file-item-name {
+    color: #d6e0ea;
+}
+
+body.dark-mode .browse-btn {
+    background: #3d4a5f;
+}
+
+body.dark-mode .browse-btn:hover {
+    background: #4a5a75;
+}
+
+body.dark-mode .generate-btn {
+    background: linear-gradient(135deg, #2d3548 0%, #3d4a5f 100%);
+}
+
+body.dark-mode .generate-btn:hover {
+    background: linear-gradient(135deg, #3d4a5f 0%, #4a5a75 100%);
+}
+
+body.dark-mode .results-section {
+    border-top-color: #3d4a5f;
+}
+
+body.dark-mode .results-content {
+    background: #2d3548;
+    border-color: #3d4a5f;
+}
+
+body.dark-mode .results-table {
+    background: #2d3548;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .results-table thead tr.header-labels-row th {
+    background: linear-gradient(135deg, #1a1f2e 0%, #242b3d 100%);
+}
+
+body.dark-mode .results-table thead tr.filter-row th {
+    background: linear-gradient(135deg, #1a1f2e 0%, #242b3d 100%);
+}
+
+body.dark-mode .results-table td {
+    border-bottom-color: #3d4a5f;
+    color: #d6e0ea;
+}
+
+body.dark-mode .results-table tbody tr:hover {
+    background: #353d52;
+}
+
+body.dark-mode .match-details {
+    color: #849bba;
+}
+
+body.dark-mode .match-found {
+    background: #064e3b;
+    color: #6ee7b7;
+}
+
+body.dark-mode .match-not-found {
+    background: #7f1d1d;
+    color: #fca5a5;
+}
+
+/* Dark mode: Make inline green/red/yellow text more visible in table cells */
+body.dark-mode .results-table td span[style*="color: #065f46"] {
+    color: #6ee7b7 !important;
+    background: rgba(6, 78, 59, 0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+body.dark-mode .results-table td span[style*="color: #991b1b"] {
+    color: #fca5a5 !important;
+    background: rgba(127, 29, 29, 0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+body.dark-mode .results-table td span[style*="color: #d97706"] {
+    color: #fbbf24 !important;
+    background: rgba(217, 119, 6, 0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+body.dark-mode .results-table td span[style*="color: #2b4a6c"] {
+    color: #ffffff !important;
+}
+
+body.dark-mode .results-table td strong[style*="color: #2b4a6c"] {
+    color: #ffffff !important;
+}
+
+body.dark-mode .results-table td span[style*="color: #7a92ab"] {
+    color: #849bba !important;
+}
+
+body.dark-mode .results-table td div[style*="color: #7a92ab"] {
+    color: #849bba !important;
+}
+
+body.dark-mode .results-table td em[style*="color: #7a92ab"] {
+    color: #849bba !important;
+}
+
+/* FOUND and NOT FOUND badges in dark mode */
+body.dark-mode .results-table td span[style*="background-color: #d1fae5"] {
+    background: #064e3b !important;
+    color: #6ee7b7 !important;
+}
+
+body.dark-mode .results-table td span[style*="background-color: #fee2e2"] {
+    background: #7f1d1d !important;
+    color: #fca5a5 !important;
+}
+
+body.dark-mode .no-results {
+    color: #849bba;
+}
+
+body.dark-mode .loading-text {
+    color: #d6e0ea;
+}
+
+body.dark-mode .loader {
+    background: #2d3548;
+}
+
+body.dark-mode .loader:before,
+body.dark-mode .loader:after {
+    background: #d6e0ea;
+}
+
+body.dark-mode .file-list::-webkit-scrollbar-track,
+body.dark-mode textarea::-webkit-scrollbar-track {
+    background: #353d52;
+}
+
+body.dark-mode .file-list::-webkit-scrollbar-thumb,
+body.dark-mode textarea::-webkit-scrollbar-thumb {
+    background: #4a5a75;
+}
+
+body.dark-mode textarea::-webkit-scrollbar-thumb:hover {
+    background: #5a6a85;
+}
+
+body.dark-mode textarea {
+    background: #2d3548;
+    border-color: #3d4a5f;
+    color: #d6e0ea;
+}
+
+body.dark-mode textarea::placeholder {
+    color: #849bba;
+}
+
+/* Search Bar Dark Mode */
+body.dark-mode .search-input-expandable {
+    background: #2d3548;
+    border-color: #4a5a75;
+    color: #d6e0ea;
+}
+
+body.dark-mode .search-input-expandable:focus {
+    border-color: #5a6a85;
+}
+
+body.dark-mode .search-input-expandable::placeholder {
+    color: #849bba;
+}
+
+body.dark-mode .search-icon {
+    color: #849bba;
+}
+
+body.dark-mode .search-container:hover .search-input-expandable,
+body.dark-mode .search-container:focus-within .search-input-expandable {
+    background: #353d52;
+}
+
+/* Clear Filters Button Dark Mode */
+body.dark-mode .clear-filters-btn {
+    background: #3d4a5f;
+    color: #d6e0ea;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .clear-filters-btn:hover {
+    background: #4a5a75;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Export Button Dark Mode */
+body.dark-mode .export-btn {
+    background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+    color: #d6e0ea;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .export-btn:hover {
+    background: linear-gradient(135deg, #065f46 0%, #064e3b 100%);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Summary Box Dark Mode */
+body.dark-mode div[style*="background: #f0f7ff"] {
+    background: #2d3548 !important;
+    border-left-color: #4a5a75 !important;
+    color: #d6e0ea !important;
+}
+
+body.dark-mode div[style*="background: #f0f7ff"] strong {
+    color: #d6e0ea !important;
+}
+
+body.dark-mode div[style*="background: #f0f7ff"] span {
+    color: #fca5a5 !important;
+}
+
+/* Tab Buttons Dark Mode */
+body.dark-mode .tab-btn {
+    background-color: #2d3548;
+    color: #849bba;
+    border-color: #3d4a5f;
+}
+
+body.dark-mode .tab-btn:hover {
+    background-color: #353d52;
+    color: #d6e0ea;
+}
+
+body.dark-mode .tab-btn.active {
+    background-color: #242b3d;
+    color: #d6e0ea;
+    border-bottom-color: #242b3d;
+}
+
+/* Column Filter Dropdowns Dark Mode */
+body.dark-mode .column-filter {
+    background: rgba(61, 74, 95, 0.5);
+    border-color: rgba(74, 90, 117, 0.5);
+    color: #d6e0ea;
+}
+
+body.dark-mode .column-filter:hover {
+    background: rgba(74, 90, 117, 0.5);
+    border-color: rgba(90, 106, 133, 0.5);
+}
+
+body.dark-mode .column-filter:focus {
+    background: rgba(74, 90, 117, 0.6);
+    border-color: #849bba;
+}
+
+body.dark-mode .column-filter option {
+    background: #1a1f2e;
+    color: #d6e0ea;
+}
+
+/* Dark Mode Toggle Button */
+.dark-mode-toggle {
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.dark-mode-toggle svg {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    transition: transform 0.3s ease;
+}
+
+.dark-mode-toggle:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.dark-mode-toggle:hover svg {
+    transform: rotate(20deg) scale(1.1);
+}
+
+body.dark-mode .dark-mode-toggle {
+    border-color: rgba(214, 224, 234, 0.3);
+    color: #d6e0ea;
+}
+
+body.dark-mode .dark-mode-toggle:hover {
+    background: rgba(214, 224, 234, 0.1);
+    border-color: rgba(214, 224, 234, 0.5);
+}

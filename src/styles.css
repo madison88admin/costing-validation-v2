@@ -230,9 +230,9 @@ body {
     background-color: #2b4a6c;
     color: white;
     border: none;
-    padding: 0.75rem 2.5rem;
+    padding: 0.75rem 1rem;
     border-radius: 10px;
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -349,14 +349,7 @@ body {
     transform: scale(0.98);
 }
 
-/* ===== GENERATE & RESULTS SECTIONS ===== */
-.generate-section {
-    text-align: center;
-    padding: 2rem 0;
-    border-top: 1px solid #e0e8f0;
-    border-bottom: 1px solid #e0e8f0;
-    margin-bottom: 2.5rem;
-}
+
 
 .results-section {
     margin-top: 2rem;
