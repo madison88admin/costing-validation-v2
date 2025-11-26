@@ -444,3 +444,202 @@ body {
         min-height: 280px;
     }
 }
+
+/* ===== RESULTS TABLE FILTERS ===== */
+/* Results Table Styling */
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Header Labels Row */
+.results-table thead tr.header-labels-row th {
+    background-color: #2b4a6c;
+    color: white;
+    font-size: 0.85em;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    padding: 10px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Filter Row */
+.results-table thead tr.filter-row th {
+    background-color: #2b4a6c;
+    padding: 8px;
+    text-align: center;
+    border-bottom: 2px solid #1a2f4a;
+}
+
+/* Column Filter Dropdowns */
+.column-filter {
+    display: block;
+    width: 100%;
+    padding: 5px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.15);
+    color: #fbfffd;
+    font-size: 0.8em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.column-filter:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.column-filter:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.3);
+    border-color: #fbfffd;
+}
+
+.column-filter option {
+    background: #233e5c;
+    color: #fbfffd;
+    padding: 6px;
+}
+
+/* Table Body Rows */
+.results-table tbody tr {
+    border-bottom: 1px solid #e0e8f0;
+}
+
+.results-table tbody td {
+    padding: 0.875rem 1rem;
+}
+
+/* Clear Filters Button */
+.clear-filters-btn {
+    background: #849bba;
+    color: #fbfffd;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(132, 155, 186, 0.3);
+    white-space: nowrap;
+    height: 38px;
+    display: flex;
+    align-items: center;
+}
+
+.clear-filters-btn:hover {
+    background: #233e5c;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(35, 62, 92, 0.4);
+}
+
+.clear-filters-btn:active {
+    transform: translateY(0);
+}
+
+/* Export Button */
+.export-btn {
+    background: #16a34a;
+    color: #fbfffd;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.3);
+    white-space: nowrap;
+    height: 38px;
+    display: flex;
+    align-items: center;
+}
+
+.export-btn:hover {
+    background: #15803d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(21, 128, 61, 0.4);
+}
+
+.export-btn:active {
+    transform: translateY(0);
+}
+
+/* Expandable Search Container */
+.search-container {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    transition: width 0.7s ease-in-out;
+}
+
+.search-container:hover,
+.search-container:focus-within {
+    width: 100%;
+}
+
+.search-icon {
+    position: absolute;
+    left: 11px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #233e5c;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.search-icon svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.5;
+}
+
+.search-input-expandable {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0 12px;
+    border: 2px solid #233e5c;
+    border-radius: 19px;
+    font-size: 0.95em;
+    font-weight: 500;
+    font-family: inherit;
+    color: #233e5c;
+    background: #fbfffd;
+    transition: all 0.7s ease-in-out;
+    cursor: pointer;
+    text-indent: 18px;
+}
+
+.search-container:hover .search-input-expandable,
+.search-container:focus-within .search-input-expandable {
+    border-radius: 8px;
+    text-indent: 22px;
+}
+
+.search-input-expandable::placeholder {
+    color: transparent;
+    transition: color 0.4s ease 0.4s;
+    font-weight: 500;
+}
+
+.search-container:hover .search-input-expandable::placeholder,
+.search-container:focus-within .search-input-expandable::placeholder {
+    color: #849bba;
+}
+
+.search-input-expandable:focus {
+    outline: none;
+    border-color: #233e5c;
+    cursor: text;
+}

@@ -329,22 +329,87 @@ class ExcelV1Processor {
 
         // Build table with export button
         let tableHTML = `
-            <div style="margin-bottom: 15px; display: flex; justify-content: flex-end;">
-                <button onclick="window.excelV1Processor.exportToPDF()" style="background-color: #2b4a6c; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(43, 74, 108, 0.15);">
-                    Export to PDF
-                </button>
+            <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
+                <div class="search-container">
+                    <div class="search-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                    </div>
+                    <input 
+                        type="text" 
+                        class="search-input-expandable" 
+                        placeholder="Search OB or Buyer CBD files..."
+                        oninput="window.excelV1Processor.searchTable(this.value)"
+                    />
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <button onclick="window.excelV1Processor.clearFilters()" class="clear-filters-btn">
+                        Clear Filters
+                    </button>
+                    <button onclick="window.excelV1Processor.exportToPDF()" class="export-btn">
+                        Export
+                    </button>
+                </div>
             </div>
-            <table id="v1ResultsTable" style="width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <table id="v1ResultsTable" class="results-table">
                 <thead>
-                    <tr style="background-color: #2b4a6c; color: white;">
-                        <th style="padding: 1rem; text-align: left; font-weight: 600; border-bottom: 2px solid #1a2f4a;">OB File/s</th>
-                        <th style="padding: 1rem; text-align: left; font-weight: 600; border-bottom: 2px solid #1a2f4a;">Buyer CBD File/s</th>
-                        <th style="padding: 1rem; text-align: left; font-weight: 600; border-bottom: 2px solid #1a2f4a;">Match Status</th>
-                        <th style="padding: 1rem; text-align: left; font-weight: 600; border-bottom: 2px solid #1a2f4a;">Standard Minute Value</th>
-                        <th style="padding: 1rem; text-align: left; font-weight: 600; border-bottom: 2px solid #1a2f4a;">Average Efficiency %</th>
-                        <th style="padding: 1rem; text-align: left; font-weight: 600; border-bottom: 2px solid #1a2f4a;">Hourly Wages with Fringes</th>
-                        <th style="padding: 1rem; text-align: left; font-weight: 600; border-bottom: 2px solid #1a2f4a;">Overhead Cost Ratio to Direct Labor</th>
-                        <th style="padding: 1rem; text-align: left; font-weight: 600; border-bottom: 2px solid #1a2f4a;">Factory Profit %</th>
+                    <tr class="header-labels-row">
+                        <th>OB File/s</th>
+                        <th>Buyer CBD File/s</th>
+                        <th>Match Status with excel</th>
+                        <th>Standard Minute Value</th>
+                        <th>Average Efficiency %</th>
+                        <th>Hourly Wages with Fringes</th>
+                        <th>Overhead Cost Ratio to Direct Labor</th>
+                        <th>Factory Profit %</th>
+                    </tr>
+                    <tr class="filter-row">
+                        <th></th>
+                        <th></th>
+                        <th>
+                            <select class="column-filter" data-column="2" onchange="window.excelV1Processor.filterTable()">
+                                <option value="all">All</option>
+                                <option value="found">Found</option>
+                                <option value="not-found">Not Found</option>
+                            </select>
+                        </th>
+                        <th>
+                            <select class="column-filter" data-column="3" onchange="window.excelV1Processor.filterTable()">
+                                <option value="all">All</option>
+                                <option value="exact">Exact match</option>
+                                <option value="close">Close match</option>
+                                <option value="mismatch">Mismatch</option>
+                            </select>
+                        </th>
+                        <th>
+                            <select class="column-filter" data-column="4" onchange="window.excelV1Processor.filterTable()">
+                                <option value="all">All</option>
+                                <option value="valid">Valid</option>
+                                <option value="invalid">Invalid</option>
+                            </select>
+                        </th>
+                        <th>
+                            <select class="column-filter" data-column="5" onchange="window.excelV1Processor.filterTable()">
+                                <option value="all">All</option>
+                                <option value="valid">Valid</option>
+                                <option value="invalid">Invalid</option>
+                            </select>
+                        </th>
+                        <th>
+                            <select class="column-filter" data-column="6" onchange="window.excelV1Processor.filterTable()">
+                                <option value="all">All</option>
+                                <option value="valid">Valid</option>
+                                <option value="invalid">Invalid</option>
+                            </select>
+                        </th>
+                        <th>
+                            <select class="column-filter" data-column="7" onchange="window.excelV1Processor.filterTable()">
+                                <option value="all">All</option>
+                                <option value="valid">Valid</option>
+                                <option value="invalid">Invalid</option>
+                            </select>
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -882,6 +947,282 @@ class ExcelV1Processor {
             };
             document.head.appendChild(jsPDFScript);
         });
+    }
+
+    /**
+     * Filter table based on dropdown selections
+     */
+    filterTable() {
+        const table = document.getElementById('v1ResultsTable');
+        if (!table) return;
+
+        const tbody = table.querySelector('tbody');
+        const rows = tbody.querySelectorAll('tr');
+        
+        // Get all filter values
+        const filters = {};
+        const filterSelects = table.querySelectorAll('.column-filter');
+        filterSelects.forEach(select => {
+            const column = select.getAttribute('data-column');
+            filters[column] = select.value;
+        });
+
+        // Filter each row
+        rows.forEach(row => {
+            let showRow = true;
+            const cells = row.querySelectorAll('td');
+
+            // Check each filter
+            Object.keys(filters).forEach(columnIndex => {
+                const filterValue = filters[columnIndex];
+                if (filterValue === 'all') return;
+
+                const cell = cells[columnIndex];
+                if (!cell) return;
+
+                const cellText = cell.textContent.trim();
+
+                // Column 2: Match Status
+                if (columnIndex === '2') {
+                    if (filterValue === 'found' && !cellText.includes('✓ FOUND')) {
+                        showRow = false;
+                    } else if (filterValue === 'not-found' && !cellText.includes('✗ NOT FOUND')) {
+                        showRow = false;
+                    }
+                }
+
+                // Column 3: Standard Minute Value
+                if (columnIndex === '3') {
+                    if (cellText === '-') {
+                        // Skip filtering for "not found" rows
+                        return;
+                    }
+
+                    if (filterValue === 'exact') {
+                        // Exact match: green color, no "BCBD:" prefix
+                        if (cellText.includes('BCBD:') || cellText.includes('Empty')) {
+                            showRow = false;
+                        }
+                    } else if (filterValue === 'close') {
+                        // Close match: has difference but <= 0.01
+                        if (!cellText.includes('BCBD:')) {
+                            showRow = false;
+                        } else {
+                            const diffMatch = cellText.match(/\([\+\-]([\d.]+)\)/);
+                            if (diffMatch) {
+                                const diff = parseFloat(diffMatch[1]);
+                                if (diff > 0.01) {
+                                    showRow = false;
+                                }
+                            }
+                        }
+                    } else if (filterValue === 'mismatch') {
+                        // Mismatch: difference > 0.01 or empty
+                        if (cellText.includes('Empty')) {
+                            // Empty is a mismatch
+                        } else if (cellText.includes('BCBD:')) {
+                            const diffMatch = cellText.match(/\([\+\-]([\d.]+)\)/);
+                            if (diffMatch) {
+                                const diff = parseFloat(diffMatch[1]);
+                                if (diff <= 0.01) {
+                                    showRow = false;
+                                }
+                            }
+                        } else {
+                            // Exact match is not a mismatch
+                            showRow = false;
+                        }
+                    }
+                }
+
+                // Columns 4-7: Valid/Invalid filters
+                if (['4', '5', '6', '7'].includes(columnIndex)) {
+                    if (cellText === '-') {
+                        // Skip filtering for "not found" rows
+                        return;
+                    }
+
+                    if (filterValue === 'valid') {
+                        // Valid: doesn't contain "Cell Empty" and doesn't have "Expected:" (meaning it matches)
+                        if (cellText.includes('Cell Empty') || cellText.includes('Expected:')) {
+                            showRow = false;
+                        }
+                    } else if (filterValue === 'invalid') {
+                        // Invalid: contains "Cell Empty" or has "Expected:" (meaning it doesn't match)
+                        if (!cellText.includes('Cell Empty') && !cellText.includes('Expected:')) {
+                            showRow = false;
+                        }
+                    }
+                }
+            });
+
+            // Show or hide the row
+            row.style.display = showRow ? '' : 'none';
+        });
+    }
+
+    /**
+     * Clear all filters and show all rows
+     */
+    clearFilters() {
+        const table = document.getElementById('v1ResultsTable');
+        if (!table) return;
+
+        // Reset all filter dropdowns to "all"
+        const filterSelects = table.querySelectorAll('.column-filter');
+        filterSelects.forEach(select => {
+            select.value = 'all';
+        });
+
+        // Clear search input
+        const searchInput = document.querySelector('.search-input-expandable');
+        if (searchInput) {
+            searchInput.value = '';
+        }
+
+        // Show all rows
+        const tbody = table.querySelector('tbody');
+        const rows = tbody.querySelectorAll('tr');
+        rows.forEach(row => {
+            row.style.display = '';
+        });
+    }
+
+    /**
+     * Search table rows based on OB Files and Buyer CBD Files columns
+     */
+    searchTable(searchTerm) {
+        const table = document.getElementById('v1ResultsTable');
+        if (!table) return;
+
+        const tbody = table.querySelector('tbody');
+        const rows = tbody.querySelectorAll('tr');
+        
+        // Convert search term to lowercase for case-insensitive search
+        const searchLower = searchTerm.toLowerCase().trim();
+
+        // If search is empty, show all rows (but respect other filters)
+        if (searchLower === '') {
+            this.filterTable(); // Re-apply existing filters
+            return;
+        }
+
+        // Search through each row
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            
+            // Get text from first two columns (OB Files and Buyer CBD Files)
+            const obFileText = cells[0] ? cells[0].textContent.toLowerCase() : '';
+            const buyerCbdText = cells[1] ? cells[1].textContent.toLowerCase() : '';
+            
+            // Check if search term is found in either column
+            const matchFound = obFileText.includes(searchLower) || buyerCbdText.includes(searchLower);
+            
+            // Show or hide row based on search match
+            if (matchFound) {
+                // Check if row should be visible based on other filters
+                row.style.display = '';
+                this.applyFiltersToRow(row);
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    /**
+     * Apply column filters to a specific row
+     */
+    applyFiltersToRow(row) {
+        const table = document.getElementById('v1ResultsTable');
+        if (!table) return;
+
+        let showRow = true;
+        const cells = row.querySelectorAll('td');
+
+        // Get all filter values
+        const filters = {};
+        const filterSelects = table.querySelectorAll('.column-filter');
+        filterSelects.forEach(select => {
+            const column = select.getAttribute('data-column');
+            filters[column] = select.value;
+        });
+
+        // Check each filter
+        Object.keys(filters).forEach(columnIndex => {
+            const filterValue = filters[columnIndex];
+            if (filterValue === 'all') return;
+
+            const cell = cells[columnIndex];
+            if (!cell) return;
+
+            const cellText = cell.textContent.trim();
+
+            // Column 2: Match Status
+            if (columnIndex === '2') {
+                if (filterValue === 'found' && !cellText.includes('✓ FOUND')) {
+                    showRow = false;
+                } else if (filterValue === 'not-found' && !cellText.includes('✗ NOT FOUND')) {
+                    showRow = false;
+                }
+            }
+
+            // Column 3: Standard Minute Value
+            if (columnIndex === '3') {
+                if (cellText === '-') return;
+
+                if (filterValue === 'exact') {
+                    if (cellText.includes('BCBD:') || cellText.includes('Empty')) {
+                        showRow = false;
+                    }
+                } else if (filterValue === 'close') {
+                    if (!cellText.includes('BCBD:')) {
+                        showRow = false;
+                    } else {
+                        const diffMatch = cellText.match(/\([\+\-]([\d.]+)\)/);
+                        if (diffMatch) {
+                            const diff = parseFloat(diffMatch[1]);
+                            if (diff > 0.01) {
+                                showRow = false;
+                            }
+                        }
+                    }
+                } else if (filterValue === 'mismatch') {
+                    if (cellText.includes('Empty')) {
+                        // Empty is a mismatch
+                    } else if (cellText.includes('BCBD:')) {
+                        const diffMatch = cellText.match(/\([\+\-]([\d.]+)\)/);
+                        if (diffMatch) {
+                            const diff = parseFloat(diffMatch[1]);
+                            if (diff <= 0.01) {
+                                showRow = false;
+                            }
+                        }
+                    } else {
+                        showRow = false;
+                    }
+                }
+            }
+
+            // Columns 4-7: Valid/Invalid filters
+            if (['4', '5', '6', '7'].includes(columnIndex)) {
+                if (cellText === '-') return;
+
+                if (filterValue === 'valid') {
+                    if (cellText.includes('Cell Empty') || cellText.includes('Expected:')) {
+                        showRow = false;
+                    }
+                } else if (filterValue === 'invalid') {
+                    if (!cellText.includes('Cell Empty') && !cellText.includes('Expected:')) {
+                        showRow = false;
+                    }
+                }
+            }
+        });
+
+        // Apply the filter result
+        if (!showRow) {
+            row.style.display = 'none';
+        }
     }
 }
 
