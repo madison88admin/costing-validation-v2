@@ -1,0 +1,106 @@
+/**
+ * Excel V2 Specific Styles
+ * Styles for Burton Cost Breakdown display
+ */
+
+/* Make V2 OB drop zone non-clickable */
+#obDropZone-v2 {
+    cursor: default !important;
+    pointer-events: none;
+}
+
+#obDropZone-v2 .burton-cost-container {
+    pointer-events: auto;
+}
+
+.burton-cost-container {
+    height: 100%;
+    overflow-y: auto;
+    padding: 0;
+    background: transparent;
+}
+
+.burton-cost-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    height: 100%;
+}
+
+.burton-cost-item {
+    background: transparent;
+    padding: 10px 20px;
+    border: none;
+    border-bottom: 1px solid #e0e8f0;
+    transition: background-color 0.2s ease;
+}
+
+.burton-cost-item:hover {
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+.burton-item-line {
+    font-size: 1em;
+    color: #2b4a6c;
+    font-weight: 400;
+    margin-bottom: 2px;
+    line-height: 1.4;
+    text-align: left;
+}
+
+.burton-item-line:last-child {
+    margin-bottom: 0;
+}
+
+.burton-item-number {
+    display: none;
+}
+
+/* Dark mode support */
+body.dark-mode .burton-cost-container {
+    background: transparent;
+}
+
+body.dark-mode .burton-cost-item {
+    background: transparent;
+    border-color: #475569;
+}
+
+body.dark-mode .burton-cost-item:hover {
+    background-color: rgba(96, 165, 250, 0.1);
+}
+
+body.dark-mode .burton-item-line {
+    color: #e2e8f0;
+}
+
+/* Scrollbar styling */
+.burton-cost-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.burton-cost-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.burton-cost-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.burton-cost-container::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+body.dark-mode .burton-cost-container::-webkit-scrollbar-track {
+    background: #1e293b;
+}
+
+body.dark-mode .burton-cost-container::-webkit-scrollbar-thumb {
+    background: #475569;
+}
+
+body.dark-mode .burton-cost-container::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}

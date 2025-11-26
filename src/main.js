@@ -22,7 +22,10 @@ class ExcelFileHandler {
     }
 
     attachEventListeners() {
-        this.setupDropZone(this.obDropZone, this.obFileInput, 'ob');
+        // For V2, don't setup OB drop zone (Burton Cost Breakdown is auto-loaded)
+        if (this.version !== 'v2') {
+            this.setupDropZone(this.obDropZone, this.obFileInput, 'ob');
+        }
         this.setupDropZone(this.bcbdDropZone, this.bcbdFileInput, 'bcbd');
         
         // Prevent default drag behavior on document
@@ -340,7 +343,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function handleGenerateResults(version) {
     const handler = window[`excelHandler${version.toUpperCase()}`];
+    const resultsContent = document.getElementById(`results-${version}`);
     
+    // Special handling for V2 - only needs BCBD files
+    if (version === 'v2') {
+        const bcbdFiles = handler.getBCBDFiles();
+        
+        if (bcbdFiles.length === 0) {
+            alert('Please upload Buyer CBD files before generating results.');
+            return;
+        }
+
+        console.log(`Generating results for ${version.toUpperCase()}...`);
+        console.log('BCBD Files:', bcbdFiles);
+
+        // Show loading state with animation
+        resultsContent.innerHTML = `
+            <div class="loading-container">
+                <div class="loader"></div>
+                <p class="loading-text">Processing ${bcbdFiles.length} BCBD file(s) with Burton Cost Breakdown...</p>
+                <p class="loading-subtext">Please wait while we scan the files...</p>
+            </div>
+        `;
+
+        if (window.excelV2Processor) {
+            const results = await window.excelV2Processor.processFiles(bcbdFiles);
+            resultsContent.innerHTML = results;
+        }
+        return;
+    }
+    
+    // Standard handling for V1 and V3
     if (!handler.areBothFilesLoaded()) {
         alert('Please upload both OB and BCBD files before generating results.');
         return;
@@ -353,8 +386,6 @@ async function handleGenerateResults(version) {
     console.log('OB Files:', obFiles);
     console.log('BCBD Files:', bcbdFiles);
 
-    const resultsContent = document.getElementById(`results-${version}`);
-    
     // Show loading state with animation
     resultsContent.innerHTML = `
         <div class="loading-container">
@@ -369,7 +400,7 @@ async function handleGenerateResults(version) {
         const results = await window.excelV1Processor.processFiles(obFiles, bcbdFiles);
         resultsContent.innerHTML = results;
     } else {
-        // Placeholder for V2 and V3
+        // Placeholder for V3
         resultsContent.innerHTML = `
             <div class="loading-container">
                 <div class="loader"></div>
