@@ -193,11 +193,37 @@ class TabManager {
     attachEventListeners() {
         this.tabs.forEach(tab => {
             tab.addEventListener('click', () => this.switchTab(tab.dataset.tab));
+            
+            // Add hover listeners to change text
+            tab.addEventListener('mouseenter', () => {
+                const fullText = tab.getAttribute('data-full');
+                if (fullText) {
+                    tab.textContent = fullText;
+                }
+            });
+            
+            tab.addEventListener('mouseleave', () => {
+                // Only collapse if not active
+                if (!tab.classList.contains('active')) {
+                    const shortText = tab.getAttribute('data-short');
+                    if (shortText) {
+                        tab.textContent = shortText;
+                    }
+                }
+            });
         });
     }
 
     switchTab(tabId) {
-        this.tabs.forEach(tab => tab.classList.remove('active'));
+        // Reset all tabs to short text and remove active class
+        this.tabs.forEach(tab => {
+            tab.classList.remove('active');
+            const shortText = tab.getAttribute('data-short');
+            if (shortText) {
+                tab.textContent = shortText;
+            }
+        });
+        
         this.tabContents.forEach(content => content.classList.remove('active'));
 
         const selectedTab = document.querySelector(`[data-tab="${tabId}"]`);
@@ -206,6 +232,12 @@ class TabManager {
         if (selectedTab && selectedContent) {
             selectedTab.classList.add('active');
             selectedContent.classList.add('active');
+            
+            // Set active tab to full text
+            const fullText = selectedTab.getAttribute('data-full');
+            if (fullText) {
+                selectedTab.textContent = fullText;
+            }
         }
 
         console.log(`Switched to ${tabId.toUpperCase()}`);
@@ -323,15 +355,12 @@ async function handleGenerateResults(version) {
 
     const resultsContent = document.getElementById(`results-${version}`);
     
-    // Show loading state
+    // Show loading state with animation
     resultsContent.innerHTML = `
-        <div style="text-align: center; padding: 2rem; color: #2b4a6c;">
-            <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">
-                Processing ${obFiles.length} OB file(s) and ${bcbdFiles.length} BCBD file(s)...
-            </p>
-            <p style="color: #7a92ab;">
-                Please wait while we scan the files...
-            </p>
+        <div class="loading-container">
+            <div class="loader"></div>
+            <p class="loading-text">Processing ${obFiles.length} OB file(s) and ${bcbdFiles.length} BCBD file(s)...</p>
+            <p class="loading-subtext">Please wait while we scan the files...</p>
         </div>
     `;
 
@@ -342,13 +371,10 @@ async function handleGenerateResults(version) {
     } else {
         // Placeholder for V2 and V3
         resultsContent.innerHTML = `
-            <div style="text-align: center; padding: 2rem; color: #2b4a6c;">
-                <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem;">
-                    Processing ${obFiles.length} OB file(s) and ${bcbdFiles.length} BCBD file(s)...
-                </p>
-                <p style="color: #7a92ab;">
-                    Template-specific processing logic for ${version.toUpperCase()} will be implemented here.
-                </p>
+            <div class="loading-container">
+                <div class="loader"></div>
+                <p class="loading-text">Processing ${obFiles.length} OB file(s) and ${bcbdFiles.length} BCBD file(s)...</p>
+                <p class="loading-subtext">Template-specific processing logic for ${version.toUpperCase()} will be implemented here.</p>
             </div>
         `;
     }

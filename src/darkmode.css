@@ -368,3 +368,17 @@ body.dark-mode .dark-mode-toggle:hover {
     background: rgba(214, 224, 234, 0.1);
     border-color: rgba(214, 224, 234, 0.5);
 }
+
+/* Loader Dark Mode */
+body.dark-mode .loader:before,
+body.dark-mode .loader:after {
+    border-color: #d6e0ea;
+}
+
+body.dark-mode .loading-text {
+    color: #d6e0ea;
+}
+
+body.dark-mode .loading-subtext {
+    color: #849bba;
+}
