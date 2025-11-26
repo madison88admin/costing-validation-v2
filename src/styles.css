@@ -90,7 +90,7 @@ body {
     background-color: #e8eef5;
     color: #7a92ab;
     border: 2px solid #2b4a6c;
-    border-bottom: none;
+    border-bottom: 2px solid #2b4a6c;
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
     padding: 0.4rem 0.6rem;
@@ -107,7 +107,6 @@ body {
     color: #2b4a6c;
     padding: 0.4rem 1.5rem;
     font-size: 0.75rem;
-    transform: translateY(-2px);
 }
 
 .tab-btn.active {
@@ -671,27 +670,35 @@ body {
     0% {
         transform: translate(0, 0);
     }
+
     12.5% {
         transform: translate(0, 33px);
     }
+
     25% {
         transform: translate(0, 33px);
     }
+
     37.5% {
         transform: translate(33px, 33px);
     }
+
     50% {
         transform: translate(33px, 33px);
     }
+
     62.5% {
         transform: translate(33px, 0);
     }
+
     75% {
         transform: translate(33px, 0);
     }
+
     87.5% {
         transform: translate(0, 0);
     }
+
     100% {
         transform: translate(0, 0);
     }

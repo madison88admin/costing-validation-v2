@@ -191,6 +191,24 @@ class TabManager {
         this.tabs = document.querySelectorAll('.tab-btn');
         this.tabContents = document.querySelectorAll('.tab-content');
         this.attachEventListeners();
+        this.initializeActiveTab();
+    }
+
+    initializeActiveTab() {
+        // Set the active tab to show full text on page load
+        this.tabs.forEach(tab => {
+            if (tab.classList.contains('active')) {
+                const fullText = tab.getAttribute('data-full');
+                if (fullText) {
+                    tab.textContent = fullText;
+                }
+            } else {
+                const shortText = tab.getAttribute('data-short');
+                if (shortText) {
+                    tab.textContent = shortText;
+                }
+            }
+        });
     }
 
     attachEventListeners() {
