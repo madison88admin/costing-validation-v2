@@ -19,13 +19,13 @@ class ExcelV2Processor {
             if (!response.ok) {
                 throw new Error('Failed to load Burton_CostBreakdown.csv');
             }
-            
+
             const csvText = await response.text();
             this.burtonCostData = this.parseCSV(csvText);
-            
+
             // Display the loaded data in the OB drop zone
             this.displayBurtonCostData();
-            
+
             console.log('Burton Cost Breakdown loaded successfully:', this.burtonCostData);
         } catch (error) {
             console.error('Error loading Burton Cost Breakdown:', error);
@@ -40,16 +40,16 @@ class ExcelV2Processor {
     parseCSV(csvText) {
         const lines = csvText.trim().split('\n');
         const data = [];
-        
+
         lines.forEach(line => {
             // Split by comma
             const values = line.split(',').map(val => val.trim());
-            
+
             // We expect 9 fields total
             // If we have more than 9, the description contains commas
             let description = '';
             let startIndex = 0;
-            
+
             if (values.length > 9) {
                 // Combine the first (length - 8) values as description
                 const descParts = values.length - 8;
@@ -59,7 +59,7 @@ class ExcelV2Processor {
                 description = values[0] || '';
                 startIndex = 1;
             }
-            
+
             data.push({
                 description: description,
                 details: values[startIndex] || '',
@@ -72,7 +72,7 @@ class ExcelV2Processor {
                 totalPrice: values[startIndex + 7] || ''
             });
         });
-        
+
         return data;
     }
 
@@ -174,17 +174,17 @@ class ExcelV2Processor {
     async parseBuyerCBDFile(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-            
+
             reader.onload = (e) => {
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    
+
                     // Get the last sheet (usually contains the latest data)
                     const lastSheetName = workbook.SheetNames[workbook.SheetNames.length - 1];
                     const sheet = workbook.Sheets[lastSheetName];
                     const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
-                    
+
                     // Parse the trims section
                     const trimsData = this.extractTrimsData(jsonData);
                     resolve(trimsData);
@@ -192,7 +192,7 @@ class ExcelV2Processor {
                     reject(error);
                 }
             };
-            
+
             reader.onerror = () => reject(new Error('Failed to read file'));
             reader.readAsArrayBuffer(file);
         });
@@ -203,31 +203,31 @@ class ExcelV2Processor {
      */
     extractTrimsData(jsonData) {
         const trimsData = [];
-        
+
         console.log(`📊 Total rows in Excel: ${jsonData.length}`);
-        
+
         // Scan through all rows in the Excel file
         for (let i = 0; i < jsonData.length; i++) {
             const row = jsonData[i];
-            
+
             // Skip empty rows or header-like rows
             if (!row[0] || row[0].toString().trim() === '') {
                 continue;
             }
-            
+
             // Log every row in column A for debugging
             console.log(`Row ${i}: "${row[0]}"`);
-            
+
             const cellValue = row[0].toString().trim().toUpperCase();
-            
+
             // Check if this is a "sewing thread" row first (before skipping headers)
             const normalizedDesc = row[0].toString().trim().toLowerCase();
             // Match any variation of "sewing thread" including "Sewing Thread - See Vendor Guide"
             const isSewingThread = normalizedDesc.includes('sewing') && normalizedDesc.includes('thread');
-            
+
             // Skip section headers and totals (but NOT sewing thread)
             if (!isSewingThread && (
-                cellValue.includes('BURTON') || 
+                cellValue.includes('BURTON') ||
                 cellValue.includes('TARGET') ||
                 cellValue.includes('FABRIC') ||
                 cellValue.includes('TRIMS') ||
@@ -248,7 +248,7 @@ class ExcelV2Processor {
                 cellValue === 'OVERHEAD')) {
                 continue;
             }
-            
+
             // Standard format for all items (including sewing thread)
             trimsData.push({
                 description: row[0] ? row[0].toString().trim() : '',
@@ -262,7 +262,7 @@ class ExcelV2Processor {
                 total: row[8] ? row[8].toString().trim() : ''
             });
         }
-        
+
         return trimsData;
     }
 
@@ -279,16 +279,16 @@ class ExcelV2Processor {
             'Polybag Sticker',
             'EA- HSC11'
         ];
-        
+
         const results = [];
-        
+
         for (const itemName of itemsToCheck) {
             // Find item in OB data
             const obItem = this.findItemInOB(itemName);
-            
+
             // Find item in Buyer data
             const buyerItem = this.findItemInBuyer(buyerData, itemName);
-            
+
             if (!obItem) {
                 results.push({
                     itemName,
@@ -297,7 +297,7 @@ class ExcelV2Processor {
                 });
                 continue;
             }
-            
+
             if (!buyerItem) {
                 results.push({
                     itemName,
@@ -306,7 +306,7 @@ class ExcelV2Processor {
                 });
                 continue;
             }
-            
+
             // Compare fields
             const comparison = {
                 material: this.compareField(obItem.materialName, buyerItem.material),
@@ -317,13 +317,13 @@ class ExcelV2Processor {
                 unitPrice: this.compareNumericField(obItem.unitPrice, buyerItem.unitPrice, true),
                 total: this.compareNumericField(obItem.totalPrice, buyerItem.total, true)
             };
-            
+
             // Debug logging
             console.log(`Item: ${itemName}`);
             console.log('OB Data:', obItem);
             console.log('Buyer Data:', buyerItem);
             console.log('Comparison:', comparison);
-            
+
             results.push({
                 itemName,
                 status: 'FOUND',
@@ -332,7 +332,7 @@ class ExcelV2Processor {
                 comparison
             });
         }
-        
+
         return results;
     }
 
@@ -352,7 +352,7 @@ class ExcelV2Processor {
      */
     findItemInBuyer(buyerData, itemName) {
         const normalizedName = this.normalizeItemName(itemName);
-        
+
         console.log(`\n=== Searching for: "${itemName}" ===`);
         console.log(`Normalized search term: "${normalizedName}"`);
         console.log('Available items in BCBD:');
@@ -361,14 +361,14 @@ class ExcelV2Processor {
             const matches = this.fuzzyMatch(normalizedName, itemDesc);
             console.log(`  [${index}] "${item.description}" -> normalized: "${itemDesc}" -> Match: ${matches}`);
         });
-        
+
         const found = buyerData.find(item => {
             const itemDesc = this.normalizeItemName(item.description);
             return this.fuzzyMatch(normalizedName, itemDesc);
         });
-        
+
         console.log(`Result: ${found ? 'FOUND - ' + found.description : 'NOT FOUND'}`);
-        
+
         return found;
     }
 
@@ -389,23 +389,23 @@ class ExcelV2Processor {
     fuzzyMatch(str1, str2) {
         // Direct match
         if (str1 === str2) return true;
-        
+
         // For "Sewing Thread" - must contain both "sewing" and "thread"
         if (str1.includes('sewing') && str1.includes('thread')) {
             return str2.includes('sewing') && str2.includes('thread');
         }
-        
+
         // For other items - require at least 80% of significant keywords to match
         const keywords1 = str1.split(' ').filter(w => w.length > 3);
         const keywords2 = str2.split(' ').filter(w => w.length > 3);
-        
+
         if (keywords1.length === 0 || keywords2.length === 0) {
             return false;
         }
-        
+
         // Count exact keyword matches (not partial)
         const matchCount = keywords1.filter(k => keywords2.includes(k)).length;
-        
+
         // Require at least 80% of keywords to match exactly
         return matchCount >= Math.min(keywords1.length, keywords2.length) * 0.8;
     }
@@ -428,22 +428,22 @@ class ExcelV2Processor {
         // Remove currency symbols and convert to numbers
         const cleanOB = (obValue || '').toString().replace(/[$,\s]/g, '');
         const cleanBuyer = (buyerValue || '').toString().replace(/[$,\s]/g, '');
-        
+
         const obNum = parseFloat(cleanOB);
         const buyerNum = parseFloat(cleanBuyer);
-        
+
         if (isNaN(obNum) || isNaN(buyerNum)) {
             return 'INVALID';
         }
-        
+
         // Round both values to 3 decimal places before comparing
         const obRounded = parseFloat(obNum.toFixed(3));
         const buyerRounded = parseFloat(buyerNum.toFixed(3));
-        
+
         if (obRounded === buyerRounded) {
             return 'VALID';
         }
-        
+
         // Check for minor difference of exactly 0.001 if enabled
         if (checkMinorDifference) {
             const difference = Math.abs(obRounded - buyerRounded);
@@ -451,7 +451,7 @@ class ExcelV2Processor {
                 return 'WARNING';
             }
         }
-        
+
         return 'INVALID';
     }
 
@@ -480,15 +480,15 @@ class ExcelV2Processor {
         } else {
             color = '#991b1b'; // Red
         }
-        
+
         // Format numeric values to 3 decimal places
         const displayOB = isNumeric ? this.formatToThreeDecimals(obValue) : obValue;
         const displayBuyer = isNumeric ? this.formatToThreeDecimals(buyerValue) : buyerValue;
-        
+
         if (!buyerValue || buyerValue === '') {
             return `<span style="color: #991b1b; font-weight: 600;">Empty</span><br><span style="font-size: 0.85em; color: #849bba;">Expected: ${displayOB}</span>`;
         }
-        
+
         if (status === 'VALID') {
             return `<span style="color: ${color}; font-weight: 600;">${displayBuyer}</span>`;
         } else {
@@ -513,7 +513,7 @@ class ExcelV2Processor {
         }
 
         let html = '';
-        
+
         for (const fileResult of results) {
             // Add summary at the top (like V1)
             const totalItems = fileResult.results.length;
@@ -522,14 +522,14 @@ class ExcelV2Processor {
                 const comp = r.comparison;
                 return Object.values(comp).every(v => v === 'VALID');
             }).length;
-            
+
             html += `
                 <div style="margin-bottom: 20px; padding: 15px; background: #f0f7ff; border-radius: 10px; border-left: 4px solid #3b82f6;">
                     <strong>File:</strong> ${fileResult.fileName}<br>
                     <strong>Summary:</strong> ${validItems} out of ${totalItems} items fully match the OB file
                 </div>
             `;
-            
+
             // Create comparison table with V1 styling
             html += `
                 <table id="v2ResultsTable" class="results-table">
@@ -547,7 +547,7 @@ class ExcelV2Processor {
                     </thead>
                     <tbody>
             `;
-            
+
             for (const item of fileResult.results) {
                 if (item.status === 'NOT_FOUND_IN_OB') {
                     html += `
@@ -571,7 +571,7 @@ class ExcelV2Processor {
                     const comp = item.comparison;
                     const obData = item.obData;
                     const buyerData = item.buyerData;
-                    
+
                     html += `
                         <tr style="border-bottom: 1px solid #e0e8f0;">
                             <td style="padding: 0.875rem 1rem; font-weight: 600;">${item.itemName}</td>
@@ -586,13 +586,13 @@ class ExcelV2Processor {
                     `;
                 }
             }
-            
+
             html += `
                     </tbody>
                 </table>
             `;
         }
-        
+
         return html;
     }
 
