@@ -1,6 +1,6 @@
 [build]
-  publish = "src"
-  command = "echo 'No build command needed'"
+  publish = "dist"
+  command = "bash build.sh"
 
 [[redirects]]
   from = "/*"

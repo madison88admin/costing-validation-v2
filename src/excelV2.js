@@ -737,7 +737,7 @@ class ExcelV2Processor {
                     didParseCell: (data) => {
                         if (data.section === 'body') {
                             const cellText = data.cell.text[0];
-                            
+
                             // Color code based on content
                             if (cellText && cellText.includes('⚠️')) {
                                 data.cell.styles.textColor = [153, 27, 27];
@@ -889,7 +889,7 @@ class ExcelV2Processor {
      */
     searchByFilename(searchTerm) {
         const fileGroups = document.querySelectorAll('.file-result-group');
-        
+
         if (!fileGroups || fileGroups.length === 0) {
             return;
         }
@@ -912,11 +912,11 @@ class ExcelV2Processor {
 
             // Get the full text content
             const fullText = summaryBox.textContent || summaryBox.innerText;
-            
+
             // Split by line breaks and find the line with "File:"
             const lines = fullText.split(/\r?\n/).map(line => line.trim());
             let filename = '';
-            
+
             for (const line of lines) {
                 if (line.toLowerCase().startsWith('file:')) {
                     // Extract everything after "File:"
@@ -924,7 +924,7 @@ class ExcelV2Processor {
                     break;
                 }
             }
-            
+
             // Check if filename contains the search term
             if (filename && filename.includes(searchLower)) {
                 group.style.display = '';
