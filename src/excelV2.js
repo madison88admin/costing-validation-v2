@@ -15,7 +15,7 @@ class ExcelV2Processor {
     async initialize() {
         try {
             // Fetch the Burton_CostBreakdown.csv file from public folder
-            const response = await fetch('../public/Burton_CostBreakdown.csv');
+            const response = await fetch('public/Burton_CostBreakdown.csv');
             if (!response.ok) {
                 throw new Error('Failed to load Burton_CostBreakdown.csv');
             }
