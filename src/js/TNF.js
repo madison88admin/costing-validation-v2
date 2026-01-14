@@ -4,17 +4,10 @@
  */
 
 class ExcelV1Processor {
-    constructor() {
-        this.obResults = [];
-        this.bcbdResults = [];
-    }
-
     /**
      * Process all files and generate results
      */
     async processFiles(obFiles, bcbdFiles) {
-        this.obResults = [];
-        this.bcbdResults = [];
 
         try {
             // Extract all product IDs and cell values from BCBD files
@@ -53,7 +46,6 @@ class ExcelV1Processor {
             return this.generateResultsHTML(allResults);
 
         } catch (error) {
-            console.error('Error processing files:', error);
             return this.generateErrorHTML(error.message);
         }
     }
@@ -79,12 +71,9 @@ class ExcelV1Processor {
                     // First, try to extract from cell E14 (common location for Product ID)
                     if (worksheet['E14']) {
                         const e14Value = String(worksheet['E14'].v).trim();
-                        console.log('Cell E14 value:', e14Value);
-
                         const e14Match = e14Value.match(/^([A-Z]{1,2}\d[A-Z0-9]{3,8})/);
                         if (e14Match) {
                             productID = e14Match[1];
-                            console.log('Product ID found in E14:', productID);
                         }
                     }
 
@@ -94,7 +83,6 @@ class ExcelV1Processor {
                         const fileNameMatch = fileName.match(/^([A-Z]{1,2}\d[A-Z0-9]{3,8})/);
                         if (fileNameMatch) {
                             productID = fileNameMatch[1];
-                            console.log('Product ID found in filename:', productID);
                         }
                     }
 
@@ -113,7 +101,6 @@ class ExcelV1Processor {
                                         const match = nextCell.match(/^([A-Z]{1,2}\d[A-Z0-9]{3,8})/);
                                         if (match) {
                                             productID = match[1];
-                                            console.log('Product ID found near Style label:', productID);
                                             break;
                                         }
                                     }
@@ -124,7 +111,6 @@ class ExcelV1Processor {
                                     const match = cellValue.match(/^([A-Z]{1,2}\d[A-Z0-9]{3,8})/);
                                     if (match) {
                                         productID = match[1];
-                                        console.log('Product ID found in cell:', productID);
                                     }
                                 }
                             }
@@ -143,66 +129,27 @@ class ExcelV1Processor {
 
                     // Helper function to extract numeric value from cell
                     const extractValue = (cellRef) => {
-                        if (!worksheet[cellRef]) {
-                            console.log(`Cell ${cellRef} not found in BCBD file`);
-                            return null;
-                        }
+                        if (!worksheet[cellRef]) return null;
 
                         let value = worksheet[cellRef].v;
-                        console.log(`Cell ${cellRef} in BCBD file - raw value:`, value, 'Type:', typeof value);
+                        if (typeof value === 'number') return value;
 
-                        // If value is already a number, return it
-                        if (typeof value === 'number') {
-                            return value;
-                        }
-
-                        // If value is a string, try to extract the number
                         if (typeof value === 'string') {
-                            // Remove currency symbols, commas, and extract number
                             let cleaned = value.replace(/[$,\s]/g, '');
-
-                            // Try to extract percentage (e.g., "50.0%" -> 50)
                             let percentMatch = cleaned.match(/([\d.]+)%/);
-                            if (percentMatch) {
-                                return parseFloat(percentMatch[1]);
-                            }
-
-                            // Try to extract plain number
+                            if (percentMatch) return parseFloat(percentMatch[1]);
                             let numberMatch = cleaned.match(/([\d.]+)/);
-                            if (numberMatch) {
-                                return parseFloat(numberMatch[1]);
-                            }
+                            if (numberMatch) return parseFloat(numberMatch[1]);
                         }
-
                         return null;
                     };
 
                     // Extract values from specific cells in the BCBD file
-                    console.log('=== Extracting cell values from BCBD file ===');
-                    console.log('Product ID:', productID);
-                    console.log('File name:', file.name);
-
-                    // K7 - Standard Minute Value
                     cellValues.standardMinuteValue = extractValue('K7');
-
-                    // K8 - Average Efficiency %
                     cellValues.averageEfficiency = extractValue('K8');
-
-                    // K9 - Hourly Wages with Fringes
                     cellValues.hourlyWages = extractValue('K9');
-
-                    // K11 - Overhead Cost Ratio to Direct Labor
                     cellValues.overheadCost = extractValue('K11');
-
-                    // R5 - Factory Profit %
                     cellValues.factoryProfit = extractValue('R5');
-
-                    console.log('=== Final extracted values from BCBD file ===');
-                    console.log('Standard Minute Value (K7):', cellValues.standardMinuteValue);
-                    console.log('Average Efficiency (K8):', cellValues.averageEfficiency);
-                    console.log('Hourly Wages (K9):', cellValues.hourlyWages);
-                    console.log('Overhead Cost (K11):', cellValues.overheadCost);
-                    console.log('Factory Profit (R5):', cellValues.factoryProfit);
 
                     resolve({ productID, cellValues });
                 } catch (error) {
@@ -265,7 +212,6 @@ class ExcelV1Processor {
                                                         let smvValue = worksheet[smvCellRef].v;
                                                         if (typeof smvValue === 'number' && smvValue > 0) {
                                                             smvForThisOccurrence = smvValue;
-                                                            console.log(`Found Total SMV for ${productID} on sheet ${sheetName}: ${smvForThisOccurrence} at ${smvCellRef}`);
                                                             break;
                                                         }
                                                     }
@@ -617,338 +563,75 @@ class ExcelV1Processor {
     }
 
     /**
-     * Export results to PDF
+     * Export results to PDF using the unified Export.js module
      */
     async exportToPDF() {
-        const table = document.getElementById('v1ResultsTable');
-
-        if (!table) {
-            alert('No results to export. Please generate results first.');
+        if (!window.pdfExporter) {
+            alert('PDF export module not available. Please refresh the page.');
             return;
         }
-
-        try {
-            // Import jsPDF library dynamically if not already loaded
-            if (typeof window.jspdf === 'undefined') {
-                await this.loadJsPDF();
-            }
-
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('l', 'mm', 'a4');
-
-            // Add title
-            doc.setFontSize(18);
-            doc.setFont(undefined, 'bold');
-            doc.text('Costing Validation Results - V1', 14, 15);
-
-            // Add timestamp
-            doc.setFontSize(10);
-            doc.setFont(undefined, 'normal');
-            const timestamp = new Date().toLocaleString();
-            doc.text(`Generated: ${timestamp}`, 14, 22);
-
-            // Get summary information
-            const summaryDiv = document.querySelector('#results-v1 div[style*="background: #f0f7ff"]');
-            let summaryHeight = 28;
-
-            if (summaryDiv) {
-                const summaryText = summaryDiv.textContent.trim();
-                doc.setFontSize(9);
-                const lines = doc.splitTextToSize(summaryText, 260);
-                doc.text(lines, 14, 28);
-                summaryHeight = 28 + (lines.length * 4) + 5;
-            }
-
-            // Prepare table data
-            const tableData = this.extractTableData(table);
-
-            // Add table using autoTable plugin
-            doc.autoTable({
-                head: tableData.headers,
-                body: tableData.rows,
-                startY: summaryHeight,
-                styles: {
-                    fontSize: 7,
-                    cellPadding: 2,
-                    overflow: 'linebreak',
-                    cellWidth: 'wrap'
-                },
-                headStyles: {
-                    fillColor: [43, 74, 108],
-                    textColor: [255, 255, 255],
-                    fontStyle: 'bold',
-                    halign: 'center'
-                },
-                columnStyles: {
-                    0: { cellWidth: 35 },
-                    1: { cellWidth: 30 },
-                    2: { cellWidth: 25 },
-                    3: { cellWidth: 30 },
-                    4: { cellWidth: 25 },
-                    5: { cellWidth: 30 },
-                    6: { cellWidth: 35 },
-                    7: { cellWidth: 25 }
-                },
-                alternateRowStyles: {
-                    fillColor: [245, 245, 245]
-                },
-                margin: { top: 10, right: 10, bottom: 10, left: 10 },
-                didParseCell: (data) => {
-                    // Color code the Match Status column (index 2)
-                    if (data.column.index === 2 && data.section === 'body') {
-                        const cellText = data.cell.text[0];
-                        if (cellText && cellText.includes('✓ FOUND')) {
-                            data.cell.styles.textColor = [6, 95, 70];
-                            data.cell.styles.fontStyle = 'bold';
-                        } else if (cellText && cellText.includes('✗ NOT FOUND')) {
-                            data.cell.styles.textColor = [153, 27, 27];
-                            data.cell.styles.fontStyle = 'bold';
-                        }
-                    }
-
-                    // Color code the Standard Minute Value column (index 3)
-                    if (data.column.index === 3 && data.section === 'body') {
-                        const cellText = data.cell.text[0];
-                        if (cellText && cellText.includes('BCBD:') && cellText.includes('OB Total SMV:')) {
-                            const diffMatch = cellText.match(/\([\+\-]([\d.]+)\)/);
-                            if (diffMatch) {
-                                const difference = parseFloat(diffMatch[1]);
-                                if (difference <= 0.01) {
-                                    data.cell.styles.textColor = [217, 119, 6];
-                                } else {
-                                    data.cell.styles.textColor = [153, 27, 27];
-                                }
-                                data.cell.styles.fontStyle = 'bold';
-                            } else {
-                                data.cell.styles.textColor = [217, 119, 6];
-                                data.cell.styles.fontStyle = 'bold';
-                            }
-                        } else if (cellText && (cellText.includes('Empty') || cellText.includes('TNF: Empty'))) {
-                            data.cell.styles.textColor = [153, 27, 27];
-                            data.cell.styles.fontStyle = 'bold';
-                        } else if (cellText && cellText !== '-' && !cellText.includes('BCBD:')) {
-                            data.cell.styles.textColor = [6, 95, 70];
-                            data.cell.styles.fontStyle = 'bold';
-                        }
-                    }
-
-                    // Color code Average Efficiency % (index 4)
-                    if (data.column.index === 4 && data.section === 'body') {
-                        const cellText = data.cell.text[0];
-                        if (cellText && cellText.includes('Cell Empty')) {
-                            data.cell.styles.textColor = [153, 27, 27];
-                            data.cell.styles.fontStyle = 'bold';
-                        } else if (cellText && cellText !== '-') {
-                            const match = cellText.match(/([\d.]+)%/);
-                            if (match) {
-                                const value = parseFloat(match[1]);
-                                if (Math.abs(value - 50.0) >= 0.1) {
-                                    data.cell.styles.textColor = [217, 119, 6];
-                                    data.cell.styles.fontStyle = 'bold';
-                                } else {
-                                    data.cell.styles.textColor = [6, 95, 70];
-                                    data.cell.styles.fontStyle = 'bold';
-                                }
-                            }
-                        }
-                    }
-
-                    // Color code Hourly Wages (index 5)
-                    if (data.column.index === 5 && data.section === 'body') {
-                        const cellText = data.cell.text[0];
-                        if (cellText && cellText.includes('Cell Empty')) {
-                            data.cell.styles.textColor = [153, 27, 27];
-                            data.cell.styles.fontStyle = 'bold';
-                        } else if (cellText && cellText !== '-') {
-                            const match = cellText.match(/([\d.]+)/);
-                            if (match) {
-                                const value = parseFloat(match[1]);
-                                if (Math.abs(value - 1.750) >= 0.01) {
-                                    data.cell.styles.textColor = [217, 119, 6];
-                                    data.cell.styles.fontStyle = 'bold';
-                                } else {
-                                    data.cell.styles.textColor = [6, 95, 70];
-                                    data.cell.styles.fontStyle = 'bold';
-                                }
-                            }
-                        }
-                    }
-
-                    // Color code Overhead Cost (index 6)
-                    if (data.column.index === 6 && data.section === 'body') {
-                        const cellText = data.cell.text[0];
-                        if (cellText && cellText.includes('Cell Empty')) {
-                            data.cell.styles.textColor = [153, 27, 27];
-                            data.cell.styles.fontStyle = 'bold';
-                        } else if (cellText && cellText !== '-') {
-                            const match = cellText.match(/([\d.]+)%/);
-                            if (match) {
-                                const value = parseFloat(match[1]);
-                                if (Math.abs(value - 70.0) >= 0.1) {
-                                    data.cell.styles.textColor = [217, 119, 6];
-                                    data.cell.styles.fontStyle = 'bold';
-                                } else {
-                                    data.cell.styles.textColor = [6, 95, 70];
-                                    data.cell.styles.fontStyle = 'bold';
-                                }
-                            }
-                        }
-                    }
-
-                    // Color code Factory Profit % (index 7)
-                    if (data.column.index === 7 && data.section === 'body') {
-                        const cellText = data.cell.text[0];
-                        if (cellText && cellText.includes('Cell Empty')) {
-                            data.cell.styles.textColor = [153, 27, 27];
-                            data.cell.styles.fontStyle = 'bold';
-                        } else if (cellText && cellText !== '-') {
-                            const match = cellText.match(/([\d.]+)%/);
-                            if (match) {
-                                const value = parseFloat(match[1]);
-                                if (Math.abs(value - 10.0) >= 0.1) {
-                                    data.cell.styles.textColor = [217, 119, 6];
-                                    data.cell.styles.fontStyle = 'bold';
-                                } else {
-                                    data.cell.styles.textColor = [6, 95, 70];
-                                    data.cell.styles.fontStyle = 'bold';
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Add page numbers
-            const pageCount = doc.internal.getNumberOfPages();
-            for (let i = 1; i <= pageCount; i++) {
-                doc.setPage(i);
-                doc.setFontSize(8);
-                doc.text(
-                    `Page ${i} of ${pageCount}`,
-                    doc.internal.pageSize.getWidth() / 2,
-                    doc.internal.pageSize.getHeight() - 10,
-                    { align: 'center' }
-                );
-            }
-
-            // Generate filename with date
-            const now = new Date();
-            const date = now.toISOString().slice(0, 10);
-            const filename = `CostingValidation_V1_${date}.pdf`;
-
-            // Save the PDF
-            doc.save(filename);
-
-            console.log('PDF exported successfully:', filename);
-
-        } catch (error) {
-            console.error('Error exporting PDF:', error);
-            alert('Failed to export PDF. Please try again.');
-        }
+        await window.pdfExporter.exportToPDF(window.pdfExporter.createTNFConfig());
     }
 
     /**
-     * Extract table data from the HTML table
+     * Get current filter values from dropdowns
      */
-    extractTableData(table) {
-        const headers = [];
-        const rows = [];
+    getFilterValues() {
+        const table = document.getElementById('v1ResultsTable');
+        if (!table) return {};
 
-        // Extract headers
-        const headerRow = table.querySelector('thead tr');
-        if (headerRow) {
-            const headerCells = headerRow.querySelectorAll('th');
-            headerCells.forEach(cell => {
-                headers.push(cell.textContent.trim());
-            });
-        }
-
-        // Extract rows from tbody
-        const tbody = table.querySelector('tbody');
-        const bodyRows = tbody.querySelectorAll('tr');
-
-        bodyRows.forEach(row => {
-            const rowData = [];
-            const cells = row.querySelectorAll('td');
-
-            cells.forEach((cell, index) => {
-                let cellText = '';
-
-                if (index === 0 || index === 1) {
-                    const strong = cell.querySelector('strong');
-                    const divs = cell.querySelectorAll('div');
-
-                    if (strong) {
-                        cellText = strong.textContent.trim();
-                        if (divs.length > 0) {
-                            divs.forEach(div => {
-                                cellText += '\n' + div.textContent.trim();
-                            });
-                        }
-                    } else {
-                        cellText = cell.textContent.trim();
-                    }
-                } else if (index === 2) {
-                    const statusSpan = cell.querySelector('span');
-                    cellText = statusSpan ? statusSpan.textContent.trim() : cell.textContent.trim();
-                } else {
-                    const spans = cell.querySelectorAll('span');
-                    if (spans.length > 0) {
-                        const textParts = [];
-                        spans.forEach(span => {
-                            const text = span.textContent.trim();
-                            if (text && !text.includes('Expected:')) {
-                                textParts.push(text);
-                            }
-                        });
-                        cellText = textParts.join(' ');
-                    } else {
-                        cellText = cell.textContent.trim();
-                    }
-                    cellText = cellText.replace(/\s+/g, ' ').trim();
-                }
-
-                rowData.push(cellText);
-            });
-
-            rows.push(rowData);
+        const filters = {};
+        const filterSelects = table.querySelectorAll('.column-filter');
+        filterSelects.forEach(select => {
+            filters[select.getAttribute('data-column')] = select.value;
         });
-
-        return {
-            headers: [headers],
-            rows: rows
-        };
+        return filters;
     }
 
     /**
-     * Load jsPDF library dynamically
+     * Check if a row passes all filter criteria
      */
-    loadJsPDF() {
-        return new Promise((resolve, reject) => {
-            if (typeof window.jspdf !== 'undefined') {
-                resolve();
-                return;
+    rowPassesFilters(row, filters) {
+        const cells = row.querySelectorAll('td');
+
+        for (const [columnIndex, filterValue] of Object.entries(filters)) {
+            if (filterValue === 'all') continue;
+
+            const cell = cells[columnIndex];
+            if (!cell) continue;
+
+            const cellText = cell.textContent.trim();
+
+            // Column 2: Match Status
+            if (columnIndex === '2') {
+                if (filterValue === 'found' && !cellText.includes('✓ FOUND')) return false;
+                if (filterValue === 'not-found' && !cellText.includes('✗ NOT FOUND')) return false;
             }
 
-            const jsPDFScript = document.createElement('script');
-            jsPDFScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-            jsPDFScript.onload = () => {
-                const autoTableScript = document.createElement('script');
-                autoTableScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js';
-                autoTableScript.onload = () => {
-                    console.log('jsPDF and autoTable loaded successfully');
-                    resolve();
-                };
-                autoTableScript.onerror = () => {
-                    reject(new Error('Failed to load jsPDF autoTable plugin'));
-                };
-                document.head.appendChild(autoTableScript);
-            };
-            jsPDFScript.onerror = () => {
-                reject(new Error('Failed to load jsPDF library'));
-            };
-            document.head.appendChild(jsPDFScript);
-        });
+            // Column 3: Standard Minute Value
+            if (columnIndex === '3' && cellText !== '-') {
+                if (filterValue === 'exact' && (cellText.includes('BCBD:') || cellText.includes('Empty'))) return false;
+                if (filterValue === 'close') {
+                    if (!cellText.includes('BCBD:')) return false;
+                    const diffMatch = cellText.match(/\([\+\-]([\d.]+)\)/);
+                    if (diffMatch && parseFloat(diffMatch[1]) > 0.01) return false;
+                }
+                if (filterValue === 'mismatch') {
+                    if (!cellText.includes('Empty') && !cellText.includes('BCBD:')) return false;
+                    if (cellText.includes('BCBD:')) {
+                        const diffMatch = cellText.match(/\([\+\-]([\d.]+)\)/);
+                        if (diffMatch && parseFloat(diffMatch[1]) <= 0.01) return false;
+                    }
+                }
+            }
+
+            // Columns 4-7: Valid/Invalid filters
+            if (['4', '5', '6', '7'].includes(columnIndex) && cellText !== '-') {
+                if (filterValue === 'valid' && (cellText.includes('Cell Empty') || cellText.includes('Expected:'))) return false;
+                if (filterValue === 'invalid' && !cellText.includes('Cell Empty') && !cellText.includes('Expected:')) return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -958,108 +641,11 @@ class ExcelV1Processor {
         const table = document.getElementById('v1ResultsTable');
         if (!table) return;
 
-        const tbody = table.querySelector('tbody');
-        const rows = tbody.querySelectorAll('tr');
+        const filters = this.getFilterValues();
+        const rows = table.querySelector('tbody').querySelectorAll('tr');
 
-        // Get all filter values
-        const filters = {};
-        const filterSelects = table.querySelectorAll('.column-filter');
-        filterSelects.forEach(select => {
-            const column = select.getAttribute('data-column');
-            filters[column] = select.value;
-        });
-
-        // Filter each row
         rows.forEach(row => {
-            let showRow = true;
-            const cells = row.querySelectorAll('td');
-
-            // Check each filter
-            Object.keys(filters).forEach(columnIndex => {
-                const filterValue = filters[columnIndex];
-                if (filterValue === 'all') return;
-
-                const cell = cells[columnIndex];
-                if (!cell) return;
-
-                const cellText = cell.textContent.trim();
-
-                // Column 2: Match Status
-                if (columnIndex === '2') {
-                    if (filterValue === 'found' && !cellText.includes('✓ FOUND')) {
-                        showRow = false;
-                    } else if (filterValue === 'not-found' && !cellText.includes('✗ NOT FOUND')) {
-                        showRow = false;
-                    }
-                }
-
-                // Column 3: Standard Minute Value
-                if (columnIndex === '3') {
-                    if (cellText === '-') {
-                        // Skip filtering for "not found" rows
-                        return;
-                    }
-
-                    if (filterValue === 'exact') {
-                        // Exact match: green color, no "BCBD:" prefix
-                        if (cellText.includes('BCBD:') || cellText.includes('Empty')) {
-                            showRow = false;
-                        }
-                    } else if (filterValue === 'close') {
-                        // Close match: has difference but <= 0.01
-                        if (!cellText.includes('BCBD:')) {
-                            showRow = false;
-                        } else {
-                            const diffMatch = cellText.match(/\([\+\-]([\d.]+)\)/);
-                            if (diffMatch) {
-                                const diff = parseFloat(diffMatch[1]);
-                                if (diff > 0.01) {
-                                    showRow = false;
-                                }
-                            }
-                        }
-                    } else if (filterValue === 'mismatch') {
-                        // Mismatch: difference > 0.01 or empty
-                        if (cellText.includes('Empty')) {
-                            // Empty is a mismatch
-                        } else if (cellText.includes('BCBD:')) {
-                            const diffMatch = cellText.match(/\([\+\-]([\d.]+)\)/);
-                            if (diffMatch) {
-                                const diff = parseFloat(diffMatch[1]);
-                                if (diff <= 0.01) {
-                                    showRow = false;
-                                }
-                            }
-                        } else {
-                            // Exact match is not a mismatch
-                            showRow = false;
-                        }
-                    }
-                }
-
-                // Columns 4-7: Valid/Invalid filters
-                if (['4', '5', '6', '7'].includes(columnIndex)) {
-                    if (cellText === '-') {
-                        // Skip filtering for "not found" rows
-                        return;
-                    }
-
-                    if (filterValue === 'valid') {
-                        // Valid: doesn't contain "Cell Empty" and doesn't have "Expected:" (meaning it matches)
-                        if (cellText.includes('Cell Empty') || cellText.includes('Expected:')) {
-                            showRow = false;
-                        }
-                    } else if (filterValue === 'invalid') {
-                        // Invalid: contains "Cell Empty" or has "Expected:" (meaning it doesn't match)
-                        if (!cellText.includes('Cell Empty') && !cellText.includes('Expected:')) {
-                            showRow = false;
-                        }
-                    }
-                }
-            });
-
-            // Show or hide the row
-            row.style.display = showRow ? '' : 'none';
+            row.style.display = this.rowPassesFilters(row, filters) ? '' : 'none';
         });
     }
 
@@ -1070,24 +656,12 @@ class ExcelV1Processor {
         const table = document.getElementById('v1ResultsTable');
         if (!table) return;
 
-        // Reset all filter dropdowns to "all"
-        const filterSelects = table.querySelectorAll('.column-filter');
-        filterSelects.forEach(select => {
-            select.value = 'all';
-        });
+        table.querySelectorAll('.column-filter').forEach(select => select.value = 'all');
 
-        // Clear search input
         const searchInput = document.querySelector('.search-input-expandable');
-        if (searchInput) {
-            searchInput.value = '';
-        }
+        if (searchInput) searchInput.value = '';
 
-        // Show all rows
-        const tbody = table.querySelector('tbody');
-        const rows = tbody.querySelectorAll('tr');
-        rows.forEach(row => {
-            row.style.display = '';
-        });
+        table.querySelector('tbody').querySelectorAll('tr').forEach(row => row.style.display = '');
     }
 
     /**
@@ -1097,134 +671,24 @@ class ExcelV1Processor {
         const table = document.getElementById('v1ResultsTable');
         if (!table) return;
 
-        const tbody = table.querySelector('tbody');
-        const rows = tbody.querySelectorAll('tr');
-
-        // Convert search term to lowercase for case-insensitive search
         const searchLower = searchTerm.toLowerCase().trim();
 
-        // If search is empty, show all rows (but respect other filters)
         if (searchLower === '') {
-            this.filterTable(); // Re-apply existing filters
+            this.filterTable();
             return;
         }
 
-        // Search through each row
+        const filters = this.getFilterValues();
+        const rows = table.querySelector('tbody').querySelectorAll('tr');
+
         rows.forEach(row => {
             const cells = row.querySelectorAll('td');
-
-            // Get text from first two columns (OB Files and Buyer CBD Files)
             const obFileText = cells[0] ? cells[0].textContent.toLowerCase() : '';
             const buyerCbdText = cells[1] ? cells[1].textContent.toLowerCase() : '';
-
-            // Check if search term is found in either column
             const matchFound = obFileText.includes(searchLower) || buyerCbdText.includes(searchLower);
 
-            // Show or hide row based on search match
-            if (matchFound) {
-                // Check if row should be visible based on other filters
-                row.style.display = '';
-                this.applyFiltersToRow(row);
-            } else {
-                row.style.display = 'none';
-            }
+            row.style.display = (matchFound && this.rowPassesFilters(row, filters)) ? '' : 'none';
         });
-    }
-
-    /**
-     * Apply column filters to a specific row
-     */
-    applyFiltersToRow(row) {
-        const table = document.getElementById('v1ResultsTable');
-        if (!table) return;
-
-        let showRow = true;
-        const cells = row.querySelectorAll('td');
-
-        // Get all filter values
-        const filters = {};
-        const filterSelects = table.querySelectorAll('.column-filter');
-        filterSelects.forEach(select => {
-            const column = select.getAttribute('data-column');
-            filters[column] = select.value;
-        });
-
-        // Check each filter
-        Object.keys(filters).forEach(columnIndex => {
-            const filterValue = filters[columnIndex];
-            if (filterValue === 'all') return;
-
-            const cell = cells[columnIndex];
-            if (!cell) return;
-
-            const cellText = cell.textContent.trim();
-
-            // Column 2: Match Status
-            if (columnIndex === '2') {
-                if (filterValue === 'found' && !cellText.includes('✓ FOUND')) {
-                    showRow = false;
-                } else if (filterValue === 'not-found' && !cellText.includes('✗ NOT FOUND')) {
-                    showRow = false;
-                }
-            }
-
-            // Column 3: Standard Minute Value
-            if (columnIndex === '3') {
-                if (cellText === '-') return;
-
-                if (filterValue === 'exact') {
-                    if (cellText.includes('BCBD:') || cellText.includes('Empty')) {
-                        showRow = false;
-                    }
-                } else if (filterValue === 'close') {
-                    if (!cellText.includes('BCBD:')) {
-                        showRow = false;
-                    } else {
-                        const diffMatch = cellText.match(/\([\+\-]([\d.]+)\)/);
-                        if (diffMatch) {
-                            const diff = parseFloat(diffMatch[1]);
-                            if (diff > 0.01) {
-                                showRow = false;
-                            }
-                        }
-                    }
-                } else if (filterValue === 'mismatch') {
-                    if (cellText.includes('Empty')) {
-                        // Empty is a mismatch
-                    } else if (cellText.includes('BCBD:')) {
-                        const diffMatch = cellText.match(/\([\+\-]([\d.]+)\)/);
-                        if (diffMatch) {
-                            const diff = parseFloat(diffMatch[1]);
-                            if (diff <= 0.01) {
-                                showRow = false;
-                            }
-                        }
-                    } else {
-                        showRow = false;
-                    }
-                }
-            }
-
-            // Columns 4-7: Valid/Invalid filters
-            if (['4', '5', '6', '7'].includes(columnIndex)) {
-                if (cellText === '-') return;
-
-                if (filterValue === 'valid') {
-                    if (cellText.includes('Cell Empty') || cellText.includes('Expected:')) {
-                        showRow = false;
-                    }
-                } else if (filterValue === 'invalid') {
-                    if (!cellText.includes('Cell Empty') && !cellText.includes('Expected:')) {
-                        showRow = false;
-                    }
-                }
-            }
-        });
-
-        // Apply the filter result
-        if (!showRow) {
-            row.style.display = 'none';
-        }
     }
 }
 
