@@ -355,14 +355,8 @@ class HellyHansenProcessor {
             `;
 
             for (const item of fileResult.results) {
-                // Check if any field is invalid for row background
-                const hasInvalid = item.consmStatus !== 'VALID' ||
-                    item.upStatus !== 'VALID' ||
-                    item.amountStatus !== 'VALID';
-                const rowBg = hasInvalid ? 'background-color: #fef2f2;' : '';
-
                 html += `
-                    <tr style="border-bottom: 1px solid #e0e8f0; ${rowBg}">
+                    <tr style="border-bottom: 1px solid #e0e8f0;">
                         <td style="padding: 0.875rem 1rem; font-weight: 600;">${item.itemName}</td>
                         <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.obConsm, item.buyerConsm, item.consmStatus)}</td>
                         <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.obUp, item.buyerUp, item.upStatus)}</td>

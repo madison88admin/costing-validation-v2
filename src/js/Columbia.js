@@ -53,6 +53,24 @@ class ColumbiaProcessor {
                 return;
             }
 
+            // Overhead line
+            if (values[0] && values[0].toLowerCase().includes('overhead')) {
+                data.push({
+                    description: values[0],
+                    overhead: values[1] || ''
+                });
+                return;
+            }
+
+            // Profit line
+            if (values[0] && values[0].toLowerCase().includes('profit')) {
+                data.push({
+                    description: values[0],
+                    profit: values[1] || ''
+                });
+                return;
+            }
+
             // Standard format: Description, PartNumber, UnitPrice, Quantity, Wastage
             data.push({
                 description: values[0] || '',
@@ -207,6 +225,8 @@ class ColumbiaProcessor {
     /**
      * Extract Columbia data from the Excel file
      * Efficiency% is at cell M19 (column 12, row 18 in 0-indexed)
+     * Overhead is at cell O21 (column 14, row 20 in 0-indexed)
+     * Profit is at cell M22 (column 12, row 21 in 0-indexed)
      * Items are found by searching Column A for keywords:
      * - Material is in Column B (index 1)
      * - FOB Cost is in Column K (index 10)
@@ -216,6 +236,8 @@ class ColumbiaProcessor {
     extractColumbiaData(jsonData) {
         const data = {
             efficiency: '',
+            overhead: '',
+            profit: '',
             items: []
         };
 
@@ -224,9 +246,19 @@ class ColumbiaProcessor {
             data.efficiency = jsonData[18][12].toString().trim();
         }
 
-        // Get the item keywords to search for from our CSV (excluding efficiency)
+        // Overhead at O21 (column O = index 14, row 21 = index 20)
+        if (jsonData[20] && jsonData[20][14] !== undefined) {
+            data.overhead = jsonData[20][14].toString().trim();
+        }
+
+        // Profit at M22 (column M = index 12, row 22 = index 21)
+        if (jsonData[21] && jsonData[21][12] !== undefined) {
+            data.profit = jsonData[21][12].toString().trim();
+        }
+
+        // Get the item keywords to search for from our CSV (excluding efficiency, overhead, profit)
         const itemsToFind = this.columbiaCostData
-            .filter(item => item.efficiency === undefined)
+            .filter(item => item.efficiency === undefined && item.overhead === undefined && item.profit === undefined)
             .map(item => item.description);
 
         // Get unique keywords
@@ -293,8 +325,52 @@ class ColumbiaProcessor {
             wastageStatus: 'VALID'
         });
 
-        // Get all non-efficiency items from CSV
-        const csvItems = this.columbiaCostData.filter(item => item.efficiency === undefined);
+        // Get expected overhead from CSV
+        const overheadItem = this.columbiaCostData.find(item => item.overhead !== undefined);
+        const expectedOverhead = overheadItem ? overheadItem.overhead : '';
+
+        // Compare Overhead (0.35 to 0.36 is valid)
+        const overheadStatus = this.compareOverhead(expectedOverhead, buyerData.overhead);
+        results.push({
+            itemName: 'Overhead',
+            obMaterial: expectedOverhead,
+            buyerMaterial: buyerData.overhead,
+            materialStatus: overheadStatus,
+            obFobCost: '-',
+            buyerFobCost: '-',
+            fobCostStatus: 'VALID',
+            obFactoryUsage: '-',
+            buyerFactoryUsage: '-',
+            factoryUsageStatus: 'VALID',
+            obWastage: '-',
+            buyerWastage: '-',
+            wastageStatus: 'VALID'
+        });
+
+        // Get expected profit from CSV
+        const profitItem = this.columbiaCostData.find(item => item.profit !== undefined);
+        const expectedProfit = profitItem ? profitItem.profit : '';
+
+        // Compare Profit (4% to 4.99% is valid)
+        const profitStatus = this.compareProfit(expectedProfit, buyerData.profit);
+        results.push({
+            itemName: 'Profit',
+            obMaterial: expectedProfit,
+            buyerMaterial: buyerData.profit,
+            materialStatus: profitStatus,
+            obFobCost: '-',
+            buyerFobCost: '-',
+            fobCostStatus: 'VALID',
+            obFactoryUsage: '-',
+            buyerFactoryUsage: '-',
+            factoryUsageStatus: 'VALID',
+            obWastage: '-',
+            buyerWastage: '-',
+            wastageStatus: 'VALID'
+        });
+
+        // Get all non-efficiency, non-overhead, non-profit items from CSV
+        const csvItems = this.columbiaCostData.filter(item => item.efficiency === undefined && item.overhead === undefined && item.profit === undefined);
 
         // Compare each CSV item with found items in BCBD
         for (const csvItem of csvItems) {
@@ -394,17 +470,84 @@ class ColumbiaProcessor {
     }
 
     /**
+     * Compare Overhead field (0.35 to 0.36 is valid)
+     */
+    compareOverhead(expectedValue, buyerValue) {
+        const cleanExpected = (expectedValue || '').toString().replace(/[$,\s%]/g, '');
+        const cleanBuyer = (buyerValue || '').toString().replace(/[$,\s%]/g, '');
+
+        const expectedNum = parseFloat(cleanExpected);
+        const buyerNum = parseFloat(cleanBuyer);
+
+        if (isNaN(expectedNum) || isNaN(buyerNum)) {
+            return 'INVALID';
+        }
+
+        // Valid range: 0.35 to 0.36
+        if (buyerNum >= 0.35 && buyerNum <= 0.36) {
+            return 'VALID';
+        }
+
+        return 'INVALID';
+    }
+
+    /**
+     * Compare Profit field (4% to 4.99% is valid)
+     */
+    compareProfit(expectedValue, buyerValue) {
+        const cleanExpected = (expectedValue || '').toString().replace(/[$,\s%]/g, '');
+        const cleanBuyer = (buyerValue || '').toString().replace(/[$,\s%]/g, '');
+
+        let expectedNum = parseFloat(cleanExpected);
+        let buyerNum = parseFloat(cleanBuyer);
+
+        if (isNaN(expectedNum) || isNaN(buyerNum)) {
+            return 'INVALID';
+        }
+
+        // Convert decimal values (0.048) to percentage (4.8)
+        if (buyerNum < 1) {
+            buyerNum = buyerNum * 100;
+        }
+        if (expectedNum < 1) {
+            expectedNum = expectedNum * 100;
+        }
+
+        // Valid range: 4% to 4.99%
+        if (buyerNum >= 4 && buyerNum < 5) {
+            return 'VALID';
+        }
+
+        return 'INVALID';
+    }
+
+    /**
      * Format field value with color coding
      */
-    formatFieldValue(obValue, buyerValue, status) {
+    formatFieldValue(obValue, buyerValue, status, itemName = '') {
         const isValid = status === 'VALID';
         const color = isValid ? '#065f46' : '#991b1b';
-        const displayValue = buyerValue || 'Empty';
+        let displayValue = buyerValue || 'Empty';
+        let expectedValue = obValue;
+
+        // Convert decimal to percentage for Profit display
+        if (itemName === 'Profit' && displayValue !== 'Empty') {
+            const cleanValue = displayValue.toString().replace(/[$,\s%]/g, '');
+            const numValue = parseFloat(cleanValue);
+            if (!isNaN(numValue) && numValue < 1) {
+                displayValue = (numValue * 100).toFixed(2) + '%';
+            }
+        }
+
+        // Format Overhead expected range
+        if (itemName === 'Overhead' && !isValid) {
+            expectedValue = '0.35 to 0.36';
+        }
 
         if (isValid) {
             return `<span style="color: ${color}; font-weight: 600;">${displayValue}</span>`;
         } else {
-            return `<span style="color: ${color}; font-weight: 600;">${displayValue}</span><br><span style="font-size: 0.85em; color: #849bba;">Expected: ${obValue}</span>`;
+            return `<span style="color: ${color}; font-weight: 600;">${displayValue}</span><br><span style="font-size: 0.85em; color: #849bba;">Expected: ${expectedValue}</span>`;
         }
     }
 
@@ -458,20 +601,18 @@ class ColumbiaProcessor {
             `;
 
             for (const item of fileResult.results) {
-                // Check if any field is invalid for row background
-                const hasInvalid = item.materialStatus !== 'VALID' ||
-                                   item.fobCostStatus !== 'VALID' ||
-                                   item.factoryUsageStatus !== 'VALID' ||
-                                   item.wastageStatus !== 'VALID';
-                const rowBg = hasInvalid ? 'background-color: #fef2f2;' : '';
+                // Skip Hangtag Package Part with material 1234
+                if (item.itemName === 'Hangtag Package Part' && item.obMaterial === '1234') {
+                    continue;
+                }
 
                 html += `
-                    <tr style="border-bottom: 1px solid #e0e8f0; ${rowBg}">
+                    <tr style="border-bottom: 1px solid #e0e8f0;">
                         <td style="padding: 0.875rem 1rem; font-weight: 600;">${item.itemName}</td>
-                        <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.obMaterial, item.buyerMaterial, item.materialStatus)}</td>
-                        <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.obFobCost, item.buyerFobCost, item.fobCostStatus)}</td>
-                        <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.obFactoryUsage, item.buyerFactoryUsage, item.factoryUsageStatus)}</td>
-                        <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.obWastage, item.buyerWastage, item.wastageStatus)}</td>
+                        <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.obMaterial, item.buyerMaterial, item.materialStatus, item.itemName)}</td>
+                        <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.obFobCost, item.buyerFobCost, item.fobCostStatus, item.itemName)}</td>
+                        <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.obFactoryUsage, item.buyerFactoryUsage, item.factoryUsageStatus, item.itemName)}</td>
+                        <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.obWastage, item.buyerWastage, item.wastageStatus, item.itemName)}</td>
                     </tr>
                 `;
             }
