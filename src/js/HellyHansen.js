@@ -183,8 +183,25 @@ class HellyHansenProcessor {
      */
     extractHellyHansenData(jsonData) {
         const data = {
-            items: []
+            items: [],
+            countryOfOrigin: ''
         };
+
+        // Search for Country of Origin in Column C
+        for (let i = 0; i < jsonData.length; i++) {
+            const row = jsonData[i];
+            if (row[2]) {
+                const cellValue = row[2].toString().trim().toUpperCase();
+                if (cellValue.includes('COUNTRY OF ORIGIN') || cellValue.includes('COUNTRY OF ORIGINAL')) {
+                    if (cellValue.includes('INDO')) {
+                        data.countryOfOrigin = 'INDO';
+                    } else if (cellValue.includes('CHINA')) {
+                        data.countryOfOrigin = 'CHINA';
+                    }
+                    break;
+                }
+            }
+        }
 
         // Get the item keywords to search for from our CSV
         const itemsToFind = this.hellyHansenCostData.map(item => item.item);
@@ -210,8 +227,11 @@ class HellyHansenProcessor {
                         consm: consm,
                         up: up,
                         amount: amount,
-                        rowIndex: i
+                        rowIndex: i,
+                        // Mark if this is a special row (only has amount, no consm/up)
+                        isSpecialRow: !consm && !up && amount
                     });
+                    break; // Found the keyword, move to next row
                 }
             }
         }
@@ -234,29 +254,90 @@ class HellyHansenProcessor {
             );
 
             if (buyerItem) {
-                // Found match - compare all fields
-                results.push({
-                    itemName: csvItem.item,
-                    obConsm: csvItem.consm,
-                    buyerConsm: buyerItem.consm,
-                    consmStatus: this.compareNumericField(csvItem.consm, buyerItem.consm),
-                    obUp: csvItem.up,
-                    buyerUp: buyerItem.up,
-                    upStatus: this.compareNumericField(csvItem.up, buyerItem.up),
-                    obAmount: csvItem.amount,
-                    buyerAmount: buyerItem.amount,
-                    amountStatus: this.compareNumericField(csvItem.amount, buyerItem.amount)
-                });
+                // Special handling for FINANCIAL AND OVERHEAD COST
+                if (csvItem.item === 'FINANCIAL AND OVERHEAD COST') {
+                    console.log('buyerData.countryOfOrigin:', buyerData.countryOfOrigin);
+                    console.log('Comparison result:', buyerData.countryOfOrigin === 'INDO');
+                    const expectedValue = buyerData.countryOfOrigin === 'INDO' ? '0.40' : '0.30';
+                    console.log('Expected value set to:', expectedValue);
+                    results.push({
+                        itemName: csvItem.item,
+                        obConsm: '-',
+                        buyerConsm: '-',
+                        consmStatus: 'N/A',
+                        obUp: '-',
+                        buyerUp: '-',
+                        upStatus: 'N/A',
+                        obAmount: expectedValue,
+                        buyerAmount: buyerItem.amount,
+                        amountStatus: this.compareNumericField(expectedValue, buyerItem.amount),
+                        specialCase: 'FINANCIAL_OVERHEAD',
+                        countryOfOrigin: buyerData.countryOfOrigin
+                    });
+                }
+                // Special handling for MARGIN / PROFIT
+                else if (csvItem.item === 'MARGIN / PROFIT') {
+                    results.push({
+                        itemName: csvItem.item,
+                        obConsm: '-',
+                        buyerConsm: '-',
+                        consmStatus: 'N/A',
+                        obUp: '-',
+                        buyerUp: '-',
+                        upStatus: 'N/A',
+                        obAmount: csvItem.amount,
+                        buyerAmount: buyerItem.amount,
+                        amountStatus: this.validateMarginProfitRange(buyerItem.amount),
+                        specialCase: 'MARGIN_PROFIT'
+                    });
+                }
+                // Special handling for Local transportation / documentation
+                else if (csvItem.item === 'Local transportation / documentation') {
+                    // For this special row, the expected value is in consm field (second column in CSV)
+                    const expectedValue = csvItem.consm || '0.25';
+                    results.push({
+                        itemName: csvItem.item,
+                        obConsm: '-',
+                        buyerConsm: '-',
+                        consmStatus: 'N/A',
+                        obUp: '-',
+                        buyerUp: '-',
+                        upStatus: 'N/A',
+                        obAmount: expectedValue,
+                        buyerAmount: buyerItem.amount,
+                        amountStatus: this.compareNumericField(expectedValue, buyerItem.amount),
+                        specialCase: 'LOCAL_TRANSPORT'
+                    });
+                }
+                // Regular items
+                else {
+                    results.push({
+                        itemName: csvItem.item,
+                        obConsm: csvItem.consm,
+                        buyerConsm: buyerItem.consm,
+                        consmStatus: this.compareNumericField(csvItem.consm, buyerItem.consm),
+                        obUp: csvItem.up,
+                        buyerUp: buyerItem.up,
+                        upStatus: this.compareNumericField(csvItem.up, buyerItem.up),
+                        obAmount: csvItem.amount,
+                        buyerAmount: buyerItem.amount,
+                        amountStatus: this.compareNumericField(csvItem.amount, buyerItem.amount)
+                    });
+                }
             } else {
-                // Item not found
+                // Item not found - check if it's a special row
+                const isSpecial = csvItem.item === 'FINANCIAL AND OVERHEAD COST' ||
+                                 csvItem.item === 'MARGIN / PROFIT' ||
+                                 csvItem.item === 'Local transportation / documentation';
+
                 results.push({
                     itemName: csvItem.item,
-                    obConsm: csvItem.consm,
+                    obConsm: isSpecial ? '-' : csvItem.consm,
                     buyerConsm: 'NOT FOUND',
-                    consmStatus: 'INVALID',
-                    obUp: csvItem.up,
+                    consmStatus: isSpecial ? 'N/A' : 'INVALID',
+                    obUp: isSpecial ? '-' : csvItem.up,
                     buyerUp: 'NOT FOUND',
-                    upStatus: 'INVALID',
+                    upStatus: isSpecial ? 'N/A' : 'INVALID',
                     obAmount: csvItem.amount,
                     buyerAmount: 'NOT FOUND',
                     amountStatus: 'INVALID'
@@ -293,12 +374,64 @@ class HellyHansenProcessor {
     }
 
     /**
+     * Validate MARGIN / PROFIT range (0.45 to 0.55)
+     */
+    validateMarginProfitRange(value) {
+        const cleanValue = (value || '').toString().replace(/[$,\s%]/g, '');
+        const numValue = parseFloat(cleanValue);
+
+        if (isNaN(numValue)) {
+            return 'INVALID';
+        }
+
+        // Check if value is within the range 0.45 to 0.55 (inclusive)
+        if (numValue >= 0.45 && numValue <= 0.55) {
+            return 'VALID';
+        }
+
+        return 'INVALID';
+    }
+
+    /**
      * Format field value with color coding
      */
-    formatFieldValue(obValue, buyerValue, status) {
+    formatFieldValue(obValue, buyerValue, status, specialCase = null, item = null) {
+        // Handle N/A status (for fields that don't apply to special rows)
+        if (status === 'N/A') {
+            return `<span style="color: #6b7280; font-weight: 500;">-</span>`;
+        }
+
         const isValid = status === 'VALID';
         const color = isValid ? '#065f46' : '#991b1b';
         const displayValue = buyerValue || 'Empty';
+
+        // Special handling for FINANCIAL AND OVERHEAD COST to always show country of origin
+        if (specialCase === 'FINANCIAL_OVERHEAD') {
+            console.log('FINANCIAL_OVERHEAD item:', item);
+            if (item && item.countryOfOrigin) {
+                const expectedText = `${obValue} (${item.countryOfOrigin})`;
+                return `<span style="color: ${color}; font-weight: 600;">${displayValue}</span><br><span style="font-size: 0.85em; color: #849bba;">Expected: ${expectedText}</span>`;
+            } else {
+                console.log('No country of origin found in item');
+                const expectedText = obValue;
+                return `<span style="color: ${color}; font-weight: 600;">${displayValue}</span><br><span style="font-size: 0.85em; color: #849bba;">Expected: ${expectedText}</span>`;
+            }
+        }
+
+        // Special handling for LOCAL_TRANSPORT to always show expected
+        if (specialCase === 'LOCAL_TRANSPORT') {
+            if (isValid) {
+                return `<span style="color: ${color}; font-weight: 600;">${displayValue}</span><br><span style="font-size: 0.85em; color: #849bba;">Expected: ${obValue}</span>`;
+            } else {
+                return `<span style="color: ${color}; font-weight: 600;">${displayValue}</span><br><span style="font-size: 0.85em; color: #849bba;">Expected: ${obValue}</span>`;
+            }
+        }
+
+        // Special handling for MARGIN / PROFIT to always show expected range
+        if (specialCase === 'MARGIN_PROFIT') {
+            const expectedText = '0.45 to 0.55';
+            return `<span style="color: ${color}; font-weight: 600;">${displayValue}</span><br><span style="font-size: 0.85em; color: #849bba;">Expected: ${expectedText}</span>`;
+        }
 
         if (isValid) {
             return `<span style="color: ${color}; font-weight: 600;">${displayValue}</span>`;
@@ -358,9 +491,9 @@ class HellyHansenProcessor {
                 html += `
                     <tr style="border-bottom: 1px solid #e0e8f0;">
                         <td style="padding: 0.875rem 1rem; font-weight: 600;">${item.itemName}</td>
-                        <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.obConsm, item.buyerConsm, item.consmStatus)}</td>
-                        <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.obUp, item.buyerUp, item.upStatus)}</td>
-                        <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.obAmount, item.buyerAmount, item.amountStatus)}</td>
+                        <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.obConsm, item.buyerConsm, item.consmStatus, item.specialCase, item)}</td>
+                        <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.obUp, item.buyerUp, item.upStatus, item.specialCase, item)}</td>
+                        <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.obAmount, item.buyerAmount, item.amountStatus, item.specialCase, item)}</td>
                     </tr>
                 `;
             }
