@@ -1,18 +1,18 @@
--, -, Cost per minute, -, 0.1865, 0.03, -, 0, -, -, -, 
--, -, Minutes/Product, -, 22, -, -, 0.2, -, -, -,
--, -, Line output/Day, -, 90, -, -, 0.50, -, -, -,
--, -, Fabrics, -, -, -, -, -, -, 0.1, 5%
-LS Thread, Wool Mix, Trims, Local Supplier, -, -, 1.000, -, $0.008, 0.01, 3%
-Traceable Wool Recycled Paper Insert, FR2061-6, Trims, Rudholm & Haak, -, -, 1.000, -, $0.059, 0.01, 3%
-Recycled Label,	FJ2069ACC1,	Trims,	Rudholm & Haak, -, -, 1.000, -, $0.080, 0.01, 3%
-Recycled Size Label, FJ2070ACCE, Trims,	Rudholm & Haak, -, -, 1.000, -, $0.020, 0.01, 3%
-Recycled Care Label, FJCARE2, Trims, Rudholm & Haak, -, -, 4.000, -, $0.030, 0.01, 3%
-Small Recycled Swing Tag, FR2058, Packaging, Rudholm & Haak, -, -, 1.000, -, $0.030, 0.01, 3%
-Paper String for Hangtag, YY007, Packaging,	Rudholm & Haak, -, -, 1.000, -, $0.042, 0.01, 3%
-Purchase Order Label, FJ-CARE-PO, Trims, Rudholm & Haak, -, -, 1.000, -, $0.012, 0.01, 3%
-Packaging - components required according to general instructions, BX-800003 Box,	Packaging, Local Supplier 00,  -, -, 1.000, -, $0.027, 0.01, 3%
-Recycled Care Label, FJ-CARE-CN,  Packaging, RUDOHLM & HAAK, -, -, 1.000, -, $0.027, 0.01, 3%
-LS Barcode sticker, Barcode Sticker, Packaging, Local Supplier, -, -, 2.000, -, $0.008, 0.01, 3%
-QR Sticker, FJ-QR- STICK01, Packaging, Rudholm & Haak, -, -, 1.000, -, $0.007, 0.01, 3%
-Dry Sac 2 Grams (8L), DS 2g(8L), Packaging, Super Dry International Pte Ltd., -, -, 1.000, -, $0.027, 0.01, 3%
-HW Recycled Polybag Caps,	FH_CapHat (31x30+5), Packaging, R-PAC VIETNAM LIMITED,  -, -, 1.000, -, $0.035, 0.01, 3%
+-, -, Cost per minute, -, 0.15 to 0.19, 0.03, -, 0, -, -, -, 
+-, -, Minutes/Product, -, 14 to 24, -, -, 0.2, -, -, -,
+-, -, Line output/Day, -, 100 to 140, -, -, 0.20 to 1.15, -, -, -,
+-, -, Fabrics, -, -, -, -, -, -, 0.1, 0.05
+LS Thread, Wool Mix, Trims, Local Supplier, -, -, 1.000, -, $0.008, 0.01, 0.03
+Traceable Wool Recycled Paper Insert, FR2061-6, Trims, Rudholm & Haak, -, -, 1.000, -, $0.059, 0.01, 0.03
+Recycled Label,	FJ2069ACC1,	Trims,	Rudholm & Haak, -, -, 1.000, -, $0.080, 0.01, 0.03
+Recycled Size Label, FJ2070ACCE, Trims,	Rudholm & Haak, -, -, 1.000, -, $0.020, 0.01, 0.03
+Recycled Care Label, FJCARE2, Trims, Rudholm & Haak, -, -, 4.000, -, $0.030, 0.01, 0.03
+Small Recycled Swing Tag, FR2058, Packaging, Rudholm & Haak, -, -, 1.000, -, $0.030, 0.01, 0.03
+Paper String for Hangtag, YY007, Packaging,	Rudholm & Haak, -, -, 1.000, -, $0.042, 0.01, 30.03
+Purchase Order Label, FJ-CARE-PO, Trims, Rudholm & Haak, -, -, 1.000, -, $0.012, 0.01, 0.03
+Packaging - components required according to general instructions, BX-800003,	Packaging, Local Supplier,  -, -, 1.000, -, $0.027, 0.01, 0.03
+Recycled Care Label, FJ-CARE-CN,  Packaging, RUDOHLM & HAAK, -, -, 1.000, -, $0.027, 0.01, 0.03
+LS , Barcode Sticker, Packaging, Local Supplier, -, -, 2.000, -, $0.0076, 0.01, 0.03
+QR , FJ-QR- STICK01, Packaging, Rudholm & Haak, -, -, 1.000, -, $0.0065, 0.01, 0.03
+Dry Sac 2 Grams (8L), DS 2g(8L), Packaging, Super Dry International Pte Ltd., -, -, 1.000, -, $0.027, 0.01, 0.03
+HW ,	FH_CapHat (31x30+5), Packaging, R-PAC VIETNAM LIMITED,  -, -, 1.000, -, $0.035, 0.01, 0.03

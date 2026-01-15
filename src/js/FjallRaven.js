@@ -211,96 +211,118 @@ class FjallRavenProcessor {
             specialItems: [] // For Cost per minute, Minutes/Product, etc.
         };
 
-        // Get the keywords to search for from our CSV
-        // Regular items (with product names) - search by Product (Column D)
-        const productItems = this.fjallRavenCostData
-            .filter(item => item.product && item.product !== '-')
-            .map(item => item.product);
+        // Track which Excel row indices have been matched (to prevent double-matching)
+        const matchedRowIndices = new Set();
 
-        // Special items (product is '-') - search by BOM Section (Column F)
-        const specialItems = this.fjallRavenCostData
-            .filter(item => item.product === '-')
-            .map(item => item.bomSection);
+        // Process CSV items IN ORDER - this ensures Fabrics is processed before Traceable Wool
+        for (const csvItem of this.fjallRavenCostData) {
 
-        // Search through all rows for matching products (Column D)
-        for (let i = 0; i < jsonData.length; i++) {
-            const row = jsonData[i];
-            if (!row[3]) continue; // Column D (Product)
+            if (csvItem.product === '-') {
+                // SPECIAL ITEM: Search by BOM Section (Column F)
+                // e.g., "Fabrics" - find ALL rows where Column F = "Fabrics"
+                const keyword = csvItem.bomSection;
 
-            const cellD = row[3].toString().trim();
+                for (let i = 0; i < jsonData.length; i++) {
+                    // Skip already matched rows
+                    if (matchedRowIndices.has(i)) continue;
 
-            // Check if this cell matches any of our product keywords
-            for (const keyword of productItems) {
-                if (cellD.toLowerCase().includes(keyword.toLowerCase()) ||
-                    keyword.toLowerCase().includes(cellD.toLowerCase())) {
+                    const row = jsonData[i];
+                    if (!row[5]) continue; // Column F (BOM Section)
 
-                    const product = cellD;
-                    const supplierMaterialCode = row[4] ? row[4].toString().trim() : '';  // Column E
-                    const bomSection = row[5] ? row[5].toString().trim() : '';            // Column F
-                    const supplier = row[6] ? row[6].toString().trim() : '';              // Column G
-                    const laborCost = row[7] ? row[7].toString().trim() : '';             // Column H
-                    const miscellaneous = row[9] ? row[9].toString().trim() : '';         // Column J
-                    const qty = row[10] ? row[10].toString().trim() : '';                 // Column K
-                    const firstCost = row[11] ? row[11].toString().trim() : '';           // Column L
-                    const price = row[12] ? row[12].toString().trim() : '';               // Column M
-                    const freight = row[13] ? row[13].toString().trim() : '';             // Column N
-                    const waste = row[14] ? row[14].toString().trim() : '';               // Column O
+                    const cellF = row[5].toString().trim();
 
-                    data.items.push({
-                        keyword: keyword,
-                        foundText: product,
-                        supplierMaterialCode: supplierMaterialCode,
-                        bomSection: bomSection,
-                        supplier: supplier,
-                        laborCost: laborCost,
-                        miscellaneous: miscellaneous,
-                        qty: qty,
-                        firstCost: firstCost,
-                        price: price,
-                        freight: freight,
-                        waste: waste,
-                        rowIndex: i,
-                        isSpecialItem: false
-                    });
-                    break; // Found the keyword, move to next row
+                    // Exact match for BOM section
+                    if (cellF.toLowerCase() === keyword.toLowerCase()) {
+                        const cellD = row[3] ? row[3].toString().trim() : '';  // Column D (Product name)
+                        const supplier = row[6] ? row[6].toString().trim() : '';
+                        const laborCost = row[7] ? row[7].toString().trim() : '';
+                        const miscellaneous = row[9] ? row[9].toString().trim() : '';
+                        const qty = row[10] ? row[10].toString().trim() : '';
+                        const firstCost = row[11] ? row[11].toString().trim() : '';
+                        const price = row[12] ? row[12].toString().trim() : '';
+                        const freight = row[13] ? row[13].toString().trim() : '';
+                        const waste = row[14] ? row[14].toString().trim() : '';
+
+                        data.specialItems.push({
+                            keyword: keyword,
+                            foundText: cellF,
+                            productName: cellD,
+                            supplier: supplier,
+                            laborCost: laborCost,
+                            miscellaneous: miscellaneous,
+                            qty: qty,
+                            firstCost: firstCost,
+                            price: price,
+                            freight: freight,
+                            waste: waste,
+                            rowIndex: i,
+                            isSpecialItem: true
+                        });
+
+                        // Mark this row as matched
+                        matchedRowIndices.add(i);
+                        // Don't break - continue to find ALL rows with this BOM section
+                    }
                 }
-            }
-        }
+            } else if (csvItem.product && csvItem.product !== '') {
+                // REGULAR ITEM: Search by Product name (Column D)
+                const keyword = csvItem.product;
+                const expectedCode = csvItem.supplierMaterialCode;
 
-        // Search through all rows for special items (Column F - BOM Section)
-        for (let i = 0; i < jsonData.length; i++) {
-            const row = jsonData[i];
-            if (!row[5]) continue; // Column F (BOM Section)
+                for (let i = 0; i < jsonData.length; i++) {
+                    // Skip already matched rows
+                    if (matchedRowIndices.has(i)) continue;
 
-            const cellF = row[5].toString().trim();
+                    const row = jsonData[i];
+                    if (!row[3]) continue; // Column D (Product)
 
-            // Check if this cell matches any of our special item keywords
-            for (const keyword of specialItems) {
-                if (cellF.toLowerCase().includes(keyword.toLowerCase()) ||
-                    keyword.toLowerCase().includes(cellF.toLowerCase())) {
+                    const cellD = row[3].toString().trim();
+                    const cellE = row[4] ? row[4].toString().trim() : '';
 
-                    const laborCost = row[7] ? row[7].toString().trim() : '';             // Column H
-                    const miscellaneous = row[9] ? row[9].toString().trim() : '';         // Column J
-                    const qty = row[10] ? row[10].toString().trim() : '';                 // Column K
-                    const firstCost = row[11] ? row[11].toString().trim() : '';           // Column L
-                    const price = row[12] ? row[12].toString().trim() : '';               // Column M
-                    const freight = row[13] ? row[13].toString().trim() : '';             // Column N
-                    const waste = row[14] ? row[14].toString().trim() : '';               // Column O
+                    // Check if product name matches
+                    if (cellD.toLowerCase().includes(keyword.toLowerCase()) ||
+                        keyword.toLowerCase().includes(cellD.toLowerCase())) {
 
-                    data.specialItems.push({
-                        keyword: keyword,
-                        foundText: cellF,
-                        laborCost: laborCost,
-                        miscellaneous: miscellaneous,
-                        qty: qty,
-                        firstCost: firstCost,
-                        price: price,
-                        freight: freight,
-                        waste: waste,
-                        rowIndex: i,
-                        isSpecialItem: true
-                    });
-                    break; // Found the keyword, move to next row
+                        // For "Recycled Care Label", also verify supplier material code
+                        if (keyword.toLowerCase() === 'recycled care label') {
+                            if (!cellE.toLowerCase().includes(expectedCode.toLowerCase()) &&
+                                !expectedCode.toLowerCase().includes(cellE.toLowerCase())) {
+                                continue; // Code doesn't match, skip
+                            }
+                        }
+
+                        const bomSection = row[5] ? row[5].toString().trim() : '';
+                        const supplier = row[6] ? row[6].toString().trim() : '';
+                        const laborCost = row[7] ? row[7].toString().trim() : '';
+                        const miscellaneous = row[9] ? row[9].toString().trim() : '';
+                        const qty = row[10] ? row[10].toString().trim() : '';
+                        const firstCost = row[11] ? row[11].toString().trim() : '';
+                        const price = row[12] ? row[12].toString().trim() : '';
+                        const freight = row[13] ? row[13].toString().trim() : '';
+                        const waste = row[14] ? row[14].toString().trim() : '';
+
+                        data.items.push({
+                            keyword: keyword,
+                            expectedCode: expectedCode,
+                            foundText: cellD,
+                            supplierMaterialCode: cellE,
+                            bomSection: bomSection,
+                            supplier: supplier,
+                            laborCost: laborCost,
+                            miscellaneous: miscellaneous,
+                            qty: qty,
+                            firstCost: firstCost,
+                            price: price,
+                            freight: freight,
+                            waste: waste,
+                            rowIndex: i,
+                            isSpecialItem: false
+                        });
+
+                        // Mark this row as matched
+                        matchedRowIndices.add(i);
+                        break; // Found match for this product, move to next CSV item
+                    }
                 }
             }
         }
@@ -316,57 +338,72 @@ class FjallRavenProcessor {
         const results = [];
 
         // First, process special items (Cost per minute, Minutes/Product, etc.)
+        // For items like "Fabrics", there can be multiple rows in the Excel
         for (const csvItem of this.fjallRavenCostData) {
             if (csvItem.product !== '-') continue; // Only process special items here
 
-            // Find matching special item in buyer data by BOM Section
-            const buyerItem = buyerData.specialItems.find(
+            // Find ALL matching special items in buyer data by BOM Section (not just the first one)
+            const matchingBuyerItems = buyerData.specialItems.filter(
                 bi => bi.keyword.toLowerCase() === csvItem.bomSection.toLowerCase()
             );
 
-            if (buyerItem) {
-                results.push({
-                    itemName: csvItem.bomSection,
-                    isSpecialItem: true,
-                    supplierMaterialCode: { ob: '-', buyer: '-', status: 'N/A' },
-                    bomSection: { ob: '-', buyer: '-', status: 'N/A' },
-                    supplier: { ob: '-', buyer: '-', status: 'N/A' },
-                    laborCost: {
-                        ob: csvItem.laborCost,
-                        buyer: buyerItem.laborCost,
-                        status: csvItem.laborCost === '-' ? 'N/A' : this.compareNumericField(csvItem.laborCost, buyerItem.laborCost)
-                    },
-                    miscellaneous: {
-                        ob: csvItem.miscellaneous,
-                        buyer: buyerItem.miscellaneous,
-                        status: csvItem.miscellaneous === '-' ? 'N/A' : this.compareNumericField(csvItem.miscellaneous, buyerItem.miscellaneous)
-                    },
-                    qty: {
-                        ob: csvItem.qty,
-                        buyer: buyerItem.qty,
-                        status: csvItem.qty === '-' ? 'N/A' : this.compareNumericField(csvItem.qty, buyerItem.qty)
-                    },
-                    firstCost: {
-                        ob: csvItem.firstCost,
-                        buyer: buyerItem.firstCost,
-                        status: csvItem.firstCost === '-' ? 'N/A' : this.compareNumericField(csvItem.firstCost, buyerItem.firstCost)
-                    },
-                    price: {
-                        ob: csvItem.price,
-                        buyer: buyerItem.price,
-                        status: csvItem.price === '-' ? 'N/A' : this.compareNumericField(csvItem.price, buyerItem.price)
-                    },
-                    freight: {
-                        ob: csvItem.freight,
-                        buyer: buyerItem.freight,
-                        status: csvItem.freight === '-' ? 'N/A' : this.compareNumericField(csvItem.freight, buyerItem.freight)
-                    },
-                    waste: {
-                        ob: csvItem.waste,
-                        buyer: buyerItem.waste,
-                        status: csvItem.waste === '-' ? 'N/A' : this.compareTextField(csvItem.waste, buyerItem.waste)
-                    }
-                });
+            if (matchingBuyerItems.length > 0) {
+                // Add each matching item as a separate result row
+                for (let idx = 0; idx < matchingBuyerItems.length; idx++) {
+                    const buyerItem = matchingBuyerItems[idx];
+                    // For multiple items with same BOM section, show product name to distinguish them
+                    const displayName = matchingBuyerItems.length > 1 && buyerItem.productName
+                        ? `${csvItem.bomSection} (${buyerItem.productName})`
+                        : csvItem.bomSection;
+
+                    results.push({
+                        itemName: displayName,
+                        isSpecialItem: true,
+                        isMultiRowItem: matchingBuyerItems.length > 1, // Flag for multiple rows
+                        supplierMaterialCode: { ob: '-', buyer: '-', status: 'N/A' },
+                        bomSection: { ob: '-', buyer: '-', status: 'N/A' },
+                        supplier: {
+                            ob: '-',
+                            buyer: buyerItem.supplier || '-',
+                            status: 'N/A'
+                        },
+                        laborCost: {
+                            ob: csvItem.laborCost,
+                            buyer: buyerItem.laborCost,
+                            status: csvItem.laborCost === '-' ? 'N/A' : this.compareNumericField(csvItem.laborCost, buyerItem.laborCost)
+                        },
+                        miscellaneous: {
+                            ob: csvItem.miscellaneous,
+                            buyer: buyerItem.miscellaneous,
+                            status: csvItem.miscellaneous === '-' ? 'N/A' : this.compareNumericField(csvItem.miscellaneous, buyerItem.miscellaneous)
+                        },
+                        qty: {
+                            ob: csvItem.qty,
+                            buyer: buyerItem.qty,
+                            status: csvItem.qty === '-' ? 'N/A' : this.compareNumericField(csvItem.qty, buyerItem.qty)
+                        },
+                        firstCost: {
+                            ob: csvItem.firstCost,
+                            buyer: buyerItem.firstCost,
+                            status: csvItem.firstCost === '-' ? 'N/A' : this.compareNumericField(csvItem.firstCost, buyerItem.firstCost)
+                        },
+                        price: {
+                            ob: csvItem.price,
+                            buyer: buyerItem.price,
+                            status: csvItem.price === '-' ? 'N/A' : this.compareNumericField(csvItem.price, buyerItem.price)
+                        },
+                        freight: {
+                            ob: csvItem.freight,
+                            buyer: buyerItem.freight,
+                            status: csvItem.freight === '-' ? 'N/A' : this.compareNumericField(csvItem.freight, buyerItem.freight)
+                        },
+                        waste: {
+                            ob: csvItem.waste,
+                            buyer: buyerItem.waste,
+                            status: csvItem.waste === '-' ? 'N/A' : this.compareTextField(csvItem.waste, buyerItem.waste)
+                        }
+                    });
+                }
             } else {
                 // Special item not found in BCBD
                 results.push({
@@ -394,13 +431,28 @@ class FjallRavenProcessor {
             }
 
             // Find matching item in buyer data by keyword
-            const buyerItem = buyerData.items.find(
-                bi => bi.keyword.toLowerCase() === csvItem.product.toLowerCase()
-            );
+            // For duplicate product names (like "Recycled Care Label"), also match by supplier material code
+            let buyerItem;
+            if (csvItem.product.toLowerCase() === 'recycled care label') {
+                // Match by both product name AND supplier material code
+                buyerItem = buyerData.items.find(
+                    bi => bi.keyword.toLowerCase() === csvItem.product.toLowerCase() &&
+                        bi.expectedCode.toLowerCase() === csvItem.supplierMaterialCode.toLowerCase()
+                );
+            } else {
+                buyerItem = buyerData.items.find(
+                    bi => bi.keyword.toLowerCase() === csvItem.product.toLowerCase()
+                );
+            }
 
             if (buyerItem) {
+                // For duplicate product names, append the supplier material code to distinguish them
+                const displayName = csvItem.product.toLowerCase() === 'recycled care label'
+                    ? `${csvItem.product} (${csvItem.supplierMaterialCode})`
+                    : csvItem.product;
+
                 results.push({
-                    itemName: csvItem.product,
+                    itemName: displayName,
                     product: {
                         ob: csvItem.product,
                         buyer: buyerItem.foundText,
@@ -459,8 +511,13 @@ class FjallRavenProcessor {
                 });
             } else {
                 // Item not found in BCBD
+                // For duplicate product names, append the supplier material code to distinguish them
+                const displayName = csvItem.product.toLowerCase() === 'recycled care label'
+                    ? `${csvItem.product} (${csvItem.supplierMaterialCode})`
+                    : csvItem.product;
+
                 results.push({
-                    itemName: csvItem.product,
+                    itemName: displayName,
                     product: { ob: csvItem.product, buyer: 'NOT FOUND', status: 'INVALID' },
                     supplierMaterialCode: { ob: csvItem.supplierMaterialCode, buyer: 'NOT FOUND', status: 'INVALID' },
                     bomSection: { ob: csvItem.bomSection, buyer: 'NOT FOUND', status: 'INVALID' },
@@ -499,21 +556,61 @@ class FjallRavenProcessor {
 
     /**
      * Compare numeric fields
+     * Supports range values like "0.15 to 0.19" - buyer value is valid if within range
      */
     compareNumericField(obValue, buyerValue) {
         if (!obValue || obValue === '-' || obValue === '') return 'N/A';
-        if (!buyerValue || buyerValue === 'NOT FOUND' || buyerValue === '') return 'INVALID';
 
-        // Clean and parse values
-        const obClean = obValue.toString().replace(/[$,\s%]/g, '');
-        const buyerClean = buyerValue.toString().replace(/[$,\s%]/g, '');
+        const obString = obValue.toString().trim();
 
+        // If buyer value is empty/null/undefined, treat it as 0
+        let buyerNum;
+        if (!buyerValue || buyerValue === '' || buyerValue === 'NOT FOUND') {
+            buyerNum = 0;
+        } else {
+            const buyerClean = buyerValue.toString().replace(/[$,\s%]/g, '');
+            buyerNum = parseFloat(buyerClean);
+        }
+
+        // Check if OB value is a range (e.g., "0.15 to 0.19" or "14 to 24")
+        const rangeMatch = obString.match(/^([\d.]+)\s*to\s*([\d.]+)$/i);
+
+        if (rangeMatch) {
+            // It's a range - check if buyer value falls within the range
+            const minValue = parseFloat(rangeMatch[1]);
+            const maxValue = parseFloat(rangeMatch[2]);
+
+            if (isNaN(minValue) || isNaN(maxValue)) {
+                return 'INVALID';
+            }
+
+            if (isNaN(buyerNum)) {
+                return 'INVALID';
+            }
+
+            // Round buyer value for comparison
+            const buyerRounded = Math.round(buyerNum * 10000) / 10000;
+
+            // Check if buyer value is within the range (inclusive)
+            if (buyerRounded >= minValue && buyerRounded <= maxValue) {
+                return 'VALID';
+            } else {
+                return 'INVALID';
+            }
+        }
+
+        // Not a range - do normal comparison
+        const obClean = obString.replace(/[$,\s%]/g, '');
         const obNum = parseFloat(obClean);
-        const buyerNum = parseFloat(buyerClean);
 
-        if (isNaN(obNum) || isNaN(buyerNum)) {
-            // If not numbers, compare as strings
+        if (isNaN(obNum)) {
+            // If OB is not a number, compare as strings
+            const buyerClean = buyerValue ? buyerValue.toString().replace(/[$,\s%]/g, '') : '';
             return obClean.toLowerCase() === buyerClean.toLowerCase() ? 'VALID' : 'INVALID';
+        }
+
+        if (isNaN(buyerNum)) {
+            return 'INVALID';
         }
 
         // Round to 4 decimal places for comparison
@@ -557,7 +654,7 @@ class FjallRavenProcessor {
             html += `
                 <div class="file-summary-box">
                     <strong>File:</strong> ${fileResult.fileName}<br>
-                    <strong>Summary:</strong> ${validItems} out of ${totalItems} items fully match
+                    <strong>Summary:</strong> ${validItems} out of ${totalItems} items match
                 </div>
             `;
 
@@ -583,14 +680,14 @@ class FjallRavenProcessor {
             `;
 
             for (const item of fileResult.results) {
-                // Special items (Cost per minute, etc.) - display with gray background
+                // Special items (Cost per minute, etc.) - same style as regular items
                 if (item.isSpecialItem) {
                     html += `
-                        <tr style="border-bottom: 1px solid #e0e8f0; background: #f8f9fa;">
-                            <td style="padding: 0.875rem 1rem; color: #6b7280;">-</td>
-                            <td style="padding: 0.875rem 1rem; color: #6b7280;">-</td>
-                            <td style="padding: 0.875rem 1rem; font-weight: 600; color: #4a5568;">${item.itemName}</td>
-                            <td style="padding: 0.875rem 1rem; color: #6b7280;">-</td>
+                        <tr style="border-bottom: 1px solid #e0e8f0;">
+                            <td style="padding: 0.875rem 1rem;">-</td>
+                            <td style="padding: 0.875rem 1rem;">-</td>
+                            <td style="padding: 0.875rem 1rem; font-weight: 600;">${item.itemName}</td>
+                            <td style="padding: 0.875rem 1rem;">-</td>
                             <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.laborCost)}</td>
                             <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.miscellaneous)}</td>
                             <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item.qty)}</td>
@@ -641,7 +738,10 @@ class FjallRavenProcessor {
 
         const isValid = field.status === 'VALID';
         const color = isValid ? '#065f46' : '#991b1b';
-        const displayValue = field.buyer || 'Empty';
+        // If buyer value is empty, show 0 instead of "Empty"
+        const displayValue = (field.buyer !== undefined && field.buyer !== null && field.buyer !== '')
+            ? field.buyer
+            : '0';
 
         if (isValid) {
             return `<span style="color: ${color}; font-weight: 600;">${displayValue}</span>`;
