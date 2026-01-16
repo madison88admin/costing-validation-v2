@@ -635,6 +635,15 @@ class FjallRavenProcessor {
 
         let html = '';
 
+        // Add export button at the top
+        html += `
+            <div style="margin-bottom: 15px; display: flex; justify-content: flex-end; align-items: center;">
+                <button onclick="window.fjallRavenProcessor.exportToPDF()" class="export-btn">
+                    Export
+                </button>
+            </div>
+        `;
+
         for (const fileResult of results) {
             html += `<div class="file-result-group">`;
 
@@ -781,6 +790,25 @@ class FjallRavenProcessor {
                 </p>
             </div>
         `;
+    }
+
+    /**
+     * Export results to PDF using the unified Export.js module
+     */
+    async exportToPDF() {
+        if (!window.pdfExporter) {
+            console.error('PDF Exporter not loaded');
+            alert('PDF export module not available. Please refresh the page.');
+            return;
+        }
+
+        if (!this.bcbdResults || this.bcbdResults.length === 0) {
+            alert('No results to export. Please generate results first.');
+            return;
+        }
+
+        const config = window.pdfExporter.createFjallRavenConfig(this.bcbdResults);
+        await window.pdfExporter.exportMultiFileToPDF(config);
     }
 }
 

@@ -611,6 +611,291 @@ class PDFExporter {
     }
 
     /**
+     * Create Fjall Raven (V5) export configuration
+     * @param {Array} fileResults - Array of file results from Fjall Raven processor
+     * @returns {Object} - Configuration object for Fjall Raven export
+     */
+    createFjallRavenConfig(fileResults) {
+        return {
+            title: 'Fjall Raven Cost Breakdown Comparison - V5',
+            fileResults: fileResults.map(fileResult => {
+                // Count fully valid items (excluding special items from count)
+                const regularItems = fileResult.results.filter(r => !r.isSpecialItem);
+                const totalItems = regularItems.length;
+                const validItems = regularItems.filter(r =>
+                    r.supplierMaterialCode.status !== 'INVALID' &&
+                    r.bomSection.status !== 'INVALID' &&
+                    r.supplier.status !== 'INVALID' &&
+                    r.qty.status !== 'INVALID' &&
+                    r.price.status !== 'INVALID' &&
+                    r.freight.status !== 'INVALID' &&
+                    r.waste.status !== 'INVALID'
+                ).length;
+
+                // Build cell statuses for coloring
+                const cellStatuses = fileResult.results.map(item => {
+                    if (item.isSpecialItem) {
+                        return [
+                            'normal', // Item (-)
+                            'normal', // Supplier Mat. Code (-)
+                            'normal', // BOM Section (item name)
+                            'normal', // Supplier (-)
+                            item.laborCost.status === 'VALID' ? 'valid' : (item.laborCost.status === 'N/A' ? 'normal' : 'invalid'),
+                            item.miscellaneous.status === 'VALID' ? 'valid' : (item.miscellaneous.status === 'N/A' ? 'normal' : 'invalid'),
+                            item.qty.status === 'VALID' ? 'valid' : (item.qty.status === 'N/A' ? 'normal' : 'invalid'),
+                            item.firstCost.status === 'VALID' ? 'valid' : (item.firstCost.status === 'N/A' ? 'normal' : 'invalid'),
+                            item.price.status === 'VALID' ? 'valid' : (item.price.status === 'N/A' ? 'normal' : 'invalid'),
+                            item.freight.status === 'VALID' ? 'valid' : (item.freight.status === 'N/A' ? 'normal' : 'invalid'),
+                            item.waste.status === 'VALID' ? 'valid' : (item.waste.status === 'N/A' ? 'normal' : 'invalid')
+                        ];
+                    } else {
+                        return [
+                            'normal', // Item name
+                            item.supplierMaterialCode.status === 'VALID' ? 'valid' : (item.supplierMaterialCode.status === 'N/A' ? 'normal' : 'invalid'),
+                            item.bomSection.status === 'VALID' ? 'valid' : (item.bomSection.status === 'N/A' ? 'normal' : 'invalid'),
+                            item.supplier.status === 'VALID' ? 'valid' : (item.supplier.status === 'N/A' ? 'normal' : 'invalid'),
+                            item.laborCost.status === 'VALID' ? 'valid' : (item.laborCost.status === 'N/A' ? 'normal' : 'invalid'),
+                            item.miscellaneous.status === 'VALID' ? 'valid' : (item.miscellaneous.status === 'N/A' ? 'normal' : 'invalid'),
+                            item.qty.status === 'VALID' ? 'valid' : (item.qty.status === 'N/A' ? 'normal' : 'invalid'),
+                            item.firstCost.status === 'VALID' ? 'valid' : (item.firstCost.status === 'N/A' ? 'normal' : 'invalid'),
+                            item.price.status === 'VALID' ? 'valid' : (item.price.status === 'N/A' ? 'normal' : 'invalid'),
+                            item.freight.status === 'VALID' ? 'valid' : (item.freight.status === 'N/A' ? 'normal' : 'invalid'),
+                            item.waste.status === 'VALID' ? 'valid' : (item.waste.status === 'N/A' ? 'normal' : 'invalid')
+                        ];
+                    }
+                });
+
+                return {
+                    fileName: fileResult.fileName,
+                    summary: `Summary: ${validItems} out of ${totalItems} items match`,
+                    results: fileResult.results,
+                    cellStatuses: cellStatuses
+                };
+            }),
+            filenamePrefix: 'FjallRavenCostBreakdown_V5',
+            columnWidths: [30, 25, 25, 25, 20, 20, 15, 20, 20, 20, 20],
+            headers: ['Item', 'Supplier Mat. Code', 'BOM Section', 'Supplier', 'Labor Cost', 'Misc.', 'Qty', 'First Cost', 'Price', 'Freight', 'Waste'],
+            colorRules: {},
+            extractRowData: (fileResult) => {
+                const rows = [];
+                for (const item of fileResult.results) {
+                    // Helper to format cell for PDF
+                    const formatForPDF = (field) => {
+                        if (!field) return '-';
+                        if (field.status === 'N/A') return '-';
+
+                        const displayValue = (field.buyer !== undefined && field.buyer !== null && field.buyer !== '')
+                            ? field.buyer
+                            : '0';
+
+                        if (field.status === 'VALID') {
+                            return displayValue;
+                        } else {
+                            return `${displayValue} (Expected: ${field.ob})`;
+                        }
+                    };
+
+                    if (item.isSpecialItem) {
+                        rows.push([
+                            '-',
+                            '-',
+                            item.itemName,
+                            '-',
+                            formatForPDF(item.laborCost),
+                            formatForPDF(item.miscellaneous),
+                            formatForPDF(item.qty),
+                            formatForPDF(item.firstCost),
+                            formatForPDF(item.price),
+                            formatForPDF(item.freight),
+                            formatForPDF(item.waste)
+                        ]);
+                    } else {
+                        rows.push([
+                            item.itemName,
+                            formatForPDF(item.supplierMaterialCode),
+                            formatForPDF(item.bomSection),
+                            formatForPDF(item.supplier),
+                            formatForPDF(item.laborCost),
+                            formatForPDF(item.miscellaneous),
+                            formatForPDF(item.qty),
+                            formatForPDF(item.firstCost),
+                            formatForPDF(item.price),
+                            formatForPDF(item.freight),
+                            formatForPDF(item.waste)
+                        ]);
+                    }
+                }
+                return rows;
+            }
+        };
+    }
+
+    /**
+     * Create Helly Hansen (V4) export configuration
+     * @param {Array} fileResults - Array of file results from Helly Hansen processor
+     * @param {Function} formatToFourDecimals - Helper function to format decimals
+     * @returns {Object} - Configuration object for Helly Hansen export
+     */
+    createHellyHansenConfig(fileResults, formatToFourDecimals) {
+        return {
+            title: 'Helly Hansen Cost Breakdown Comparison - V4',
+            fileResults: fileResults.map(fileResult => {
+                const totalItems = fileResult.results.length;
+                const validItems = fileResult.results.filter(r =>
+                    (r.consmStatus === 'VALID' || r.consmStatus === 'N/A') &&
+                    (r.upStatus === 'VALID' || r.upStatus === 'N/A') &&
+                    r.amountStatus === 'VALID'
+                ).length;
+
+                // Build cell statuses for coloring
+                const cellStatuses = fileResult.results.map(item => {
+                    return [
+                        'normal', // Item name
+                        item.consmStatus === 'VALID' ? 'valid' : (item.consmStatus === 'N/A' ? 'normal' : 'invalid'),
+                        item.upStatus === 'VALID' ? 'valid' : (item.upStatus === 'N/A' ? 'normal' : 'invalid'),
+                        item.amountStatus === 'VALID' ? 'valid' : 'invalid'
+                    ];
+                });
+
+                return {
+                    fileName: fileResult.fileName,
+                    summary: `Summary: ${validItems} out of ${totalItems} items fully match`,
+                    results: fileResult.results,
+                    cellStatuses: cellStatuses
+                };
+            }),
+            filenamePrefix: 'HellyHansenCostBreakdown_V4',
+            columnWidths: [80, 40, 40, 40],
+            headers: ['Item', 'CONSM', 'U/P', 'Amount'],
+            colorRules: {},
+            extractRowData: (fileResult) => {
+                const rows = [];
+                for (const item of fileResult.results) {
+                    // Helper to format cell for PDF
+                    const formatForPDF = (obVal, buyerVal, status, isNumeric = true, specialCase = null) => {
+                        // Handle N/A status
+                        if (status === 'N/A') {
+                            return '-';
+                        }
+
+                        if (!buyerVal || buyerVal === '' || buyerVal === 'NOT FOUND') {
+                            const displayOB = isNumeric && obVal ? formatToFourDecimals(obVal) : obVal;
+                            return `Empty (Expected: ${displayOB})`;
+                        }
+
+                        const displayBuyer = isNumeric ? formatToFourDecimals(buyerVal) : buyerVal;
+                        const displayOB = isNumeric ? formatToFourDecimals(obVal) : obVal;
+
+                        // Special handling for MARGIN_PROFIT
+                        if (specialCase === 'MARGIN_PROFIT') {
+                            return `${displayBuyer} (Expected: 0.45 to 0.55)`;
+                        }
+
+                        // Special handling for FINANCIAL_OVERHEAD
+                        if (specialCase === 'FINANCIAL_OVERHEAD' && item.countryOfOrigin) {
+                            return `${displayBuyer} (Expected: ${displayOB} - ${item.countryOfOrigin})`;
+                        }
+
+                        if (status === 'VALID') {
+                            return displayBuyer;
+                        } else {
+                            return `${displayBuyer} (Expected: ${displayOB})`;
+                        }
+                    };
+
+                    rows.push([
+                        item.itemName,
+                        formatForPDF(item.obConsm, item.buyerConsm, item.consmStatus, true, item.specialCase),
+                        formatForPDF(item.obUp, item.buyerUp, item.upStatus, true, item.specialCase),
+                        formatForPDF(item.obAmount, item.buyerAmount, item.amountStatus, true, item.specialCase)
+                    ]);
+                }
+                return rows;
+            }
+        };
+    }
+
+    /**
+     * Create Columbia (V3) export configuration
+     * @param {Array} fileResults - Array of file results from Columbia processor
+     * @param {Function} formatToThreeDecimals - Helper function to format decimals
+     * @returns {Object} - Configuration object for Columbia export
+     */
+    createColumbiaConfig(fileResults, formatToThreeDecimals) {
+        return {
+            title: 'Columbia Cost Breakdown Comparison - V3',
+            fileResults: fileResults.map(fileResult => {
+                const totalItems = fileResult.results.length;
+                const validItems = fileResult.results.filter(r =>
+                    r.materialStatus === 'VALID' &&
+                    r.fobCostStatus === 'VALID' &&
+                    r.factoryUsageStatus === 'VALID' &&
+                    r.wastageStatus === 'VALID'
+                ).length;
+
+                // Build cell statuses for coloring (skip Hangtag Package Part with material 1234)
+                const cellStatuses = fileResult.results
+                    .filter(item => !(item.itemName === 'Hangtag Package Part' && item.obMaterial === '1234'))
+                    .map(item => {
+                        return [
+                            'normal', // Item name
+                            item.materialStatus === 'VALID' ? 'valid' : 'invalid',
+                            item.fobCostStatus === 'VALID' ? 'valid' : 'invalid',
+                            item.factoryUsageStatus === 'VALID' ? 'valid' : 'invalid',
+                            item.wastageStatus === 'VALID' ? 'valid' : 'invalid'
+                        ];
+                    });
+
+                return {
+                    fileName: fileResult.fileName,
+                    summary: `Summary: ${validItems} out of ${totalItems} items fully match`,
+                    results: fileResult.results,
+                    cellStatuses: cellStatuses
+                };
+            }),
+            filenamePrefix: 'ColumbiaCostBreakdown_V3',
+            columnWidths: [50, 50, 40, 40, 40],
+            headers: ['Item', 'Material', 'FOB Cost', 'Factory Usage', 'Wastage'],
+            colorRules: {},
+            extractRowData: (fileResult) => {
+                const rows = [];
+                for (const item of fileResult.results) {
+                    // Skip Hangtag Package Part with material 1234
+                    if (item.itemName === 'Hangtag Package Part' && item.obMaterial === '1234') {
+                        continue;
+                    }
+
+                    // Helper to format cell for PDF
+                    const formatForPDF = (obVal, buyerVal, status, isNumeric = false) => {
+                        if (!buyerVal || buyerVal === '' || buyerVal === 'NOT FOUND') {
+                            const displayOB = isNumeric && obVal ? formatToThreeDecimals(obVal) : obVal;
+                            return `Empty (Expected: ${displayOB})`;
+                        }
+
+                        const displayBuyer = isNumeric ? formatToThreeDecimals(buyerVal) : buyerVal;
+                        const displayOB = isNumeric ? formatToThreeDecimals(obVal) : obVal;
+
+                        if (status === 'VALID') {
+                            return displayBuyer;
+                        } else {
+                            return `${displayBuyer} (Expected: ${displayOB})`;
+                        }
+                    };
+
+                    rows.push([
+                        item.itemName,
+                        formatForPDF(item.obMaterial, item.buyerMaterial, item.materialStatus, false),
+                        formatForPDF(item.obFobCost, item.buyerFobCost, item.fobCostStatus, true),
+                        formatForPDF(item.obFactoryUsage, item.buyerFactoryUsage, item.factoryUsageStatus, true),
+                        formatForPDF(item.obWastage, item.buyerWastage, item.wastageStatus, true)
+                    ]);
+                }
+                return rows;
+            }
+        };
+    }
+
+    /**
      * Create Burton (V2) export configuration
      * @param {Array} fileResults - Array of file results from Burton processor
      * @param {Function} formatToThreeDecimals - Helper function to format decimals
