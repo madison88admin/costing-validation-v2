@@ -38,6 +38,7 @@
                 <button class="tab-btn" data-tab="v4" data-short="HH" data-full="Helly Hansen">Helly Hansen</button>
                 <button class="tab-btn" data-tab="v5" data-short="FR" data-full="Fjall Raven">Fjall Raven</button>
                 <button class="tab-btn" data-tab="v6" data-short="LLB" data-full="LLBEAN">LLBEAN</button>
+                <button class="tab-btn" data-tab="v7" data-short="MMT" data-full="Mammut">Mammut</button>
             </div>
         </div>
 
@@ -252,6 +253,40 @@
                     <div class="results-content" id="results-v6"></div>
                 </div>
             </div>
+
+            <!-- Tab Content V7 (Mammut) -->
+            <div class="tab-content" id="tab-v7">
+                <div class="upload-section">
+                    <div id="obDropZone-v7" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Mammut Validation Criteria</h2>
+                            <p class="drop-subtitle">Default values to check</p>
+                            <p class="file-label">Validation Rules</p>
+                            <div id="mammutValidationRules" class="validation-rules-display"></div>
+                        </div>
+                    </div>
+
+                    <div id="bcbdDropZone-v7" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Drag & Drop Files Here</h2>
+                            <p class="drop-subtitle">or click to browse</p>
+                            <p class="file-label">Buyer CBD File/s</p>
+                            <input type="file" id="bcbdFileInput-v7" accept=".xlsx,.xls,.csv" multiple hidden>
+                            <button class="browse-btn">Browse Files</button>
+                            <div class="file-list" id="bcbdFileList-v7"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generate-section">
+                    <button class="generate-btn" data-version="v7">Generate Results</button>
+                </div>
+
+                <div class="results-section">
+                    <h2 class="results-title">Results</h2>
+                    <div class="results-content" id="results-v7"></div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -262,6 +297,7 @@
     <script src="js/HellyHansen.js"></script>
     <script src="js/FjallRaven.js"></script>
     <script src="js/LLBEAN.js"></script>
+    <script src="js/Mammut.js"></script>
     <script src="js/main.js"></script>
 </body>
 

@@ -22,8 +22,8 @@ class ExcelFileHandler {
     }
 
     attachEventListeners() {
-        // For V2, V3, V4, V5, and V6, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV)
-        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6') {
+        // For V2, V3, V4, V5, V6, and V7, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV)
+        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7') {
             this.setupDropZone(this.obDropZone, this.obFileInput, 'ob');
         }
         this.setupDropZone(this.bcbdDropZone, this.bcbdFileInput, 'bcbd');
@@ -353,6 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.excelHandlerV4 = new ExcelFileHandler('v4');
     window.excelHandlerV5 = new ExcelFileHandler('v5');
     window.excelHandlerV6 = new ExcelFileHandler('v6');
+    window.excelHandlerV7 = new ExcelFileHandler('v7');
 
     document.querySelectorAll('.generate-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -366,7 +367,12 @@ document.addEventListener('DOMContentLoaded', () => {
         window.llbeanProcessor.initialize();
     }
 
-    console.log('Costing Validation initialized with 6 versions');
+    // Initialize Mammut processor when page loads
+    if (window.mammutProcessor) {
+        window.mammutProcessor.initialize();
+    }
+
+    console.log('Costing Validation initialized with 7 versions');
 });
 
 async function handleGenerateResults(version) {
@@ -508,6 +514,34 @@ async function handleGenerateResults(version) {
 
         if (window.llbeanProcessor) {
             const results = await window.llbeanProcessor.processFiles(bcbdFiles);
+            resultsContent.innerHTML = results;
+        }
+        return;
+    }
+
+    // Special handling for V7 - only needs BCBD files (Mammut)
+    if (version === 'v7') {
+        const bcbdFiles = handler.getBCBDFiles();
+
+        if (bcbdFiles.length === 0) {
+            alert('Please upload Buyer CBD files before generating results.');
+            return;
+        }
+
+        console.log(`Generating results for ${version.toUpperCase()}...`);
+        console.log('BCBD Files:', bcbdFiles);
+
+        // Show loading state with animation
+        resultsContent.innerHTML = `
+            <div class="loading-container">
+                <div class="loader"></div>
+                <p class="loading-text">Processing ${bcbdFiles.length} BCBD file(s) with Mammut validation...</p>
+                <p class="loading-subtext">Please wait while we scan the files...</p>
+            </div>
+        `;
+
+        if (window.mammutProcessor) {
+            const results = await window.mammutProcessor.processFiles(bcbdFiles);
             resultsContent.innerHTML = results;
         }
         return;
