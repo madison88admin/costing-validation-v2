@@ -3,17 +3,19 @@
  * Styles for Burton Cost Breakdown display
  */
 
-/* Make V2, V3, and V4 OB drop zone non-clickable */
+/* Make V2, V3, V4, and V6 OB drop zone non-clickable */
 #obDropZone-v2,
 #obDropZone-v3,
-#obDropZone-v4 {
+#obDropZone-v4,
+#obDropZone-v6 {
     cursor: default !important;
     pointer-events: none;
 }
 
 #obDropZone-v2 .burton-cost-container,
 #obDropZone-v3 .burton-cost-container,
-#obDropZone-v4 .burton-cost-container {
+#obDropZone-v4 .burton-cost-container,
+#obDropZone-v6 .burton-cost-container {
     pointer-events: auto;
 }
 

@@ -22,8 +22,8 @@ class ExcelFileHandler {
     }
 
     attachEventListeners() {
-        // For V2, V3, V4, and V5, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV)
-        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5') {
+        // For V2, V3, V4, V5, and V6, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV)
+        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6') {
             this.setupDropZone(this.obDropZone, this.obFileInput, 'ob');
         }
         this.setupDropZone(this.bcbdDropZone, this.bcbdFileInput, 'bcbd');
@@ -352,6 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.excelHandlerV3 = new ExcelFileHandler('v3');
     window.excelHandlerV4 = new ExcelFileHandler('v4');
     window.excelHandlerV5 = new ExcelFileHandler('v5');
+    window.excelHandlerV6 = new ExcelFileHandler('v6');
 
     document.querySelectorAll('.generate-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -360,7 +361,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    console.log('Costing Validation initialized with 5 versions');
+    // Initialize LLBEAN processor when page loads
+    if (window.llbeanProcessor) {
+        window.llbeanProcessor.initialize();
+    }
+
+    console.log('Costing Validation initialized with 6 versions');
 });
 
 async function handleGenerateResults(version) {
@@ -474,6 +480,34 @@ async function handleGenerateResults(version) {
 
         if (window.fjallRavenProcessor) {
             const results = await window.fjallRavenProcessor.processFiles(bcbdFiles);
+            resultsContent.innerHTML = results;
+        }
+        return;
+    }
+
+    // Special handling for V6 - only needs BCBD files (LLBEAN)
+    if (version === 'v6') {
+        const bcbdFiles = handler.getBCBDFiles();
+
+        if (bcbdFiles.length === 0) {
+            alert('Please upload Buyer CBD files before generating results.');
+            return;
+        }
+
+        console.log(`Generating results for ${version.toUpperCase()}...`);
+        console.log('BCBD Files:', bcbdFiles);
+
+        // Show loading state with animation
+        resultsContent.innerHTML = `
+            <div class="loading-container">
+                <div class="loader"></div>
+                <p class="loading-text">Processing ${bcbdFiles.length} BCBD file(s) with LLBEAN validation...</p>
+                <p class="loading-subtext">Please wait while we scan the files...</p>
+            </div>
+        `;
+
+        if (window.llbeanProcessor) {
+            const results = await window.llbeanProcessor.processFiles(bcbdFiles);
             resultsContent.innerHTML = results;
         }
         return;
