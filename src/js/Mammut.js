@@ -22,11 +22,35 @@ class MammutProcessor {
                 minValue: 0.30,
                 maxValue: 0.50
             },
-            // Wastage Cost check: Column Q (index 16) should be 5% up to FABRIC TOTAL row
+            // Wastage Cost check: Column Q (index 16)
+            // Fabric section = 5%, all other sections = 3%
             wastageCost: {
                 valueColIndex: 16, // Column Q (index 16)
-                expectedValue: 0.05, // 5%
-                fabricTotalLabel: 'FABRIC TOTAL'
+                sections: [
+                    { label: 'FABRIC TOTAL', expectedValue: 0.05 },      // 5% for fabric
+                    { label: 'ZIPPER TOTAL', expectedValue: 0.03 },      // 3% for zipper
+                    { label: 'TRIMS TOTAL', expectedValue: 0.03 },       // 3% for trims
+                    { label: 'GRAPHIC TOTAL', expectedValue: 0.03 },     // 3% for graphic
+                    { label: 'PACKING TOTAL', expectedValue: 0.03 },     // 3% for packing
+                    { label: 'OTHERS TOTAL', expectedValue: 0.03 }       // 3% for others
+                ]
+            },
+            // CMT (Cut, Make, Trim) checks - found after OTHERS TOTAL
+            // Column E: label, Column H: price, Column K: exchange rate (1.00), Column L: currency (USD)
+            cmtChecks: {
+                labelColIndex: 4,    // Column E (index 4)
+                priceColIndex: 7,    // Column H (index 7)
+                exRateColIndex: 10,  // Column K (index 10)
+                currencyColIndex: 11, // Column L (index 11)
+                expectedExRate: 1.00,
+                expectedCurrency: 'USD',
+                items: [
+                    { label: 'KNITTING', expectedPrice: 0.05 },
+                    { label: 'LABELLING', expectedPrice: 0.05 },
+                    { label: 'SEWING', expectedPrice: 0.20 },
+                    { label: 'WASHING', expectedPrice: 0.17 },
+                    { label: 'NEATEN/STEAMING/PACKING', expectedPrice: 0.40 }
+                ]
             }
         };
     }
@@ -64,9 +88,18 @@ class MammutProcessor {
                         <div class="burton-item-line"><strong>Valid Range:</strong> ${pm.minValue.toFixed(2)} - ${pm.maxValue.toFixed(2)}</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Fabric Wastage Check (Column Q)</strong></div>
-                        <div class="burton-item-line"><strong>Expected Value:</strong> ${(wc.expectedValue * 100).toFixed(0)}%</div>
-                        <div class="burton-item-line"><strong>Valid Range:</strong> Up to FABRIC TOTAL row</div>
+                        <div class="burton-item-line"><strong>Wastage Check (Column Q)</strong></div>
+                        ${wc.sections.map(section =>
+                            `<div class="burton-item-line"><strong>${section.label}:</strong> ${(section.expectedValue * 100).toFixed(0)}%</div>`
+                        ).join('')}
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line"><strong>CMT Checks (After OTHERS TOTAL)</strong></div>
+                        <div class="burton-item-line"><strong>Exchange Rate (Col K):</strong> ${this.validationRules.cmtChecks.expectedExRate.toFixed(2)}</div>
+                        <div class="burton-item-line"><strong>Currency (Col L):</strong> ${this.validationRules.cmtChecks.expectedCurrency}</div>
+                        ${this.validationRules.cmtChecks.items.map(item =>
+                            `<div class="burton-item-line"><strong>${item.label} (Col H):</strong> ${item.expectedPrice.toFixed(2)}</div>`
+                        ).join('')}
                     </div>
                 </div>
             </div>
@@ -126,11 +159,13 @@ class MammutProcessor {
                     const cellChecks = this.checkCellValues(jsonData);
                     const profitMarginCheck = this.checkProfitMargin(jsonData);
                     const wastageCostCheck = this.checkWastageCost(jsonData);
+                    const cmtCheck = this.checkCMT(jsonData);
 
                     resolve({
                         cellChecks: cellChecks,
                         profitMarginCheck: profitMarginCheck,
-                        wastageCostCheck: wastageCostCheck
+                        wastageCostCheck: wastageCostCheck,
+                        cmtCheck: cmtCheck
                     });
                 } catch (error) {
                     reject(error);
@@ -240,91 +275,220 @@ class MammutProcessor {
 
     /**
      * Check Wastage Cost values
-     * Ensures all values in column Q (index 16) are 5% up to FABRIC TOTAL row
-     * Returns details of any cells that don't match the expected 5%
+     * Checks column Q for each section:
+     * - Fabric section: 5%
+     * - Zipper, Trims, Graphic, Packing, Others sections: 3%
      */
     checkWastageCost(jsonData) {
         const wc = this.validationRules.wastageCost;
         const colIndex = wc.valueColIndex; // Column Q (index 16)
-        const expectedValue = wc.expectedValue; // 0.05 (5%)
-        const fabricTotalLabel = wc.fabricTotalLabel;
+        const sections = wc.sections;
 
-        let fabricTotalRowIndex = -1;
-        let invalidCells = [];
-        let validCells = [];
+        // Find all section TOTAL row indices
+        const sectionRows = [];
+        for (const section of sections) {
+            for (let i = 0; i < jsonData.length; i++) {
+                const row = jsonData[i];
+                const colB = row[1] ? String(row[1]).trim().toUpperCase() : '';
 
-        // Find the FABRIC TOTAL row
+                if (colB.includes(section.label.toUpperCase())) {
+                    sectionRows.push({
+                        label: section.label,
+                        expectedValue: section.expectedValue,
+                        rowIndex: i
+                    });
+                    console.log(`Found "${section.label}" at row ${i + 1}`);
+                    break;
+                }
+            }
+        }
+
+        if (sectionRows.length === 0) {
+            return {
+                found: false,
+                message: 'No section TOTAL rows found in column B'
+            };
+        }
+
+        // Sort sections by row index to process in order
+        sectionRows.sort((a, b) => a.rowIndex - b.rowIndex);
+
+        // Process each section
+        const sectionResults = [];
+        let startRow = 0;
+
+        for (const section of sectionRows) {
+            const endRow = section.rowIndex; // exclusive
+            const expectedValue = section.expectedValue;
+            let invalidCells = [];
+            let validCells = [];
+
+            // Check all rows in this section
+            for (let i = startRow; i < endRow; i++) {
+                const row = jsonData[i];
+                const cellValue = row[colIndex];
+
+                // Skip empty cells
+                if (cellValue === null || cellValue === undefined || cellValue === '') {
+                    continue;
+                }
+
+                // Parse the value
+                let numericValue = null;
+                const cleanValue = String(cellValue).replace(/[%,\s]/g, '');
+                numericValue = parseFloat(cleanValue);
+
+                if (isNaN(numericValue)) {
+                    continue;
+                }
+
+                // Round to 2 decimal places for comparison
+                const roundedValue = Math.round(numericValue * 100) / 100;
+                const roundedExpected = Math.round(expectedValue * 100) / 100;
+
+                if (roundedValue === roundedExpected) {
+                    validCells.push({
+                        rowNumber: i + 1,
+                        cellAddress: `Q${i + 1}`,
+                        value: cellValue,
+                        numericValue: numericValue
+                    });
+                } else {
+                    invalidCells.push({
+                        rowNumber: i + 1,
+                        cellAddress: `Q${i + 1}`,
+                        value: cellValue,
+                        numericValue: numericValue,
+                        expectedValue: expectedValue
+                    });
+                }
+            }
+
+            sectionResults.push({
+                label: section.label,
+                totalRowNumber: section.rowIndex + 1,
+                expectedValue: expectedValue,
+                validCells: validCells,
+                invalidCells: invalidCells,
+                isValid: invalidCells.length === 0
+            });
+
+            // Next section starts after this TOTAL row
+            startRow = section.rowIndex + 1;
+        }
+
+        const allValid = sectionResults.every(s => s.isValid);
+        const totalValid = sectionResults.reduce((sum, s) => sum + s.validCells.length, 0);
+        const totalInvalid = sectionResults.reduce((sum, s) => sum + s.invalidCells.length, 0);
+
+        return {
+            found: true,
+            sections: sectionResults,
+            isValid: allValid,
+            summary: `${totalValid} valid, ${totalInvalid} invalid`
+        };
+    }
+
+    /**
+     * Check CMT (Cut, Make, Trim) items after OTHERS TOTAL
+     * Validates: Column E (label), Column H (price), Column K (ex rate = 1.00), Column L (currency = USD)
+     */
+    checkCMT(jsonData) {
+        const cmt = this.validationRules.cmtChecks;
+        const labelColIndex = cmt.labelColIndex;       // Column E (index 4)
+        const priceColIndex = cmt.priceColIndex;       // Column H (index 7)
+        const exRateColIndex = cmt.exRateColIndex;     // Column K (index 10)
+        const currencyColIndex = cmt.currencyColIndex; // Column L (index 11)
+
+        // Find OTHERS TOTAL row first
+        let othersTotalRowIndex = -1;
         for (let i = 0; i < jsonData.length; i++) {
             const row = jsonData[i];
             const colB = row[1] ? String(row[1]).trim().toUpperCase() : '';
-
-            if (colB.includes(fabricTotalLabel.toUpperCase())) {
-                fabricTotalRowIndex = i;
-                console.log(`Found "FABRIC TOTAL" at row ${i + 1}`);
+            if (colB.includes('OTHERS TOTAL')) {
+                othersTotalRowIndex = i;
+                console.log(`Found "OTHERS TOTAL" at row ${i + 1} for CMT check`);
                 break;
             }
         }
 
-        if (fabricTotalRowIndex === -1) {
+        if (othersTotalRowIndex === -1) {
             return {
                 found: false,
-                message: 'FABRIC TOTAL row not found in column B'
+                message: 'OTHERS TOTAL row not found - cannot locate CMT section'
             };
         }
 
-        // Check all rows from start to FABRIC TOTAL (exclusive)
-        for (let i = 0; i < fabricTotalRowIndex; i++) {
-            const row = jsonData[i];
-            const cellValue = row[colIndex];
+        const results = [];
 
-            // Skip empty cells
-            if (cellValue === null || cellValue === undefined || cellValue === '') {
-                continue;
+        // Search for each CMT item after OTHERS TOTAL
+        for (const item of cmt.items) {
+            let found = false;
+            let rowNumber = -1;
+            let actualPrice = null;
+            let actualExRate = null;
+            let actualCurrency = null;
+
+            // Search in rows after OTHERS TOTAL
+            for (let i = othersTotalRowIndex + 1; i < jsonData.length; i++) {
+                const row = jsonData[i];
+                const colE = row[labelColIndex] ? String(row[labelColIndex]).trim().toUpperCase() : '';
+
+                if (colE.includes(item.label.toUpperCase())) {
+                    found = true;
+                    rowNumber = i + 1;
+                    actualPrice = row[priceColIndex];
+                    actualExRate = row[exRateColIndex];
+                    actualCurrency = row[currencyColIndex] ? String(row[currencyColIndex]).trim().toUpperCase() : '';
+                    console.log(`Found CMT item "${item.label}" at row ${rowNumber}`);
+                    break;
+                }
             }
 
-            // Parse the value
-            let numericValue = null;
-            const cleanValue = String(cellValue).replace(/[%,\s]/g, '');
-            numericValue = parseFloat(cleanValue);
+            // Parse numeric values
+            let numericPrice = null;
+            let numericExRate = null;
 
-            if (isNaN(numericValue)) {
-                continue;
+            if (actualPrice !== null && actualPrice !== undefined && actualPrice !== '') {
+                const cleanPrice = String(actualPrice).replace(/[$,\s]/g, '');
+                numericPrice = parseFloat(cleanPrice);
             }
 
-            // Round to 2 decimal places for comparison
-            const roundedValue = Math.round(numericValue * 100) / 100;
-            const roundedExpected = Math.round(expectedValue * 100) / 100;
-
-            // Check if rounded value matches expected 5%
-            if (roundedValue === roundedExpected) {
-                // Valid cell
-                validCells.push({
-                    rowNumber: i + 1,
-                    cellAddress: `Q${i + 1}`,
-                    value: cellValue,
-                    numericValue: numericValue
-                });
-            } else {
-                // Invalid cell
-                invalidCells.push({
-                    rowNumber: i + 1,
-                    cellAddress: `Q${i + 1}`,
-                    value: cellValue,
-                    numericValue: numericValue
-                });
+            if (actualExRate !== null && actualExRate !== undefined && actualExRate !== '') {
+                const cleanExRate = String(actualExRate).replace(/[$,\s]/g, '');
+                numericExRate = parseFloat(cleanExRate);
             }
+
+            // Validate
+            const priceValid = numericPrice !== null && Math.abs(numericPrice - item.expectedPrice) < 0.001;
+            const exRateValid = numericExRate !== null && Math.abs(numericExRate - cmt.expectedExRate) < 0.001;
+            const currencyValid = actualCurrency === cmt.expectedCurrency;
+
+            results.push({
+                label: item.label,
+                found: found,
+                rowNumber: rowNumber,
+                expectedPrice: item.expectedPrice,
+                actualPrice: actualPrice,
+                numericPrice: numericPrice,
+                priceValid: priceValid,
+                expectedExRate: cmt.expectedExRate,
+                actualExRate: actualExRate,
+                numericExRate: numericExRate,
+                exRateValid: exRateValid,
+                expectedCurrency: cmt.expectedCurrency,
+                actualCurrency: actualCurrency,
+                currencyValid: currencyValid,
+                isValid: found && priceValid && exRateValid && currencyValid
+            });
         }
 
-        const isValid = invalidCells.length === 0;
+        const allValid = results.every(r => r.isValid);
 
         return {
             found: true,
-            fabricTotalRowNumber: fabricTotalRowIndex + 1,
-            expectedValue: expectedValue,
-            validCells: validCells,
-            invalidCells: invalidCells,
-            isValid: isValid,
-            summary: `${validCells.length} valid, ${invalidCells.length} invalid`
+            items: results,
+            isValid: allValid
         };
     }
 
@@ -387,16 +551,28 @@ class MammutProcessor {
             const cellChecks = fileResult.results.cellChecks;
             const profitMargin = fileResult.results.profitMarginCheck;
             const wastageCost = fileResult.results.wastageCostCheck;
+            const cmtCheck = fileResult.results.cmtCheck;
 
             // Count valid checks
             let validCount = 0;
-            let totalChecks = cellChecks.length + 2; // cell checks + profit margin + wastage cost
+            const wastageSectionCount = wastageCost.found && wastageCost.sections ? wastageCost.sections.length : 1;
+            const cmtItemCount = cmtCheck && cmtCheck.found && cmtCheck.items ? cmtCheck.items.length : 0;
+            let totalChecks = cellChecks.length + 1 + wastageSectionCount + cmtItemCount; // cell checks + profit margin + wastage sections + CMT items
 
             cellChecks.forEach(check => {
                 if (check.isValid) validCount++;
             });
             if (profitMargin.found && profitMargin.isValid) validCount++;
-            if (wastageCost.found && wastageCost.isValid) validCount++;
+            if (wastageCost.found && wastageCost.sections) {
+                wastageCost.sections.forEach(section => {
+                    if (section.isValid) validCount++;
+                });
+            }
+            if (cmtCheck && cmtCheck.found && cmtCheck.items) {
+                cmtCheck.items.forEach(item => {
+                    if (item.isValid) validCount++;
+                });
+            }
 
             html += `<div class="file-result-group">`;
 
@@ -457,41 +633,99 @@ class MammutProcessor {
                 `;
             }
 
-            // Fabric Wastage rows
-            if (wastageCost.found) {
-                // Invalid cells row
-                if (wastageCost.invalidCells.length > 0) {
-                    const invalidCellsDisplay = wastageCost.invalidCells.map(cell => {
-                        const roundedValue = cell.numericValue.toFixed(2);
-                        return `${cell.cellAddress} (${roundedValue})`;
-                    }).join(', ');
-                    html += `
-                        <tr style="border-bottom: 1px solid #e0e8f0;">
-                            <td style="padding: 0.875rem 1rem; font-weight: 600;">Fabric Wastage - Invalid</td>
-                            <td style="padding: 0.875rem 1rem; text-align: center;">
-                                <span style="color: #991b1b; font-weight: 600;">${invalidCellsDisplay}</span>
-                            </td>
-                        </tr>
-                    `;
-                }
+            // Wastage rows for each section
+            if (wastageCost.found && wastageCost.sections) {
+                for (const section of wastageCost.sections) {
+                    const sectionName = section.label.replace(' TOTAL', '');
+                    const expectedPercent = (section.expectedValue * 100).toFixed(0);
 
-                // Valid cells row
-                if (wastageCost.validCells.length > 0) {
-                    const validCellsDisplay = wastageCost.validCells.map(cell => `${cell.cellAddress}`).join(', ');
-                    html += `
-                        <tr style="border-bottom: 1px solid #e0e8f0;">
-                            <td style="padding: 0.875rem 1rem; font-weight: 600;">Fabric Wastage - Valid</td>
-                            <td style="padding: 0.875rem 1rem; text-align: center;">
-                                <span style="color: #065f46; font-weight: 600;">${validCellsDisplay}</span>
-                            </td>
-                        </tr>
-                    `;
+                    // Combine valid and invalid cells on one row
+                    const allCells = [];
+
+                    // Add valid cells (green)
+                    section.validCells.forEach(cell => {
+                        allCells.push(`<span style="color: #065f46; font-weight: 600;">${cell.cellAddress}</span>`);
+                    });
+
+                    // Add invalid cells (red with value)
+                    section.invalidCells.forEach(cell => {
+                        const roundedValue = cell.numericValue.toFixed(2);
+                        allCells.push(`<span style="color: #991b1b; font-weight: 600;">${cell.cellAddress} (${roundedValue})</span>`);
+                    });
+
+                    if (allCells.length > 0) {
+                        html += `
+                            <tr style="border-bottom: 1px solid #e0e8f0;">
+                                <td style="padding: 0.875rem 1rem; font-weight: 600;">${sectionName} Wastage (${expectedPercent}%)</td>
+                                <td style="padding: 0.875rem 1rem; text-align: center;">
+                                    ${allCells.join(', ')}
+                                </td>
+                            </tr>
+                        `;
+                    } else {
+                        // No cells at all
+                        html += `
+                            <tr style="border-bottom: 1px solid #e0e8f0;">
+                                <td style="padding: 0.875rem 1rem; font-weight: 600;">${sectionName} Wastage (${expectedPercent}%)</td>
+                                <td style="padding: 0.875rem 1rem; text-align: center;">
+                                    <span style="color: #6b7280; font-weight: 600;">No data</span>
+                                </td>
+                            </tr>
+                        `;
+                    }
                 }
             } else {
                 html += `
                     <tr style="border-bottom: 1px solid #e0e8f0;">
-                        <td style="padding: 0.875rem 1rem; font-weight: 600;">Fabric Wastage</td>
-                        <td style="padding: 0.875rem 1rem; text-align: center; color: #991b1b; font-weight: 600;">${wastageCost.message || 'Not found'}</td>
+                        <td style="padding: 0.875rem 1rem; font-weight: 600;">Wastage Check</td>
+                        <td style="padding: 0.875rem 1rem; text-align: center; color: #991b1b; font-weight: 600;">${wastageCost.message || 'No sections found'}</td>
+                    </tr>
+                `;
+            }
+
+            // CMT (Cut, Make, Trim) rows
+            if (cmtCheck && cmtCheck.found && cmtCheck.items) {
+                for (const item of cmtCheck.items) {
+                    if (!item.found) {
+                        html += `
+                            <tr style="border-bottom: 1px solid #e0e8f0;">
+                                <td style="padding: 0.875rem 1rem; font-weight: 600;">${item.label}</td>
+                                <td style="padding: 0.875rem 1rem; text-align: center; color: #991b1b; font-weight: 600;">Not found</td>
+                            </tr>
+                        `;
+                    } else {
+                        // Build details string showing what's valid/invalid
+                        const details = [];
+
+                        // Price check
+                        const priceColor = item.priceValid ? '#065f46' : '#991b1b';
+                        const priceDisplay = item.numericPrice !== null ? item.numericPrice.toFixed(2) : item.actualPrice;
+                        details.push(`<span style="color: ${priceColor};">Price: ${priceDisplay}</span>`);
+
+                        // Exchange rate check
+                        const exRateColor = item.exRateValid ? '#065f46' : '#991b1b';
+                        const exRateDisplay = item.numericExRate !== null ? item.numericExRate.toFixed(2) : item.actualExRate;
+                        details.push(`<span style="color: ${exRateColor};">Ex.Rate: ${exRateDisplay}</span>`);
+
+                        // Currency check
+                        const currencyColor = item.currencyValid ? '#065f46' : '#991b1b';
+                        details.push(`<span style="color: ${currencyColor};">Currency: ${item.actualCurrency || 'N/A'}</span>`);
+
+                        html += `
+                            <tr style="border-bottom: 1px solid #e0e8f0;">
+                                <td style="padding: 0.875rem 1rem; font-weight: 600;">${item.label}</td>
+                                <td style="padding: 0.875rem 1rem; text-align: center; font-weight: 600;">
+                                    ${details.join(' | ')}
+                                </td>
+                            </tr>
+                        `;
+                    }
+                }
+            } else if (cmtCheck && !cmtCheck.found) {
+                html += `
+                    <tr style="border-bottom: 1px solid #e0e8f0;">
+                        <td style="padding: 0.875rem 1rem; font-weight: 600;">Process Check</td>
+                        <td style="padding: 0.875rem 1rem; text-align: center; color: #991b1b; font-weight: 600;">${cmtCheck.message || 'Not found'}</td>
                     </tr>
                 `;
             }

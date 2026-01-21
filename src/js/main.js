@@ -22,8 +22,8 @@ class ExcelFileHandler {
     }
 
     attachEventListeners() {
-        // For V2, V3, V4, V5, V6, and V7, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV)
-        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7') {
+        // For V2, V3, V4, V5, V6, V7, and V8, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV)
+        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7' && this.version !== 'v8') {
             this.setupDropZone(this.obDropZone, this.obFileInput, 'ob');
         }
         this.setupDropZone(this.bcbdDropZone, this.bcbdFileInput, 'bcbd');
@@ -354,6 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.excelHandlerV5 = new ExcelFileHandler('v5');
     window.excelHandlerV6 = new ExcelFileHandler('v6');
     window.excelHandlerV7 = new ExcelFileHandler('v7');
+    window.excelHandlerV8 = new ExcelFileHandler('v8');
 
     document.querySelectorAll('.generate-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -372,7 +373,12 @@ document.addEventListener('DOMContentLoaded', () => {
         window.mammutProcessor.initialize();
     }
 
-    console.log('Costing Validation initialized with 7 versions');
+    // Initialize Outdoor Research processor when page loads
+    if (window.outdoorResearchProcessor) {
+        window.outdoorResearchProcessor.initialize();
+    }
+
+    console.log('Costing Validation initialized with 8 versions');
 });
 
 async function handleGenerateResults(version) {
@@ -542,6 +548,34 @@ async function handleGenerateResults(version) {
 
         if (window.mammutProcessor) {
             const results = await window.mammutProcessor.processFiles(bcbdFiles);
+            resultsContent.innerHTML = results;
+        }
+        return;
+    }
+
+    // Special handling for V8 - only needs BCBD files (Outdoor Research)
+    if (version === 'v8') {
+        const bcbdFiles = handler.getBCBDFiles();
+
+        if (bcbdFiles.length === 0) {
+            alert('Please upload Buyer CBD files before generating results.');
+            return;
+        }
+
+        console.log(`Generating results for ${version.toUpperCase()}...`);
+        console.log('BCBD Files:', bcbdFiles);
+
+        // Show loading state with animation
+        resultsContent.innerHTML = `
+            <div class="loading-container">
+                <div class="loader"></div>
+                <p class="loading-text">Processing ${bcbdFiles.length} BCBD file(s) with Outdoor Research validation...</p>
+                <p class="loading-subtext">Please wait while we scan the files...</p>
+            </div>
+        `;
+
+        if (window.outdoorResearchProcessor) {
+            const results = await window.outdoorResearchProcessor.processFiles(bcbdFiles);
             resultsContent.innerHTML = results;
         }
         return;
