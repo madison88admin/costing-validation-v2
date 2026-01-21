@@ -631,10 +631,22 @@ class LLBEANProcessor {
     }
 
     /**
-     * Export to PDF (placeholder for now)
+     * Export results to PDF using the unified Export.js module
      */
     async exportToPDF() {
-        alert('Export functionality will be implemented later.');
+        if (!window.pdfExporter) {
+            console.error('PDF Exporter not loaded');
+            alert('PDF export module not available. Please refresh the page.');
+            return;
+        }
+
+        if (!this.bcbdResults || this.bcbdResults.length === 0) {
+            alert('No results to export. Please generate results first.');
+            return;
+        }
+
+        const config = window.pdfExporter.createLLBEANConfig(this.bcbdResults);
+        await window.pdfExporter.exportMultiFileToPDF(config);
     }
 }
 

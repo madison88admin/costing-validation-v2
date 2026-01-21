@@ -905,6 +905,463 @@ class PDFExporter {
     }
 
     /**
+     * Create Outdoor Research (V8) export configuration
+     * @param {Array} fileResults - Array of file results from Outdoor Research processor
+     * @returns {Object} - Configuration object for Outdoor Research export
+     */
+    createOutdoorResearchConfig(fileResults) {
+        return {
+            title: 'Outdoor Research Validation Results - V8',
+            fileResults: fileResults.map(fileResult => {
+                const gpCheck = fileResult.results.generalPackagingCheck;
+                const ocCheck = fileResult.results.otherChargesCheck;
+
+                // Count valid checks
+                let validCount = 0;
+                let totalChecks = 0;
+
+                if (gpCheck && gpCheck.found && gpCheck.checks) {
+                    totalChecks++;
+                    if (gpCheck.isValid) validCount++;
+                }
+                if (ocCheck && ocCheck.found && ocCheck.checks) {
+                    totalChecks++;
+                    if (ocCheck.isValid) validCount++;
+                }
+
+                // Build cell statuses for coloring
+                const cellStatuses = [];
+
+                // General Packaging row
+                if (gpCheck && gpCheck.found && gpCheck.checks) {
+                    cellStatuses.push([
+                        'normal',
+                        gpCheck.isValid ? 'valid' : 'invalid'
+                    ]);
+                } else {
+                    cellStatuses.push([
+                        'normal',
+                        'invalid'
+                    ]);
+                }
+
+                // Other Charges row
+                if (ocCheck && ocCheck.found && ocCheck.checks) {
+                    cellStatuses.push([
+                        'normal',
+                        ocCheck.isValid ? 'valid' : 'invalid'
+                    ]);
+                } else {
+                    cellStatuses.push([
+                        'normal',
+                        'invalid'
+                    ]);
+                }
+
+                return {
+                    fileName: fileResult.fileName,
+                    summary: `Summary: ${validCount} out of ${totalChecks} checks passed`,
+                    results: fileResult.results,
+                    cellStatuses: cellStatuses
+                };
+            }),
+            filenamePrefix: 'OutdoorResearchValidation_V8',
+            columnWidths: [45, 105],
+            headers: ['Validation Check', 'Value'],
+            colorRules: {},
+            extractRowData: (fileResult) => {
+                const rows = [];
+                const gpCheck = fileResult.results.generalPackagingCheck;
+                const ocCheck = fileResult.results.otherChargesCheck;
+
+                // General Packaging row
+                if (gpCheck && gpCheck.found && gpCheck.checks) {
+                    const checkDetails = gpCheck.checks.map(check => {
+                        return `${check.label}: ${check.actualValue || 'Empty'}`;
+                    }).join(' | ');
+
+                    rows.push([
+                        `General Packaging (Row ${gpCheck.rowNumber})`,
+                        checkDetails
+                    ]);
+                } else if (gpCheck && !gpCheck.found) {
+                    rows.push([
+                        'General Packaging',
+                        gpCheck.message || 'Not found'
+                    ]);
+                }
+
+                // Other Charges row
+                if (ocCheck && ocCheck.found && ocCheck.checks) {
+                    const checkDetails = ocCheck.checks.map(check => {
+                        return `${check.label}: ${check.actualValue || 'Empty'}`;
+                    }).join(' | ');
+
+                    rows.push([
+                        `Other Charges (Row ${ocCheck.rowNumber})`,
+                        checkDetails
+                    ]);
+                } else if (ocCheck && !ocCheck.found) {
+                    rows.push([
+                        'Other Charges',
+                        ocCheck.message || 'Not found'
+                    ]);
+                }
+
+                return rows;
+            }
+        };
+    }
+
+    /**
+     * Create Mammut (V7) export configuration
+     * @param {Array} fileResults - Array of file results from Mammut processor
+     * @returns {Object} - Configuration object for Mammut export
+     */
+    createMammutConfig(fileResults) {
+        return {
+            title: 'Mammut Validation Results - V7',
+            fileResults: fileResults.map(fileResult => {
+                const cellChecks = fileResult.results.cellChecks;
+                const profitMargin = fileResult.results.profitMarginCheck;
+                const wastageCost = fileResult.results.wastageCostCheck;
+                const cmtCheck = fileResult.results.cmtCheck;
+
+                // Count valid checks
+                let validCount = 0;
+                const wastageSectionCount = wastageCost.found && wastageCost.sections ? wastageCost.sections.length : 1;
+                const cmtItemCount = cmtCheck && cmtCheck.found && cmtCheck.items ? cmtCheck.items.length : 0;
+                let totalChecks = cellChecks.length + 1 + wastageSectionCount + cmtItemCount;
+
+                cellChecks.forEach(check => {
+                    if (check.isValid) validCount++;
+                });
+                if (profitMargin.found && profitMargin.isValid) validCount++;
+                if (wastageCost.found && wastageCost.sections) {
+                    wastageCost.sections.forEach(section => {
+                        if (section.isValid) validCount++;
+                    });
+                }
+                if (cmtCheck && cmtCheck.found && cmtCheck.items) {
+                    cmtCheck.items.forEach(item => {
+                        if (item.isValid) validCount++;
+                    });
+                }
+
+                // Build cell statuses for coloring
+                const cellStatuses = [];
+
+                // Cell checks rows
+                cellChecks.forEach(check => {
+                    cellStatuses.push([
+                        'normal',
+                        check.isValid ? 'valid' : 'invalid'
+                    ]);
+                });
+
+                // Profit margin row
+                cellStatuses.push([
+                    'normal',
+                    profitMargin.found && profitMargin.isValid ? 'valid' : 'invalid'
+                ]);
+
+                // Wastage rows
+                if (wastageCost.found && wastageCost.sections) {
+                    wastageCost.sections.forEach(section => {
+                        cellStatuses.push([
+                            'normal',
+                            section.isValid ? 'valid' : 'invalid'
+                        ]);
+                    });
+                }
+
+                // CMT rows
+                if (cmtCheck && cmtCheck.found && cmtCheck.items) {
+                    cmtCheck.items.forEach(item => {
+                        cellStatuses.push([
+                            'normal',
+                            item.isValid ? 'valid' : 'invalid'
+                        ]);
+                    });
+                }
+
+                return {
+                    fileName: fileResult.fileName,
+                    summary: `Summary: ${validCount} out of ${totalChecks} checks passed`,
+                    results: fileResult.results,
+                    cellStatuses: cellStatuses
+                };
+            }),
+            filenamePrefix: 'MammutValidation_V7',
+            columnWidths: [45, 105],
+            headers: ['Validation Check', 'Value'],
+            colorRules: {},
+            extractRowData: (fileResult) => {
+                const rows = [];
+                const cellChecks = fileResult.results.cellChecks;
+                const profitMargin = fileResult.results.profitMarginCheck;
+                const wastageCost = fileResult.results.wastageCostCheck;
+                const cmtCheck = fileResult.results.cmtCheck;
+
+                // Helper to format number
+                const formatNumber = (value) => {
+                    const num = parseFloat(String(value).replace(/[$,\s%]/g, ''));
+                    if (isNaN(num)) return value;
+                    return num.toFixed(2);
+                };
+
+                // Cell checks rows
+                for (const check of cellChecks) {
+                    rows.push([
+                        check.label,
+                        check.found ? (check.actualValue || 'Empty') : 'Not found'
+                    ]);
+                }
+
+                // Profit Margin row
+                if (profitMargin.found) {
+                    const pmActual = profitMargin.numericValue !== null ? formatNumber(profitMargin.actualValue) : profitMargin.actualValue;
+                    const pmRange = `${formatNumber(profitMargin.minValue)} - ${formatNumber(profitMargin.maxValue)}`;
+                    rows.push([
+                        'PROFIT MARGIN',
+                        `${pmActual} (Expected: ${pmRange})`
+                    ]);
+                } else {
+                    rows.push([
+                        'PROFIT MARGIN',
+                        profitMargin.message || 'Not found'
+                    ]);
+                }
+
+                // Wastage rows for each section
+                if (wastageCost.found && wastageCost.sections) {
+                    for (const section of wastageCost.sections) {
+                        const sectionName = section.label.replace(' TOTAL', '');
+                        const expectedPercent = (section.expectedValue * 100).toFixed(0);
+
+                        // Combine valid and invalid cells
+                        const allCells = [];
+
+                        section.validCells.forEach(cell => {
+                            allCells.push(cell.cellAddress);
+                        });
+
+                        section.invalidCells.forEach(cell => {
+                            const roundedValue = cell.numericValue.toFixed(2);
+                            allCells.push(`${cell.cellAddress} (${roundedValue})`);
+                        });
+
+                        rows.push([
+                            `${sectionName} Wastage (${expectedPercent}%)`,
+                            allCells.length > 0 ? allCells.join(', ') : 'No data'
+                        ]);
+                    }
+                } else {
+                    rows.push([
+                        'Wastage Check',
+                        wastageCost.message || 'No sections found'
+                    ]);
+                }
+
+                // CMT (Cut, Make, Trim) rows
+                if (cmtCheck && cmtCheck.found && cmtCheck.items) {
+                    for (const item of cmtCheck.items) {
+                        if (!item.found) {
+                            rows.push([
+                                item.label,
+                                'Not found'
+                            ]);
+                        } else {
+                            const details = [];
+
+                            const priceDisplay = item.numericPrice !== null ? item.numericPrice.toFixed(2) : item.actualPrice;
+                            details.push(`Price: ${priceDisplay}`);
+
+                            const exRateDisplay = item.numericExRate !== null ? item.numericExRate.toFixed(2) : item.actualExRate;
+                            details.push(`Ex.Rate: ${exRateDisplay}`);
+
+                            details.push(`Currency: ${item.actualCurrency || 'N/A'}`);
+
+                            rows.push([
+                                item.label,
+                                details.join(' | ')
+                            ]);
+                        }
+                    }
+                } else if (cmtCheck && !cmtCheck.found) {
+                    rows.push([
+                        'Process Check',
+                        cmtCheck.message || 'Not found'
+                    ]);
+                }
+
+                return rows;
+            }
+        };
+    }
+
+    /**
+     * Create LLBEAN (V6) export configuration
+     * @param {Array} fileResults - Array of file results from LLBEAN processor
+     * @returns {Object} - Configuration object for LLBEAN export
+     */
+    createLLBEANConfig(fileResults) {
+        return {
+            title: 'LLBEAN Validation Results - V6',
+            fileResults: fileResults.map(fileResult => {
+                const b5 = fileResult.results.b5Check;
+                const trimsBox = fileResult.results.trimsBoxCheck;
+                const totalFinancial = fileResult.results.totalFinancialCostCheck;
+
+                // Count valid checks
+                let validCount = 0;
+                let totalChecks = 3;
+
+                if (b5.isValid) validCount++;
+                if (trimsBox.found && trimsBox.isValid) validCount++;
+                if (totalFinancial.found && totalFinancial.isValid) validCount++;
+
+                // Build cell statuses for coloring
+                const cellStatuses = [];
+
+                // B5 Keywords row
+                cellStatuses.push([
+                    'normal', // Check name
+                    'normal', // Supplier
+                    b5.isValid ? 'valid' : 'invalid', // Consumption (keywords)
+                    'normal', // Unit Price
+                    'normal', // Total Cost
+                    'normal'  // Status
+                ]);
+
+                // Trims Box row
+                if (trimsBox.found && trimsBox.boxData) {
+                    cellStatuses.push([
+                        'normal', // Check name
+                        trimsBox.validation.supplier === 'VALID' ? 'valid' : 'invalid',
+                        trimsBox.validation.consumption === 'VALID' ? 'valid' : 'invalid',
+                        trimsBox.validation.unitPrice === 'VALID' ? 'valid' : 'invalid',
+                        trimsBox.validation.totalCost === 'VALID' ? 'valid' : 'invalid',
+                        'normal'  // Status
+                    ]);
+                } else {
+                    cellStatuses.push([
+                        'normal', 'invalid', 'invalid', 'invalid', 'invalid', 'normal'
+                    ]);
+                }
+
+                // Total Financial Cost row
+                if (totalFinancial.found && totalFinancial.expectedValue !== null) {
+                    cellStatuses.push([
+                        'normal', // Check name
+                        'normal', // Supplier
+                        'normal', // Consumption
+                        'normal', // Unit Price
+                        totalFinancial.validation === 'VALID' ? 'valid' : 'invalid',
+                        'normal'  // Status
+                    ]);
+                } else {
+                    cellStatuses.push([
+                        'normal', 'normal', 'normal', 'normal', 'invalid', 'normal'
+                    ]);
+                }
+
+                return {
+                    fileName: fileResult.fileName,
+                    summary: `Summary: ${validCount} out of ${totalChecks} checks passed`,
+                    results: fileResult.results,
+                    cellStatuses: cellStatuses
+                };
+            }),
+            filenamePrefix: 'LLBEANValidation_V6',
+            columnWidths: [35, 25, 30, 25, 25, 20],
+            headers: ['Validation Check', 'Supplier', 'Consumption', 'Unit Price', 'Total Cost', 'Status'],
+            colorRules: {},
+            extractRowData: (fileResult) => {
+                const rows = [];
+                const b5 = fileResult.results.b5Check;
+                const trimsBox = fileResult.results.trimsBoxCheck;
+                const totalFinancial = fileResult.results.totalFinancialCostCheck;
+
+                // Helper to format cell for PDF
+                const formatForPDF = (expected, actual, status, isNumeric = false) => {
+                    if (!actual || actual === '') {
+                        const displayExpected = isNumeric ? parseFloat(expected).toFixed(2) : expected;
+                        return `Empty (Expected: ${displayExpected})`;
+                    }
+
+                    const displayActual = isNumeric ? parseFloat(actual).toFixed(2) : actual;
+                    const displayExpected = isNumeric ? parseFloat(expected).toFixed(2) : expected;
+
+                    if (status === 'VALID') {
+                        return displayActual;
+                    } else {
+                        return `${displayActual} (Expected: ${displayExpected})`;
+                    }
+                };
+
+                // B5 Keywords row
+                rows.push([
+                    `Cell B5 Keywords\n(Value: ${b5.cellValue || 'Empty'})`,
+                    '-',
+                    b5.foundKeywords.length > 0 ? b5.foundKeywords.join(', ') : b5.requiredKeywords.join(', '),
+                    '-',
+                    '-',
+                    b5.isValid ? 'VALID' : 'INVALID'
+                ]);
+
+                // Trims Box row
+                if (trimsBox.found && trimsBox.boxData) {
+                    const v = trimsBox.validation;
+                    const expected = trimsBox.expected;
+                    const actual = trimsBox.boxData;
+
+                    rows.push([
+                        `Trims - Box\n(Row ${actual.rowNumber})`,
+                        formatForPDF(expected.supplier, actual.supplier, v.supplier, false),
+                        formatForPDF(expected.consumption, actual.consumption, v.consumption, true),
+                        formatForPDF(expected.unitPrice, actual.unitPrice, v.unitPrice, true),
+                        formatForPDF(expected.totalCost, actual.totalCost, v.totalCost, true),
+                        trimsBox.isValid ? 'VALID' : 'INVALID'
+                    ]);
+                } else {
+                    rows.push([
+                        'Trims - Box',
+                        '-',
+                        trimsBox.message || 'Not found',
+                        '-',
+                        '-',
+                        'NOT FOUND'
+                    ]);
+                }
+
+                // Total Financial Cost row
+                if (totalFinancial.found && totalFinancial.expectedValue !== null) {
+                    rows.push([
+                        `Total Financial Cost\n(Row ${totalFinancial.rowNumber}, ${totalFinancial.matchedKeyword})`,
+                        '-',
+                        '-',
+                        '-',
+                        formatForPDF(totalFinancial.expectedValue, totalFinancial.actualValue, totalFinancial.validation, true),
+                        totalFinancial.isValid ? 'VALID' : 'INVALID'
+                    ]);
+                } else {
+                    rows.push([
+                        'Total Financial Cost',
+                        '-',
+                        totalFinancial.message || 'Not found',
+                        '-',
+                        '-',
+                        'NOT FOUND'
+                    ]);
+                }
+
+                return rows;
+            }
+        };
+    }
+
+    /**
      * Create Burton (V2) export configuration
      * @param {Array} fileResults - Array of file results from Burton processor
      * @param {Function} formatToThreeDecimals - Helper function to format decimals

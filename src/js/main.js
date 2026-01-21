@@ -22,8 +22,8 @@ class ExcelFileHandler {
     }
 
     attachEventListeners() {
-        // For V2, V3, V4, V5, V6, V7, and V8, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV)
-        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7' && this.version !== 'v8') {
+        // For V2, V3, V4, V5, V6, V7, V8, and V9, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV)
+        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7' && this.version !== 'v8' && this.version !== 'v9') {
             this.setupDropZone(this.obDropZone, this.obFileInput, 'ob');
         }
         this.setupDropZone(this.bcbdDropZone, this.bcbdFileInput, 'bcbd');
@@ -355,6 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.excelHandlerV6 = new ExcelFileHandler('v6');
     window.excelHandlerV7 = new ExcelFileHandler('v7');
     window.excelHandlerV8 = new ExcelFileHandler('v8');
+    window.excelHandlerV9 = new ExcelFileHandler('v9');
 
     document.querySelectorAll('.generate-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -576,6 +577,34 @@ async function handleGenerateResults(version) {
 
         if (window.outdoorResearchProcessor) {
             const results = await window.outdoorResearchProcessor.processFiles(bcbdFiles);
+            resultsContent.innerHTML = results;
+        }
+        return;
+    }
+
+    // Special handling for V9 - only needs BCBD files (On AG)
+    if (version === 'v9') {
+        const bcbdFiles = handler.getBCBDFiles();
+
+        if (bcbdFiles.length === 0) {
+            alert('Please upload Buyer CBD files before generating results.');
+            return;
+        }
+
+        console.log(`Generating results for ${version.toUpperCase()}...`);
+        console.log('BCBD Files:', bcbdFiles);
+
+        // Show loading state with animation
+        resultsContent.innerHTML = `
+            <div class="loading-container">
+                <div class="loader"></div>
+                <p class="loading-text">Processing ${bcbdFiles.length} BCBD file(s) with On AG validation...</p>
+                <p class="loading-subtext">Please wait while we scan the files...</p>
+            </div>
+        `;
+
+        if (window.onAGProcessor) {
+            const results = await window.onAGProcessor.processFiles(bcbdFiles);
             resultsContent.innerHTML = results;
         }
         return;

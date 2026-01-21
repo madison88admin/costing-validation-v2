@@ -40,6 +40,7 @@
                 <button class="tab-btn" data-tab="v6" data-short="LLB" data-full="LLBEAN">LLBEAN</button>
                 <button class="tab-btn" data-tab="v7" data-short="MMT" data-full="Mammut">Mammut</button>
                 <button class="tab-btn" data-tab="v8" data-short="OR" data-full="Outdoor Research">Outdoor Research</button>
+                <button class="tab-btn" data-tab="v9" data-short="OAG" data-full="On AG">On AG</button>
             </div>
         </div>
 
@@ -322,6 +323,40 @@
                     <div class="results-content" id="results-v8"></div>
                 </div>
             </div>
+
+            <!-- Tab Content V9 (On AG) -->
+            <div class="tab-content" id="tab-v9">
+                <div class="upload-section">
+                    <div id="obDropZone-v9" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">On AG Validation Criteria</h2>
+                            <p class="drop-subtitle">Default values to check</p>
+                            <p class="file-label">Validation Rules</p>
+                            <div id="onAGValidationRules" class="validation-rules-display"></div>
+                        </div>
+                    </div>
+
+                    <div id="bcbdDropZone-v9" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Drag & Drop Files Here</h2>
+                            <p class="drop-subtitle">or click to browse</p>
+                            <p class="file-label">Buyer CBD File/s</p>
+                            <input type="file" id="bcbdFileInput-v9" accept=".xlsx,.xls,.csv" multiple hidden>
+                            <button class="browse-btn">Browse Files</button>
+                            <div class="file-list" id="bcbdFileList-v9"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generate-section">
+                    <button class="generate-btn" data-version="v9">Generate Results</button>
+                </div>
+
+                <div class="results-section">
+                    <h2 class="results-title">Results</h2>
+                    <div class="results-content" id="results-v9"></div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -334,6 +369,7 @@
     <script src="js/LLBEAN.js"></script>
     <script src="js/Mammut.js"></script>
     <script src="js/Outdoor.js"></script>
+    <script src="js/OnAG.js"></script>
     <script src="js/main.js"></script>
 </body>
 
