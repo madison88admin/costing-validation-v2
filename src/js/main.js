@@ -22,8 +22,8 @@ class ExcelFileHandler {
     }
 
     attachEventListeners() {
-        // For V2, V3, V4, V5, V6, V7, V8, and V9, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV)
-        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7' && this.version !== 'v8' && this.version !== 'v9') {
+        // For V2, V3, V4, V5, V6, V7, V8, V9, and V10, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV)
+        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7' && this.version !== 'v8' && this.version !== 'v9' && this.version !== 'v10') {
             this.setupDropZone(this.obDropZone, this.obFileInput, 'ob');
         }
         this.setupDropZone(this.bcbdDropZone, this.bcbdFileInput, 'bcbd');
@@ -356,6 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.excelHandlerV7 = new ExcelFileHandler('v7');
     window.excelHandlerV8 = new ExcelFileHandler('v8');
     window.excelHandlerV9 = new ExcelFileHandler('v9');
+    window.excelHandlerV10 = new ExcelFileHandler('v10');
 
     document.querySelectorAll('.generate-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -379,7 +380,12 @@ document.addEventListener('DOMContentLoaded', () => {
         window.outdoorResearchProcessor.initialize();
     }
 
-    console.log('Costing Validation initialized with 8 versions');
+    // Initialize Peak Performance processor when page loads
+    if (window.peakPerformanceProcessor) {
+        window.peakPerformanceProcessor.initialize();
+    }
+
+    console.log('Costing Validation initialized with 10 versions');
 });
 
 async function handleGenerateResults(version) {
@@ -605,6 +611,34 @@ async function handleGenerateResults(version) {
 
         if (window.onAGProcessor) {
             const results = await window.onAGProcessor.processFiles(bcbdFiles);
+            resultsContent.innerHTML = results;
+        }
+        return;
+    }
+
+    // Special handling for V10 - only needs BCBD files (Peak Performance)
+    if (version === 'v10') {
+        const bcbdFiles = handler.getBCBDFiles();
+
+        if (bcbdFiles.length === 0) {
+            alert('Please upload Buyer CBD files before generating results.');
+            return;
+        }
+
+        console.log(`Generating results for ${version.toUpperCase()}...`);
+        console.log('BCBD Files:', bcbdFiles);
+
+        // Show loading state with animation
+        resultsContent.innerHTML = `
+            <div class="loading-container">
+                <div class="loader"></div>
+                <p class="loading-text">Processing ${bcbdFiles.length} BCBD file(s) with Peak Performance validation...</p>
+                <p class="loading-subtext">Please wait while we scan the files...</p>
+            </div>
+        `;
+
+        if (window.peakPerformanceProcessor) {
+            const results = await window.peakPerformanceProcessor.processFiles(bcbdFiles);
             resultsContent.innerHTML = results;
         }
         return;
