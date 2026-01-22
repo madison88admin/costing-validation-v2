@@ -42,6 +42,7 @@
                 <button class="tab-btn" data-tab="v8" data-short="OR" data-full="Outdoor Research">Outdoor Research</button>
                 <button class="tab-btn" data-tab="v9" data-short="OAG" data-full="On AG">On AG</button>
                 <button class="tab-btn" data-tab="v10" data-short="PP" data-full="Peak Performance">Peak Performance</button>
+                <button class="tab-btn" data-tab="v11" data-short="SKD" data-full="Skida">Skida</button>
             </div>
         </div>
 
@@ -392,6 +393,35 @@
                     <div class="results-content" id="results-v10"></div>
                 </div>
             </div>
+
+            <!-- Tab Content V11 (Skida) -->
+            <div class="tab-content" id="tab-v11">
+                <div class="upload-section">
+                    <div id="obDropZone-v11" class="drop-zone">
+                        <!-- Content will be populated by Skida.js displayValidationRules() -->
+                    </div>
+
+                    <div id="bcbdDropZone-v11" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Drag & Drop Files Here</h2>
+                            <p class="drop-subtitle">or click to browse</p>
+                            <p class="file-label">Buyer CBD File/s</p>
+                            <input type="file" id="bcbdFileInput-v11" accept=".xlsx,.xls,.csv" multiple hidden>
+                            <button class="browse-btn">Browse Files</button>
+                            <div class="file-list" id="bcbdFileList-v11"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generate-section">
+                    <button class="generate-btn" data-version="v11">Generate Results</button>
+                </div>
+
+                <div class="results-section">
+                    <h2 class="results-title">Results</h2>
+                    <div class="results-content" id="results-v11"></div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -406,6 +436,7 @@
     <script src="js/Outdoor.js"></script>
     <script src="js/OnAG.js"></script>
     <script src="js/PeakPerformance.js"></script>
+    <script src="js/Skida.js"></script>
     <script src="js/main.js"></script>
 </body>
 
