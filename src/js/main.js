@@ -22,8 +22,8 @@ class ExcelFileHandler {
     }
 
     attachEventListeners() {
-        // For V2, V3, V4, V5, V6, V7, V8, V9, V10, V11, and V12, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV)
-        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7' && this.version !== 'v8' && this.version !== 'v9' && this.version !== 'v10' && this.version !== 'v11' && this.version !== 'v12') {
+        // For V2, V3, V4, V5, V6, V7, V8, V9, V10, V11, V12, and V13, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV)
+        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7' && this.version !== 'v8' && this.version !== 'v9' && this.version !== 'v10' && this.version !== 'v11' && this.version !== 'v12' && this.version !== 'v13') {
             this.setupDropZone(this.obDropZone, this.obFileInput, 'ob');
         }
         this.setupDropZone(this.bcbdDropZone, this.bcbdFileInput, 'bcbd');
@@ -359,6 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.excelHandlerV10 = new ExcelFileHandler('v10');
     window.excelHandlerV11 = new ExcelFileHandler('v11');
     window.excelHandlerV12 = new ExcelFileHandler('v12');
+    window.excelHandlerV13 = new ExcelFileHandler('v13');
 
     document.querySelectorAll('.generate-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -397,7 +398,12 @@ document.addEventListener('DOMContentLoaded', () => {
         window.vuoriProcessor.initialize();
     }
 
-    console.log('Costing Validation initialized with 12 versions');
+    // Initialize Prana processor when page loads
+    if (window.pranaProcessor) {
+        window.pranaProcessor.initialize();
+    }
+
+    console.log('Costing Validation initialized with 13 versions');
 });
 
 async function handleGenerateResults(version) {
@@ -707,6 +713,34 @@ async function handleGenerateResults(version) {
 
         if (window.vuoriProcessor) {
             const results = await window.vuoriProcessor.processFiles(bcbdFiles);
+            resultsContent.innerHTML = results;
+        }
+        return;
+    }
+
+    // Special handling for V13 - only needs BCBD files (Prana)
+    if (version === 'v13') {
+        const bcbdFiles = handler.getBCBDFiles();
+
+        if (bcbdFiles.length === 0) {
+            alert('Please upload Buyer CBD files before generating results.');
+            return;
+        }
+
+        console.log(`Generating results for ${version.toUpperCase()}...`);
+        console.log('BCBD Files:', bcbdFiles);
+
+        // Show loading state with animation
+        resultsContent.innerHTML = `
+            <div class="loading-container">
+                <div class="loader"></div>
+                <p class="loading-text">Processing ${bcbdFiles.length} BCBD file(s) with Prana validation...</p>
+                <p class="loading-subtext">Scanning all sheets for Fabrics section...</p>
+            </div>
+        `;
+
+        if (window.pranaProcessor) {
+            const results = await window.pranaProcessor.processFiles(bcbdFiles);
             resultsContent.innerHTML = results;
         }
         return;
