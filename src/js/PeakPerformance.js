@@ -626,10 +626,10 @@ class PeakPerformanceProcessor {
             if (fabricWastage.found) {
                 const allCells = [];
                 fabricWastage.validCells.forEach(cell => {
-                    allCells.push(`<span style="color: #065f46; font-weight: 600;">${cell.cellAddress}</span>`);
+                    allCells.push(`<span style="color: #065f46; font-weight: 600;">${cell.value}</span>`);
                 });
                 fabricWastage.invalidCells.forEach(cell => {
-                    allCells.push(`<span style="color: #991b1b; font-weight: 600;">${cell.cellAddress} (${cell.value})</span>`);
+                    allCells.push(`<span style="color: #991b1b; font-weight: 600;">${cell.value}</span> <span style="font-size: 0.85em; color: #849bba;">(Expected: 5%)</span>`);
                 });
 
                 if (allCells.length > 0) {
@@ -708,10 +708,12 @@ class PeakPerformanceProcessor {
 
                         const formatCell = (check) => {
                             if (!check) return '<span style="color: #6b7280;">-</span>';
-                            const color = check.isValid ? '#065f46' : '#991b1b';
-                            // Show the actual value from the cell, not the cell address
                             const displayValue = check.actual || '-';
-                            return `<span style="color: ${color}; font-weight: 600;">${displayValue}</span>`;
+                            if (check.isValid) {
+                                return `<span style="color: #065f46; font-weight: 600;">${displayValue}</span>`;
+                            } else {
+                                return `<span style="color: #991b1b; font-weight: 600;">${displayValue}</span><br><span style="font-size: 0.75em; color: #849bba;">(Expected: ${check.expected})</span>`;
+                            }
                         };
 
                         html += `

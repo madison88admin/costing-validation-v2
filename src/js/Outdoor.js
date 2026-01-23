@@ -240,22 +240,9 @@ class OutdoorResearchProcessor {
 
         let html = '';
 
-        // Add search bar and export button at the top
+        // Add export button at the top
         html += `
-            <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
-                <div class="search-container">
-                    <div class="search-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                        </svg>
-                    </div>
-                    <input
-                        type="text"
-                        class="search-input-expandable"
-                        placeholder="Search by filename..."
-                        oninput="window.outdoorResearchProcessor.searchByFilename(this.value)"
-                    />
-                </div>
+            <div style="margin-bottom: 15px; display: flex; justify-content: flex-end; align-items: center;">
                 <button onclick="window.outdoorResearchProcessor.exportToPDF()" class="export-btn">
                     Export
                 </button>
@@ -294,8 +281,8 @@ class OutdoorResearchProcessor {
                 <table class="results-table" style="table-layout: fixed; width: 100%;">
                     <thead>
                         <tr class="header-labels-row">
-                            <th style="width: 50%;">Validation Check</th>
-                            <th style="width: 50%;">Value</th>
+                            <th style="width: 30%;">Validation Check</th>
+                            <th style="width: 70%;">Value</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -304,14 +291,17 @@ class OutdoorResearchProcessor {
             // General Packaging checks - all on one row
             if (gpCheck && gpCheck.found && gpCheck.checks) {
                 const checkDetails = gpCheck.checks.map(check => {
-                    const valueColor = check.isValid ? '#065f46' : '#991b1b';
-                    return `<span style="color: ${valueColor}; font-weight: 600;">${check.actualValue || 'Empty'}</span>`;
+                    if (check.isValid) {
+                        return `<span style="color: #065f46; font-weight: 600;">${check.actualValue || 'Empty'}</span>`;
+                    } else {
+                        return `<span style="color: #991b1b; font-weight: 600;">${check.actualValue || 'Empty'}</span> <span style="font-size: 0.85em; color: #849bba;">(Expected: ${check.expectedValue})</span>`;
+                    }
                 }).join(' | ');
 
                 html += `
                     <tr style="border-bottom: 1px solid #e0e8f0;">
                         <td style="padding: 0.875rem 1rem; font-weight: 600;">General Packaging (Row ${gpCheck.rowNumber})</td>
-                        <td style="padding: 0.875rem 1rem; text-align: center;">
+                        <td style="padding: 0.875rem 1rem; text-align: left;">
                             ${checkDetails}
                         </td>
                     </tr>
@@ -320,7 +310,7 @@ class OutdoorResearchProcessor {
                 html += `
                     <tr style="border-bottom: 1px solid #e0e8f0;">
                         <td style="padding: 0.875rem 1rem; font-weight: 600;">General Packaging</td>
-                        <td style="padding: 0.875rem 1rem; text-align: center; color: #991b1b; font-weight: 600;">${gpCheck.message || 'Not found'}</td>
+                        <td style="padding: 0.875rem 1rem; text-align: left; color: #991b1b; font-weight: 600;">${gpCheck.message || 'Not found'}</td>
                     </tr>
                 `;
             }
@@ -328,14 +318,17 @@ class OutdoorResearchProcessor {
             // Other Charges checks - all on one row
             if (ocCheck && ocCheck.found && ocCheck.checks) {
                 const checkDetails = ocCheck.checks.map(check => {
-                    const valueColor = check.isValid ? '#065f46' : '#991b1b';
-                    return `<span style="color: ${valueColor}; font-weight: 600;">${check.actualValue || 'Empty'}</span>`;
+                    if (check.isValid) {
+                        return `<span style="color: #065f46; font-weight: 600;">${check.actualValue || 'Empty'}</span>`;
+                    } else {
+                        return `<span style="color: #991b1b; font-weight: 600;">${check.actualValue || 'Empty'}</span> <span style="font-size: 0.85em; color: #849bba;">(Expected: ${check.expectedValue})</span>`;
+                    }
                 }).join(' | ');
 
                 html += `
                     <tr style="border-bottom: 1px solid #e0e8f0;">
                         <td style="padding: 0.875rem 1rem; font-weight: 600;">Other Charges (Row ${ocCheck.rowNumber})</td>
-                        <td style="padding: 0.875rem 1rem; text-align: center;">
+                        <td style="padding: 0.875rem 1rem; text-align: left;">
                             ${checkDetails}
                         </td>
                     </tr>
@@ -344,7 +337,7 @@ class OutdoorResearchProcessor {
                 html += `
                     <tr style="border-bottom: 1px solid #e0e8f0;">
                         <td style="padding: 0.875rem 1rem; font-weight: 600;">Other Charges</td>
-                        <td style="padding: 0.875rem 1rem; text-align: center; color: #991b1b; font-weight: 600;">${ocCheck.message || 'Not found'}</td>
+                        <td style="padding: 0.875rem 1rem; text-align: left; color: #991b1b; font-weight: 600;">${ocCheck.message || 'Not found'}</td>
                     </tr>
                 `;
             }

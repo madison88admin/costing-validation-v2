@@ -470,22 +470,9 @@ class OnAGProcessor {
 
         let html = '';
 
-        // Add search bar and export button at the top
+        // Add export button at the top
         html += `
-            <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; gap: 12px;">
-                <div class="search-container">
-                    <div class="search-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-                        </svg>
-                    </div>
-                    <input
-                        type="text"
-                        class="search-input-expandable"
-                        placeholder="Search by filename..."
-                        oninput="window.onAGProcessor.searchByFilename(this.value)"
-                    />
-                </div>
+            <div style="margin-bottom: 15px; display: flex; justify-content: flex-end; align-items: center;">
                 <button onclick="window.onAGProcessor.exportToPDF()" class="export-btn">
                     Export
                 </button>
@@ -541,37 +528,37 @@ class OnAGProcessor {
                     <tbody>
             `;
 
-            // Display each wastage section - Mammut style
+            // Display each wastage section
             for (const section of wastageResults) {
                 if (!section.found) {
                     html += `
                         <tr style="border-bottom: 1px solid #e0e8f0;">
                             <td style="padding: 0.875rem 1rem; font-weight: 600;">${section.section} Wastage (${section.expectedWastage || '?'}%)</td>
-                            <td style="padding: 0.875rem 1rem; text-align: center; color: #991b1b; font-weight: 600;">
+                            <td style="padding: 0.875rem 1rem; text-align: left; color: #991b1b; font-weight: 600;">
                                 ${section.message || 'Not found'}
                             </td>
                         </tr>
                     `;
                 } else {
-                    // Combine valid and invalid cells on one row - Mammut style
+                    // Combine valid and invalid cells on one row - show values
                     const allCells = [];
 
-                    // Add valid cells (green) - just cell address
+                    // Add valid cells (green) - show value
                     section.validCells.forEach(cell => {
-                        allCells.push(`<span style="color: #065f46; font-weight: 600;">${cell.cellAddress}</span>`);
+                        allCells.push(`<span style="color: #065f46; font-weight: 600;">${cell.numericValue.toFixed(2)}</span>`);
                     });
 
-                    // Add invalid cells (red with value)
+                    // Add invalid cells (red with value and expected)
                     section.invalidCells.forEach(cell => {
                         const roundedValue = cell.numericValue.toFixed(2);
-                        allCells.push(`<span style="color: #991b1b; font-weight: 600;">${cell.cellAddress} (${roundedValue})</span>`);
+                        allCells.push(`<span style="color: #991b1b; font-weight: 600;">${roundedValue}</span> <span style="font-size: 0.85em; color: #849bba;">(Expected: ${section.expectedWastage})</span>`);
                     });
 
                     if (allCells.length > 0) {
                         html += `
                             <tr style="border-bottom: 1px solid #e0e8f0;">
                                 <td style="padding: 0.875rem 1rem; font-weight: 600;">${section.section} Wastage (${section.expectedWastage}%)</td>
-                                <td style="padding: 0.875rem 1rem; text-align: center;">
+                                <td style="padding: 0.875rem 1rem; text-align: left;">
                                     ${allCells.join(', ')}
                                 </td>
                             </tr>
@@ -581,7 +568,7 @@ class OnAGProcessor {
                         html += `
                             <tr style="border-bottom: 1px solid #e0e8f0;">
                                 <td style="padding: 0.875rem 1rem; font-weight: 600;">${section.section} Wastage (${section.expectedWastage}%)</td>
-                                <td style="padding: 0.875rem 1rem; text-align: center;">
+                                <td style="padding: 0.875rem 1rem; text-align: left;">
                                     <span style="color: #6b7280; font-weight: 600;">No data</span>
                                 </td>
                             </tr>
@@ -590,24 +577,22 @@ class OnAGProcessor {
                 }
             }
 
-            // Display Coats Thread check - Mammut style with cell addresses
+            // Display Coats Thread check - show values with labels
             if (coatsThreadCheck && coatsThreadCheck.found && coatsThreadCheck.checks) {
-                const allCells = [];
-
-                coatsThreadCheck.checks.forEach(check => {
+                const checkDetails = coatsThreadCheck.checks.map(check => {
+                    const displayValue = !isNaN(check.numericValue) ? check.numericValue : check.actualValue;
                     if (check.isValid) {
-                        allCells.push(`<span style="color: #065f46; font-weight: 600;">${check.cellAddress}</span>`);
+                        return `<span style="color: #065f46; font-weight: 600;">${check.label}: ${displayValue}</span>`;
                     } else {
-                        const displayValue = !isNaN(check.numericValue) ? check.numericValue : check.actualValue;
-                        allCells.push(`<span style="color: #991b1b; font-weight: 600;">${check.cellAddress} (${displayValue})</span>`);
+                        return `<span style="color: #991b1b; font-weight: 600;">${check.label}: ${displayValue}</span> <span style="font-size: 0.85em; color: #849bba;">(Expected: ${check.expectedValue})</span>`;
                     }
-                });
+                }).join(', ');
 
                 html += `
                     <tr style="border-bottom: 1px solid #e0e8f0;">
                         <td style="padding: 0.875rem 1rem; font-weight: 600;">Coats Thread (Row ${coatsThreadCheck.rowNumber})</td>
-                        <td style="padding: 0.875rem 1rem; text-align: center;">
-                            ${allCells.join(', ')}
+                        <td style="padding: 0.875rem 1rem; text-align: left;">
+                            ${checkDetails}
                         </td>
                     </tr>
                 `;
@@ -615,36 +600,38 @@ class OnAGProcessor {
                 html += `
                     <tr style="border-bottom: 1px solid #e0e8f0;">
                         <td style="padding: 0.875rem 1rem; font-weight: 600;">Coats Thread</td>
-                        <td style="padding: 0.875rem 1rem; text-align: center; color: #6b7280; font-weight: 600;">
+                        <td style="padding: 0.875rem 1rem; text-align: left; color: #6b7280; font-weight: 600;">
                             ${coatsThreadCheck.message || 'Not found in Material section'}
                         </td>
                     </tr>
                 `;
             }
 
-            // Display Process Costs checks - Mammut style with cell addresses
+            // Display Process Costs checks - show actual values
             if (processCostsCheck && processCostsCheck.items) {
                 for (const item of processCostsCheck.items) {
                     if (!item.found) {
                         html += `
                             <tr style="border-bottom: 1px solid #e0e8f0;">
-                                <td style="padding: 0.875rem 1rem; font-weight: 600;">${item.label}</td>
-                                <td style="padding: 0.875rem 1rem; text-align: center; color: #991b1b; font-weight: 600;">
+                                <td style="padding: 0.875rem 1rem; font-weight: 600;">${item.label} (${item.expectedValue})</td>
+                                <td style="padding: 0.875rem 1rem; text-align: left; color: #991b1b; font-weight: 600;">
                                     Not found
                                 </td>
                             </tr>
                         `;
                     } else {
-                        const valueColor = item.isValid ? '#065f46' : '#991b1b';
                         const displayValue = !isNaN(item.numericValue) ? item.numericValue : item.actualValue;
-                        const cellDisplay = item.isValid
-                            ? `<span style="color: ${valueColor}; font-weight: 600;">${item.cellAddress}</span>`
-                            : `<span style="color: ${valueColor}; font-weight: 600;">${item.cellAddress} (${displayValue})</span>`;
+                        let cellDisplay;
+                        if (item.isValid) {
+                            cellDisplay = `<span style="color: #065f46; font-weight: 600;">${displayValue}</span>`;
+                        } else {
+                            cellDisplay = `<span style="color: #991b1b; font-weight: 600;">${displayValue}</span> <span style="font-size: 0.85em; color: #849bba;">(Expected: ${item.expectedValue})</span>`;
+                        }
 
                         html += `
                             <tr style="border-bottom: 1px solid #e0e8f0;">
                                 <td style="padding: 0.875rem 1rem; font-weight: 600;">${item.label} (${item.expectedValue})</td>
-                                <td style="padding: 0.875rem 1rem; text-align: center;">
+                                <td style="padding: 0.875rem 1rem; text-align: left;">
                                     ${cellDisplay}
                                 </td>
                             </tr>

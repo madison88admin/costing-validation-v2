@@ -516,7 +516,7 @@ class MammutProcessor {
     generateResultsHTML(results) {
         if (!results || results.length === 0) {
             return `
-                <div style="text-align: center; padding: 2rem; color: #2b4a6c;">
+                <div style="text-align: left; padding: 2rem; color: #2b4a6c;">
                     <p style="font-size: 1.3em; margin-bottom: 10px;">Mammut Validation Ready</p>
                     <p>Upload Buyer CBD files to validate.</p>
                 </div>
@@ -589,8 +589,8 @@ class MammutProcessor {
                 <table class="results-table" style="table-layout: fixed; width: 100%;">
                     <thead>
                         <tr class="header-labels-row">
-                            <th style="width: 50%;">Validation Check</th>
-                            <th style="width: 50%;">Value</th>
+                            <th style="width: 30%;">Validation Check</th>
+                            <th style="width: 70%;">Value</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -602,7 +602,7 @@ class MammutProcessor {
                 html += `
                     <tr style="border-bottom: 1px solid #e0e8f0;">
                         <td style="padding: 0.875rem 1rem; font-weight: 600;">${check.label}</td>
-                        <td style="padding: 0.875rem 1rem; text-align: center;">
+                        <td style="padding: 0.875rem 1rem; text-align: left;">
                             ${check.found
                                 ? `<span style="color: ${valueColor}; font-weight: 600;">${check.actualValue || 'Empty'}</span>`
                                 : '<span style="color: #991b1b; font-weight: 600;">Not found</span>'}
@@ -619,7 +619,7 @@ class MammutProcessor {
                 html += `
                     <tr style="border-bottom: 1px solid #e0e8f0;">
                         <td style="padding: 0.875rem 1rem; font-weight: 600;">PROFIT MARGIN</td>
-                        <td style="padding: 0.875rem 1rem; text-align: center;">
+                        <td style="padding: 0.875rem 1rem; text-align: left;">
                             <span style="color: ${valueColor}; font-weight: 600;">${pmActual}</span>
                         </td>
                     </tr>
@@ -628,7 +628,7 @@ class MammutProcessor {
                 html += `
                     <tr style="border-bottom: 1px solid #e0e8f0;">
                         <td style="padding: 0.875rem 1rem; font-weight: 600;">PROFIT MARGIN</td>
-                        <td style="padding: 0.875rem 1rem; text-align: center; color: #991b1b; font-weight: 600;">${profitMargin.message || 'Not found'}</td>
+                        <td style="padding: 0.875rem 1rem; text-align: left; color: #991b1b; font-weight: 600;">${profitMargin.message || 'Not found'}</td>
                     </tr>
                 `;
             }
@@ -657,7 +657,7 @@ class MammutProcessor {
                         html += `
                             <tr style="border-bottom: 1px solid #e0e8f0;">
                                 <td style="padding: 0.875rem 1rem; font-weight: 600;">${sectionName} Wastage (${expectedPercent}%)</td>
-                                <td style="padding: 0.875rem 1rem; text-align: center;">
+                                <td style="padding: 0.875rem 1rem; text-align: left;">
                                     ${allCells.join(', ')}
                                 </td>
                             </tr>
@@ -667,7 +667,7 @@ class MammutProcessor {
                         html += `
                             <tr style="border-bottom: 1px solid #e0e8f0;">
                                 <td style="padding: 0.875rem 1rem; font-weight: 600;">${sectionName} Wastage (${expectedPercent}%)</td>
-                                <td style="padding: 0.875rem 1rem; text-align: center;">
+                                <td style="padding: 0.875rem 1rem; text-align: left;">
                                     <span style="color: #6b7280; font-weight: 600;">No data</span>
                                 </td>
                             </tr>
@@ -678,7 +678,7 @@ class MammutProcessor {
                 html += `
                     <tr style="border-bottom: 1px solid #e0e8f0;">
                         <td style="padding: 0.875rem 1rem; font-weight: 600;">Wastage Check</td>
-                        <td style="padding: 0.875rem 1rem; text-align: center; color: #991b1b; font-weight: 600;">${wastageCost.message || 'No sections found'}</td>
+                        <td style="padding: 0.875rem 1rem; text-align: left; color: #991b1b; font-weight: 600;">${wastageCost.message || 'No sections found'}</td>
                     </tr>
                 `;
             }
@@ -690,7 +690,7 @@ class MammutProcessor {
                         html += `
                             <tr style="border-bottom: 1px solid #e0e8f0;">
                                 <td style="padding: 0.875rem 1rem; font-weight: 600;">${item.label}</td>
-                                <td style="padding: 0.875rem 1rem; text-align: center; color: #991b1b; font-weight: 600;">Not found</td>
+                                <td style="padding: 0.875rem 1rem; text-align: left; color: #991b1b; font-weight: 600;">Not found</td>
                             </tr>
                         `;
                     } else {
@@ -698,23 +698,32 @@ class MammutProcessor {
                         const details = [];
 
                         // Price check
-                        const priceColor = item.priceValid ? '#065f46' : '#991b1b';
                         const priceDisplay = item.numericPrice !== null ? item.numericPrice.toFixed(2) : item.actualPrice;
-                        details.push(`<span style="color: ${priceColor};">Price: ${priceDisplay}</span>`);
+                        if (item.priceValid) {
+                            details.push(`<span style="color: #065f46; font-weight: 600;">Price: ${priceDisplay}</span>`);
+                        } else {
+                            details.push(`<span style="color: #991b1b; font-weight: 600;">Price: ${priceDisplay}</span> <span style="font-size: 0.85em; color: #849bba;">(Expected: ${item.expectedPrice.toFixed(2)})</span>`);
+                        }
 
                         // Exchange rate check
-                        const exRateColor = item.exRateValid ? '#065f46' : '#991b1b';
                         const exRateDisplay = item.numericExRate !== null ? item.numericExRate.toFixed(2) : item.actualExRate;
-                        details.push(`<span style="color: ${exRateColor};">Ex.Rate: ${exRateDisplay}</span>`);
+                        if (item.exRateValid) {
+                            details.push(`<span style="color: #065f46; font-weight: 600;">Ex.Rate: ${exRateDisplay}</span>`);
+                        } else {
+                            details.push(`<span style="color: #991b1b; font-weight: 600;">Ex.Rate: ${exRateDisplay}</span> <span style="font-size: 0.85em; color: #849bba;">(Expected: ${item.expectedExRate.toFixed(2)})</span>`);
+                        }
 
                         // Currency check
-                        const currencyColor = item.currencyValid ? '#065f46' : '#991b1b';
-                        details.push(`<span style="color: ${currencyColor};">Currency: ${item.actualCurrency || 'N/A'}</span>`);
+                        if (item.currencyValid) {
+                            details.push(`<span style="color: #065f46; font-weight: 600;">Currency: ${item.actualCurrency || 'N/A'}</span>`);
+                        } else {
+                            details.push(`<span style="color: #991b1b; font-weight: 600;">Currency: ${item.actualCurrency || 'N/A'}</span> <span style="font-size: 0.85em; color: #849bba;">(Expected: ${item.expectedCurrency})</span>`);
+                        }
 
                         html += `
                             <tr style="border-bottom: 1px solid #e0e8f0;">
                                 <td style="padding: 0.875rem 1rem; font-weight: 600;">${item.label}</td>
-                                <td style="padding: 0.875rem 1rem; text-align: center; font-weight: 600;">
+                                <td style="padding: 0.875rem 1rem; text-align: left; font-weight: 600;">
                                     ${details.join(' | ')}
                                 </td>
                             </tr>
@@ -725,7 +734,7 @@ class MammutProcessor {
                 html += `
                     <tr style="border-bottom: 1px solid #e0e8f0;">
                         <td style="padding: 0.875rem 1rem; font-weight: 600;">Process Check</td>
-                        <td style="padding: 0.875rem 1rem; text-align: center; color: #991b1b; font-weight: 600;">${cmtCheck.message || 'Not found'}</td>
+                        <td style="padding: 0.875rem 1rem; text-align: left; color: #991b1b; font-weight: 600;">${cmtCheck.message || 'Not found'}</td>
                     </tr>
                 `;
             }

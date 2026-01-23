@@ -25,6 +25,12 @@
  * - Find "LABELS / GARMENT PACKAGING" in Column A
  * - Scan Column G until "Labels/Garment Packaging Subtotal"
  * - Expected wastage: 3%
+ *
+ * Global Row Checks (all sheets):
+ * - "Overhead" in Column A → Column K = 0.30049
+ * - "Profit" in Column A → Column K ≤ 0.30
+ * - "Transit/Transportation" in Column A → Column K = 0.200499
+ * - "Finance" in Column A → Column J = 0, Column K = 0.15049999
  */
 
 class PranaProcessor {
@@ -61,7 +67,99 @@ class PranaProcessor {
                 name: 'Labels / Garment Packaging',
                 startMarker: 'labels / garment packaging',
                 endMarker: 'labels/garment packaging subtotal',
-                expectedWastage: '3%'
+                expectedWastage: '3%',
+                useColumnB: true, // Check Column B for item names instead of Column A
+                specialItems: [
+                    {
+                        name: 'beanie packaging',
+                        checks: [
+                            { column: 8, columnLetter: 'I', label: 'Total Yield', expected: '1.00' },
+                            { column: 9, columnLetter: 'J', label: 'Unit Price', expected: '0.055' }
+                        ]
+                    },
+                    {
+                        name: '25mm interior tear away label',
+                        checks: [
+                            { column: 8, columnLetter: 'I', label: 'Total Yield', expected: '1.00' },
+                            { column: 9, columnLetter: 'J', label: 'Unit Price', expected: '0.05' }
+                        ]
+                    },
+                    {
+                        name: 'upc sticker small',
+                        checks: [
+                            { column: 8, columnLetter: 'I', label: 'Total Yield', expected: '1.00' },
+                            { column: 9, columnLetter: 'J', label: 'Unit Price', expected: '0.008' }
+                        ]
+                    },
+                    {
+                        name: 'upc sticker small with msrp',
+                        checks: [
+                            { column: 8, columnLetter: 'I', label: 'Total Yield', expected: '1.00' },
+                            { column: 9, columnLetter: 'J', label: 'Unit Price', expected: '0.054' }
+                        ]
+                    },
+                    {
+                        name: 'glassine tissue bag',
+                        checks: [
+                            { column: 8, columnLetter: 'I', label: 'Total Yield', expected: '1.00' },
+                            { column: 9, columnLetter: 'J', label: 'Unit Price', expected: '0.066' }
+                        ]
+                    },
+                    {
+                        name: 'care label',
+                        checks: [
+                            { column: 8, columnLetter: 'I', label: 'Total Yield', expected: '1.00' },
+                            { column: 9, columnLetter: 'J', label: 'Unit Price', expected: '0.03' }
+                        ]
+                    },
+                    {
+                        name: 'po label',
+                        checks: [
+                            { column: 8, columnLetter: 'I', label: 'Total Yield', expected: '1.00' },
+                            { column: 9, columnLetter: 'J', label: 'Unit Price', expected: '0.01' }
+                        ]
+                    },
+                    {
+                        name: 'main tag upc sticker',
+                        checks: [
+                            { column: 8, columnLetter: 'I', label: 'Total Yield', expected: '1.00' },
+                            { column: 9, columnLetter: 'J', label: 'Unit Price', expected: '0.006' }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        // Global row checks - scan Column A for keywords and validate values
+        this.globalRowChecks = [
+            {
+                name: 'Overhead',
+                marker: 'overhead',
+                checks: [
+                    { column: 10, columnLetter: 'K', label: 'Value', expected: '0.30049' }
+                ]
+            },
+            {
+                name: 'Profit',
+                marker: 'profit',
+                checks: [
+                    { column: 10, columnLetter: 'K', label: 'Value', expected: '≤ 0.30', maxValue: 0.30 }
+                ]
+            },
+            {
+                name: 'Transit/Transportation',
+                marker: 'transit/transportation',
+                checks: [
+                    { column: 10, columnLetter: 'K', label: 'Value', expected: '0.200499' }
+                ]
+            },
+            {
+                name: 'Finance',
+                marker: 'finance',
+                checks: [
+                    { column: 9, columnLetter: 'J', label: 'Percentage', expected: '0', allowedValues: ['0', '0%'] },
+                    { column: 10, columnLetter: 'K', label: 'Value', expected: '0.15049999' }
+                ]
             }
         ];
     }
@@ -93,6 +191,12 @@ class PranaProcessor {
                         <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Section 4 - Labels / Garment Packaging:</strong></div>
                         <div class="burton-item-line">• Column G Wastage: <strong>3%</strong></div>
                         <div class="burton-item-line">• Stops at "Labels/Garment Packaging Subtotal"</div>
+                        <div class="burton-item-line">• <em>Special Items (Col B):</em> Col I = <strong>1.00</strong>, Col J = <strong>Unit Price</strong></div>
+                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Global Checks (Column A):</strong></div>
+                        <div class="burton-item-line">• Overhead: Col K = <strong>0.30049</strong></div>
+                        <div class="burton-item-line">• Profit: Col K = <strong>≤ 0.30</strong></div>
+                        <div class="burton-item-line">• Transit/Transportation: Col K = <strong>0.200499</strong></div>
+                        <div class="burton-item-line">• Finance: Col J = <strong>0</strong>, Col K = <strong>0.15049999</strong></div>
                     </div>
                 </div>
             </div>
@@ -163,6 +267,7 @@ class PranaProcessor {
         const result = {
             sheetName: sheetName,
             sections: [],
+            globalChecks: [],
             anySectionFound: false
         };
 
@@ -175,7 +280,87 @@ class PranaProcessor {
             }
         }
 
+        // Process global row checks
+        const globalResults = this.validateGlobalRowChecks(jsonData);
+        if (globalResults.length > 0) {
+            result.globalChecks = globalResults;
+            result.anySectionFound = true;
+        }
+
         return result;
+    }
+
+    validateGlobalRowChecks(jsonData) {
+        const results = [];
+
+        for (let i = 0; i < jsonData.length; i++) {
+            const row = jsonData[i];
+            const cellA = row[0] ? String(row[0]).trim() : '';
+            const cellALower = cellA.toLowerCase();
+            const rowNum = i + 1;
+
+            // Check each global row check config
+            for (const checkConfig of this.globalRowChecks) {
+                if (cellALower === checkConfig.marker.toLowerCase()) {
+                    const checkResult = {
+                        name: checkConfig.name,
+                        rowNumber: rowNum,
+                        checks: []
+                    };
+
+                    for (const check of checkConfig.checks) {
+                        const actualValue = row[check.column];
+                        const result = this.validateGlobalValue(actualValue, check.expected, check.label, rowNum, check.columnLetter, check.allowedValues, check.maxValue);
+                        checkResult.checks.push(result);
+                    }
+
+                    results.push(checkResult);
+                }
+            }
+        }
+
+        return results;
+    }
+
+    validateGlobalValue(actual, expected, label, rowNum, colLetter, allowedValues, maxValue) {
+        let actualStr = '';
+        let actualNum = NaN;
+
+        if (actual !== undefined && actual !== null && actual !== '') {
+            actualNum = parseFloat(actual);
+            if (!isNaN(actualNum)) {
+                // Format to match expected precision (but handle ≤ prefix)
+                const expectedClean = expected.replace(/[≤<>=]/g, '').trim();
+                const expectedDecimals = (expectedClean.split('.')[1] || '').length;
+                actualStr = actualNum.toFixed(expectedDecimals);
+            } else {
+                actualStr = String(actual).trim();
+            }
+        } else {
+            actualStr = 'Empty';
+        }
+
+        // Check if valid
+        let isValid = false;
+
+        // If maxValue is specified, check if actual is <= maxValue
+        if (maxValue !== undefined) {
+            isValid = !isNaN(actualNum) && actualNum <= maxValue;
+        } else {
+            // Otherwise check exact match or allowedValues
+            isValid = actualStr === expected;
+            if (!isValid && allowedValues) {
+                isValid = allowedValues.includes(actualStr);
+            }
+        }
+
+        return {
+            label: label,
+            expected: expected,
+            actual: actualStr,
+            isValid: isValid,
+            cellAddress: `${colLetter}${rowNum}`
+        };
     }
 
     validateSection(jsonData, sectionConfig) {
@@ -228,10 +413,19 @@ class PranaProcessor {
 
                 // Check for special items (like "sewing thread" in Thread section)
                 if (sectionConfig.specialItems) {
+                    // Use Column B if specified, otherwise Column A
+                    const itemNameColumn = sectionConfig.useColumnB ? 1 : 0;
+                    const cellForMatching = row[itemNameColumn] ? String(row[itemNameColumn]).trim() : '';
+                    const cellForMatchingLower = cellForMatching.toLowerCase();
+
                     for (const specialItem of sectionConfig.specialItems) {
-                        if (cellALower === specialItem.name.toLowerCase()) {
+                        if (cellForMatchingLower === specialItem.name.toLowerCase()) {
+                            // Get Column A value for display
+                            const columnAValue = row[0] ? String(row[0]).trim() : '';
+
                             const specialResult = {
-                                name: cellA,
+                                name: cellForMatching,
+                                columnA: columnAValue,
                                 rowNumber: rowNum,
                                 checks: []
                             };
@@ -418,11 +612,54 @@ class PranaProcessor {
             `;
         }
 
+        // Add global checks if any
+        if (sheetResult.globalChecks && sheetResult.globalChecks.length > 0) {
+            const totalRows = sheetResult.sections.length + 1; // +1 for global checks row
+
+            // Update rowspan for sheet name cell if sections exist
+            html = html.replace(
+                `rowspan="${sheetResult.sections.length}"`,
+                `rowspan="${totalRows}"`
+            );
+
+            html += `
+                <tr style="border-bottom: 1px solid #e0e8f0;">
+                    ${sheetResult.sections.length === 0 ? `<td style="padding: 0.875rem 1rem; font-weight: 600; vertical-align: top; max-width: 200px; word-wrap: break-word;">${sheetResult.sheetName}</td>` : ''}
+                    <td style="padding: 0.875rem 1rem; font-weight: 600;">Global Checks</td>
+                    <td style="padding: 0.875rem 1rem;">
+                        ${this.formatGlobalChecks(sheetResult.globalChecks)}
+                    </td>
+                </tr>
+            `;
+        }
+
         html += `
                 </tbody>
             </table>
             </div>
         `;
+
+        return html;
+    }
+
+    formatGlobalChecks(globalChecks) {
+        let html = '';
+
+        for (const check of globalChecks) {
+            html += `<div style="margin-bottom: 0.5rem;">`;
+            html += `<span style="font-weight: 600; color: #64748b; font-size: 0.85em;">${check.name} (Row ${check.rowNumber}):</span> `;
+
+            const checkResults = check.checks.map(c => {
+                if (c.isValid) {
+                    return `<span style="color: #065f46; font-weight: 600;">${c.label}: ${c.actual}</span>`;
+                } else {
+                    return `<span style="color: #991b1b; font-weight: 600;">${c.label}: ${c.actual}</span> <span style="font-size: 0.85em; color: #849bba;">(Expected: ${c.expected})</span>`;
+                }
+            }).join(', ');
+            html += checkResults;
+
+            html += `</div>`;
+        }
 
         return html;
     }
@@ -436,23 +673,19 @@ class PranaProcessor {
 
         for (const specialItem of specialItemResults) {
             html += `<div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed #64748b;">`;
-            html += `<span style="font-weight: 600; color: #64748b; font-size: 0.85em;">${specialItem.name} (Row ${specialItem.rowNumber}):</span><br>`;
+            // Show Column A if available, then item name
+            const columnADisplay = specialItem.columnA ? `${specialItem.columnA} - ` : '';
+            html += `<span style="font-weight: 600; color: #64748b; font-size: 0.85em;">${columnADisplay}${specialItem.name} (Row ${specialItem.rowNumber}):</span><br>`;
 
-            const validChecks = specialItem.checks.filter(c => c.isValid);
-            const invalidChecks = specialItem.checks.filter(c => !c.isValid);
-
-            if (validChecks.length > 0) {
-                const validCells = validChecks.map(c => c.cellAddress).join(', ');
-                html += `<span style="color: #065f46; font-weight: 600;">${validCells}</span>`;
-            }
-
-            if (invalidChecks.length > 0) {
-                if (validChecks.length > 0) html += '<br>';
-                const invalidCells = invalidChecks.map(c => {
-                    return `<span style="color: #991b1b; font-weight: 600;">${c.cellAddress}: ${c.actual}</span> <span style="font-size: 0.85em; color: #849bba;">(Expected: ${c.expected})</span>`;
-                }).join(', ');
-                html += invalidCells;
-            }
+            // Show each check with actual value in green (valid) or red with expected (invalid)
+            const checkResults = specialItem.checks.map(c => {
+                if (c.isValid) {
+                    return `<span style="color: #065f46; font-weight: 600;">${c.label}: ${c.actual}</span>`;
+                } else {
+                    return `<span style="color: #991b1b; font-weight: 600;">${c.label}: ${c.actual}</span> <span style="font-size: 0.85em; color: #849bba;">(Expected: ${c.expected})</span>`;
+                }
+            }).join(', ');
+            html += checkResults;
 
             html += `</div>`;
         }
