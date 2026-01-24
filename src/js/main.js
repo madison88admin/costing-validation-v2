@@ -247,7 +247,8 @@ class TabManager {
 
         this.tabContents.forEach(content => content.classList.remove('active'));
 
-        const selectedTab = document.querySelector(`[data-tab="${tabId}"]`);
+        // Use more specific selector to get the tab button, not the menu item
+        const selectedTab = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
         const selectedContent = document.getElementById(`tab-${tabId}`);
 
         if (selectedTab && selectedContent) {
@@ -261,7 +262,94 @@ class TabManager {
             }
         }
 
+        // Update menu active state
+        if (window.menuManager) {
+            window.menuManager.updateActiveMenuItem(tabId);
+        }
+
         console.log(`Switched to ${tabId.toUpperCase()}`);
+    }
+}
+
+// Menu Manager
+class MenuManager {
+    constructor() {
+        this.menuToggle = document.getElementById('menuToggle');
+        this.menuDropdown = document.getElementById('menuDropdown');
+        this.menuItems = document.querySelectorAll('.menu-item');
+        this.init();
+    }
+
+    init() {
+        // Toggle menu on button click
+        if (this.menuToggle) {
+            this.menuToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleMenu();
+            });
+        }
+
+        // Handle menu item clicks
+        this.menuItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                const tabId = item.getAttribute('data-tab');
+                if (tabId && window.tabManager) {
+                    window.tabManager.switchTab(tabId);
+                    this.updateActiveMenuItem(tabId);
+                    this.closeMenu();
+                }
+            });
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (this.menuDropdown &&
+                !this.menuDropdown.contains(e.target) &&
+                !this.menuToggle.contains(e.target)) {
+                this.closeMenu();
+            }
+        });
+
+        // Close menu on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.closeMenu();
+            }
+        });
+
+        // Set initial active state
+        this.updateActiveMenuItem('v1');
+    }
+
+    updateActiveMenuItem(tabId) {
+        // Remove active class from all menu items
+        this.menuItems.forEach(item => {
+            item.classList.remove('active');
+        });
+
+        // Add active class to the selected menu item
+        const activeItem = Array.from(this.menuItems).find(item => item.getAttribute('data-tab') === tabId);
+        if (activeItem) {
+            activeItem.classList.add('active');
+        }
+    }
+
+    toggleMenu() {
+        if (this.menuDropdown) {
+            this.menuDropdown.classList.toggle('active');
+        }
+    }
+
+    closeMenu() {
+        if (this.menuDropdown) {
+            this.menuDropdown.classList.remove('active');
+        }
+    }
+
+    openMenu() {
+        if (this.menuDropdown) {
+            this.menuDropdown.classList.add('active');
+        }
     }
 }
 
@@ -344,6 +432,7 @@ class DarkModeManager {
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
+    window.menuManager = new MenuManager();
     window.darkModeManager = new DarkModeManager();
     window.tabManager = new TabManager();
     window.logoEasterEgg = new LogoEasterEgg();
@@ -817,6 +906,6 @@ class LogoEasterEgg {
         this.speechBubble.classList.add('show');
         this.timeout = setTimeout(() => {
             this.speechBubble.classList.remove('show');
-        }, 3000);
+        }, 300);
     }
 }

@@ -406,6 +406,56 @@ body.dark-mode .dark-mode-toggle:hover {
     border-color: rgba(214, 224, 234, 0.5);
 }
 
+/* Menu Toggle Dark Mode */
+body.dark-mode .menu-toggle {
+    border-color: rgba(214, 224, 234, 0.3);
+    color: #d6e0ea;
+}
+
+body.dark-mode .menu-toggle:hover {
+    background: rgba(214, 224, 234, 0.1);
+    border-color: rgba(214, 224, 234, 0.5);
+}
+
+/* Menu Dropdown Dark Mode */
+body.dark-mode .menu-dropdown {
+    background: #2d3548;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .menu-dropdown::before {
+    background: #2d3548;
+}
+
+/* Menu Dropdown Header Dark Mode */
+body.dark-mode .menu-dropdown-header {
+    color: #849bba;
+    border-bottom-color: #3d4a5f;
+}
+
+/* Menu Items Dark Mode */
+body.dark-mode .menu-item {
+    color: #d6e0ea;
+}
+
+body.dark-mode .menu-item::before {
+    background: #60a5fa;
+}
+
+body.dark-mode .menu-item.active {
+    background: #353d52;
+    color: #ffffff;
+}
+
+body.dark-mode .menu-item:hover {
+    background: #353d52;
+    color: #ffffff;
+}
+
+body.dark-mode .menu-item:active {
+    background: #3d4a5f;
+}
+
 /* Loader Dark Mode */
 body.dark-mode .loader:before,
 body.dark-mode .loader:after {
