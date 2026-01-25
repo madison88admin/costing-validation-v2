@@ -598,6 +598,56 @@ class PDFExporter {
     createBurtonConfig(fileResults, formatToThreeDecimals) {
         return createBurtonConfig(fileResults, formatToThreeDecimals);
     }
+
+    /**
+     * Create On AG (V9) export configuration
+     * Delegates to external configuration file
+     * @param {Array} fileResults - Array of file results from On AG processor
+     * @returns {Object} - Configuration object for On AG export
+     */
+    createOnAGConfig(fileResults) {
+        return createOnAGConfig(fileResults);
+    }
+
+    /**
+     * Create Peak Performance (V10) export configuration
+     * Delegates to external configuration file
+     * @param {Array} fileResults - Array of file results from Peak Performance processor
+     * @returns {Object} - Configuration object for Peak Performance export
+     */
+    createPeakPerformanceConfig(fileResults) {
+        return createPeakPerformanceConfig(fileResults);
+    }
+
+    /**
+     * Create Skida (V11) export configuration
+     * Delegates to external configuration file
+     * @param {Array} fileResults - Array of file results from Skida processor
+     * @returns {Object} - Configuration object for Skida export
+     */
+    createSkidaConfig(fileResults) {
+        return createSkidaConfig(fileResults);
+    }
+
+    /**
+     * Create Vuori (V12) export configuration
+     * Delegates to external configuration file
+     * @param {Array} fileResults - Array of file results from Vuori processor
+     * @returns {Object} - Configuration object for Vuori export
+     */
+    createVuoriConfig(fileResults) {
+        return createVuoriConfig(fileResults);
+    }
+
+    /**
+     * Create Prana (V13) export configuration
+     * Delegates to external configuration file
+     * @param {Array} fileResults - Array of file results from Prana processor
+     * @returns {Object} - Configuration object for Prana export
+     */
+    createPranaConfig(fileResults) {
+        return createPranaConfig(fileResults);
+    }
 }
 
 // Initialize global PDF exporter instance

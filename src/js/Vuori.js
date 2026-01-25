@@ -139,6 +139,9 @@ class VuoriProcessor {
             }
         }
 
+        // Store results for export
+        this.fileResults = results;
+
         return this.generateResultsHTML(results);
     }
 
@@ -355,6 +358,15 @@ class VuoriProcessor {
     generateResultsHTML(results) {
         let html = '';
 
+        // Add export button at the top
+        html += `
+            <div style="margin-bottom: 15px; display: flex; justify-content: flex-end; align-items: center;">
+                <button onclick="window.vuoriProcessor.exportToPDF()" class="export-btn">
+                    Export
+                </button>
+            </div>
+        `;
+
         for (const fileResult of results) {
             // Wrap each file's results in a group container (like Burton)
             html += `<div class="file-result-group">`;
@@ -549,6 +561,25 @@ class VuoriProcessor {
 
         // Download
         XLSX.writeFile(wb, exportFileName);
+    }
+
+    /**
+     * Export results to PDF using the unified Export.js module
+     */
+    async exportToPDF() {
+        if (!window.pdfExporter) {
+            console.error('PDF Exporter not loaded');
+            alert('PDF export module not available. Please refresh the page.');
+            return;
+        }
+
+        if (!this.fileResults || this.fileResults.length === 0) {
+            alert('No results to export. Please generate results first.');
+            return;
+        }
+
+        const config = window.pdfExporter.createVuoriConfig(this.fileResults);
+        await window.pdfExporter.exportMultiFileToPDF(config);
     }
 }
 

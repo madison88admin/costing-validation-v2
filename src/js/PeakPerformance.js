@@ -817,60 +817,8 @@ class PeakPerformanceProcessor {
             return;
         }
 
-        const config = this.createPeakPerformanceConfig(this.bcbdResults);
+        const config = window.pdfExporter.createPeakPerformanceConfig(this.bcbdResults);
         await window.pdfExporter.exportMultiFileToPDF(config);
-    }
-
-    /**
-     * Create PDF export configuration for Peak Performance
-     */
-    createPeakPerformanceConfig(results) {
-        return {
-            title: 'Peak Performance Validation Report',
-            brandName: 'Peak Performance',
-            files: results.map(fileResult => {
-                const checks = [];
-                const fabricWastage = fileResult.results.fabricWastageCheck;
-                const standardItems = fileResult.results.standardItemsCheck;
-
-                // Add fabric wastage check
-                if (fabricWastage.found) {
-                    checks.push({
-                        label: 'Fabric/Yarn Wastage (5%)',
-                        isValid: fabricWastage.isValid,
-                        details: `${fabricWastage.validCells.length} valid, ${fabricWastage.invalidCells.length} invalid`,
-                        validCells: fabricWastage.validCells.map(c => c.cellAddress),
-                        invalidCells: fabricWastage.invalidCells.map(c => `${c.cellAddress} (${c.value})`)
-                    });
-                } else {
-                    checks.push({
-                        label: 'Fabric/Yarn Wastage (5%)',
-                        isValid: false,
-                        details: fabricWastage.message || 'Not found'
-                    });
-                }
-
-                // Add standard items checks
-                if (standardItems.found && standardItems.items) {
-                    for (const item of standardItems.items) {
-                        if (item.found) {
-                            checks.push({
-                                label: item.standardItem.materialDesc,
-                                isValid: item.isValid,
-                                details: item.checks.map(c => `${c.label}: ${c.isValid ? 'OK' : c.actual}`).join(', ')
-                            });
-                        }
-                    }
-                }
-
-                return {
-                    fileName: fileResult.fileName,
-                    checks: checks,
-                    validCount: checks.filter(c => c.isValid).length,
-                    totalCount: checks.length
-                };
-            })
-        };
     }
 }
 

@@ -23,15 +23,17 @@ function createOutdoorResearchConfig(fileResults) {
                 if (ocCheck.isValid) validCount++;
             }
 
-            // Build cell statuses for coloring
+            // Build cell statuses for coloring (one row per check)
             const cellStatuses = [];
 
-            // General Packaging row
+            // General Packaging checks - each check gets its own row
             if (gpCheck && gpCheck.found && gpCheck.checks) {
-                cellStatuses.push([
-                    'normal',
-                    gpCheck.isValid ? 'valid' : 'invalid'
-                ]);
+                gpCheck.checks.forEach(check => {
+                    cellStatuses.push([
+                        'normal',
+                        check.isValid ? 'valid' : 'invalid'
+                    ]);
+                });
             } else {
                 cellStatuses.push([
                     'normal',
@@ -39,12 +41,14 @@ function createOutdoorResearchConfig(fileResults) {
                 ]);
             }
 
-            // Other Charges row
+            // Other Charges checks - each check gets its own row
             if (ocCheck && ocCheck.found && ocCheck.checks) {
-                cellStatuses.push([
-                    'normal',
-                    ocCheck.isValid ? 'valid' : 'invalid'
-                ]);
+                ocCheck.checks.forEach(check => {
+                    cellStatuses.push([
+                        'normal',
+                        check.isValid ? 'valid' : 'invalid'
+                    ]);
+                });
             } else {
                 cellStatuses.push([
                     'normal',
@@ -61,23 +65,27 @@ function createOutdoorResearchConfig(fileResults) {
         }),
         filenamePrefix: 'OutdoorResearchValidation_V8',
         columnWidths: [45, 105],
-        headers: ['Validation Check', 'Value'],
+        headers: ['Validation Check', 'Cost'],
         colorRules: {},
         extractRowData: (fileResult) => {
             const rows = [];
             const gpCheck = fileResult.results.generalPackagingCheck;
             const ocCheck = fileResult.results.otherChargesCheck;
 
-            // General Packaging row
+            // General Packaging checks - each check gets its own row
             if (gpCheck && gpCheck.found && gpCheck.checks) {
-                const checkDetails = gpCheck.checks.map(check => {
-                    return `${check.label}: ${check.actualValue || 'Empty'}`;
-                }).join(' | ');
-
-                rows.push([
-                    `General Packaging (Row ${gpCheck.rowNumber})`,
-                    checkDetails
-                ]);
+                gpCheck.checks.forEach((check, index) => {
+                    const rowLabel = index === 0
+                        ? `General Packaging (Row ${gpCheck.rowNumber})`
+                        : '';
+                    const valueDisplay = check.isValid
+                        ? `${check.label}: ${check.actualValue || 'Empty'}`
+                        : `${check.label}: ${check.actualValue || 'Empty'} (Expected: ${check.expectedValue})`;
+                    rows.push([
+                        rowLabel,
+                        valueDisplay
+                    ]);
+                });
             } else if (gpCheck && !gpCheck.found) {
                 rows.push([
                     'General Packaging',
@@ -85,16 +93,20 @@ function createOutdoorResearchConfig(fileResults) {
                 ]);
             }
 
-            // Other Charges row
+            // Other Charges checks - each check gets its own row
             if (ocCheck && ocCheck.found && ocCheck.checks) {
-                const checkDetails = ocCheck.checks.map(check => {
-                    return `${check.label}: ${check.actualValue || 'Empty'}`;
-                }).join(' | ');
-
-                rows.push([
-                    `Other Charges (Row ${ocCheck.rowNumber})`,
-                    checkDetails
-                ]);
+                ocCheck.checks.forEach((check, index) => {
+                    const rowLabel = index === 0
+                        ? `Other Charges (Row ${ocCheck.rowNumber})`
+                        : '';
+                    const valueDisplay = check.isValid
+                        ? `${check.label}: ${check.actualValue || 'Empty'}`
+                        : `${check.label}: ${check.actualValue || 'Empty'} (Expected: ${check.expectedValue})`;
+                    rows.push([
+                        rowLabel,
+                        valueDisplay
+                    ]);
+                });
             } else if (ocCheck && !ocCheck.found) {
                 rows.push([
                     'Other Charges',
