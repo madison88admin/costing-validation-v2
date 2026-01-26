@@ -668,6 +668,16 @@ class PDFExporter {
     createJackWolfskinConfig(fileResults) {
         return createJackWolfskinConfig(fileResults);
     }
+
+    /**
+     * Create 511 (V16) export configuration
+     * Delegates to external configuration file
+     * @param {Array} fileResults - Array of file results from 511 processor
+     * @returns {Object} - Configuration object for 511 export
+     */
+    create511Config(fileResults) {
+        return create511Config(fileResults);
+    }
 }
 
 // Initialize global PDF exporter instance

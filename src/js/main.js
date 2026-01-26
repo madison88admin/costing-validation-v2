@@ -22,8 +22,8 @@ class ExcelFileHandler {
     }
 
     attachEventListeners() {
-        // For V2-V15, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV or validation rules)
-        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7' && this.version !== 'v8' && this.version !== 'v9' && this.version !== 'v10' && this.version !== 'v11' && this.version !== 'v12' && this.version !== 'v13' && this.version !== 'v14' && this.version !== 'v15') {
+        // For V2-V16, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV or validation rules)
+        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7' && this.version !== 'v8' && this.version !== 'v9' && this.version !== 'v10' && this.version !== 'v11' && this.version !== 'v12' && this.version !== 'v13' && this.version !== 'v14' && this.version !== 'v15' && this.version !== 'v16') {
             this.setupDropZone(this.obDropZone, this.obFileInput, 'ob');
         }
         this.setupDropZone(this.bcbdDropZone, this.bcbdFileInput, 'bcbd');
@@ -451,6 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.excelHandlerV13 = new ExcelFileHandler('v13');
     window.excelHandlerV14 = new ExcelFileHandler('v14');
     window.excelHandlerV15 = new ExcelFileHandler('v15');
+    window.excelHandlerV16 = new ExcelFileHandler('v16');
 
     document.querySelectorAll('.generate-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -499,7 +500,12 @@ document.addEventListener('DOMContentLoaded', () => {
         window.jackWolfskinProcessor.initialize();
     }
 
-    console.log('Costing Validation initialized with 15 versions');
+    // Initialize 511 processor when page loads
+    if (window.processor511) {
+        window.processor511.initialize();
+    }
+
+    console.log('Costing Validation initialized with 16 versions');
 });
 
 async function handleGenerateResults(version) {
@@ -893,6 +899,34 @@ async function handleGenerateResults(version) {
 
         if (window.jackWolfskinProcessor) {
             const results = await window.jackWolfskinProcessor.processFiles(bcbdFiles);
+            resultsContent.innerHTML = results;
+        }
+        return;
+    }
+
+    // Special handling for V16 - only needs BCBD files (511)
+    if (version === 'v16') {
+        const bcbdFiles = handler.getBCBDFiles();
+
+        if (bcbdFiles.length === 0) {
+            alert('Please upload Buyer CBD files before generating results.');
+            return;
+        }
+
+        console.log(`Generating results for ${version.toUpperCase()}...`);
+        console.log('BCBD Files:', bcbdFiles);
+
+        // Show loading state with animation
+        resultsContent.innerHTML = `
+            <div class="loading-container">
+                <div class="loader"></div>
+                <p class="loading-text">Processing ${bcbdFiles.length} BCBD file(s) with 511 validation...</p>
+                <p class="loading-subtext">Please wait while we scan the files...</p>
+            </div>
+        `;
+
+        if (window.processor511) {
+            const results = await window.processor511.processFiles(bcbdFiles);
             resultsContent.innerHTML = results;
         }
         return;

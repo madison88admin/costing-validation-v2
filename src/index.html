@@ -76,6 +76,9 @@
                         <button class="menu-item" data-tab="v15">
                             <span class="menu-item-text">Jack Wolfskin</span>
                         </button>
+                        <button class="menu-item" data-tab="v16">
+                            <span class="menu-item-text">511</span>
+                        </button>
                     </div>
                 </div>
                 <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode">
@@ -107,6 +110,7 @@
                 <button class="tab-btn" data-tab="v13" data-short="PRA" data-full="Prana">Prana</button>
                 <button class="tab-btn" data-tab="v14" data-short="TM" data-full="Travis Matthew">Travis Matthew</button>
                 <button class="tab-btn" data-tab="v15" data-short="JW" data-full="Jack Wolfskin">Jack Wolfskin</button>
+                <button class="tab-btn" data-tab="v16" data-short="511" data-full="511">511</button>
             </div>
         </div>
 
@@ -606,6 +610,35 @@
                     <div class="results-content" id="results-v15"></div>
                 </div>
             </div>
+
+            <!-- Tab Content V16 (511) -->
+            <div class="tab-content" id="tab-v16">
+                <div class="upload-section">
+                    <div id="obDropZone-v16" class="drop-zone">
+                        <!-- Content will be populated by 511.js displayValidationRules() -->
+                    </div>
+
+                    <div id="bcbdDropZone-v16" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Drag & Drop Files Here</h2>
+                            <p class="drop-subtitle">or click to browse</p>
+                            <p class="file-label">Buyer CBD File/s</p>
+                            <input type="file" id="bcbdFileInput-v16" accept=".xlsx,.xls,.csv" multiple hidden>
+                            <button class="browse-btn">Browse Files</button>
+                            <div class="file-list" id="bcbdFileList-v16"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generate-section">
+                    <button class="generate-btn" data-version="v16">Generate Results</button>
+                </div>
+
+                <div class="results-section">
+                    <h2 class="results-title">Results</h2>
+                    <div class="results-content" id="results-v16"></div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -625,6 +658,7 @@
     <script src="js/export/prana_export.js"></script>
     <script src="js/export/travismatthew_export.js"></script>
     <script src="js/export/jackwolfskin_export.js"></script>
+    <script src="js/export/511_export.js"></script>
 
     <!-- Main Export Module -->
     <script src="js/Export.js"></script>
@@ -645,6 +679,7 @@
     <script src="js/Prana.js"></script>
     <script src="js/TravisMatthew.js"></script>
     <script src="js/JackWolfskin.js"></script>
+    <script src="js/511.js"></script>
     <script src="js/main.js"></script>
 </body>
 
