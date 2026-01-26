@@ -715,15 +715,15 @@ window.excelV2Processor = new ExcelV2Processor();
 
 // Auto-load Burton Cost Breakdown when V2 tab is activated
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if we're on V2 tab and initialize
-    const v2Tab = document.querySelector('[data-tab="v2"]');
-    if (v2Tab) {
-        v2Tab.addEventListener('click', () => {
+    // Add click listener to ALL elements with data-tab="v2" (both tab buttons and menu items)
+    const v2Tabs = document.querySelectorAll('[data-tab="v2"]');
+    v2Tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
             if (!window.excelV2Processor.burtonCostData) {
                 window.excelV2Processor.initialize();
             }
         });
-    }
+    });
 
     // If V2 tab is already active on load, initialize immediately
     const v2TabContent = document.getElementById('tab-v2');

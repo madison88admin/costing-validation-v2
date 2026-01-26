@@ -560,14 +560,15 @@ window.hellyHansenProcessor = new HellyHansenProcessor();
 
 // Auto-load when V4 tab is activated
 document.addEventListener('DOMContentLoaded', () => {
-    const v4Tab = document.querySelector('[data-tab="v4"]');
-    if (v4Tab) {
-        v4Tab.addEventListener('click', () => {
+    // Add click listener to ALL elements with data-tab="v4" (both tab buttons and menu items)
+    const v4Tabs = document.querySelectorAll('[data-tab="v4"]');
+    v4Tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
             if (!window.hellyHansenProcessor.hellyHansenCostData) {
                 window.hellyHansenProcessor.initialize();
             }
         });
-    }
+    });
 
     const v4TabContent = document.getElementById('tab-v4');
     if (v4TabContent && v4TabContent.classList.contains('active')) {

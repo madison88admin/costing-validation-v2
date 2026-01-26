@@ -817,14 +817,15 @@ window.fjallRavenProcessor = new FjallRavenProcessor();
 
 // Auto-load when V5 tab is activated
 document.addEventListener('DOMContentLoaded', () => {
-    const v5Tab = document.querySelector('[data-tab="v5"]');
-    if (v5Tab) {
-        v5Tab.addEventListener('click', () => {
+    // Add click listener to ALL elements with data-tab="v5" (both tab buttons and menu items)
+    const v5Tabs = document.querySelectorAll('[data-tab="v5"]');
+    v5Tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
             if (!window.fjallRavenProcessor.fjallRavenCostData) {
                 window.fjallRavenProcessor.initialize();
             }
         });
-    }
+    });
 
     const v5TabContent = document.getElementById('tab-v5');
     if (v5TabContent && v5TabContent.classList.contains('active')) {

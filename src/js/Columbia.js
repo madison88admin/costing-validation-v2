@@ -679,15 +679,15 @@ window.columbiaProcessor = new ColumbiaProcessor();
 
 // Auto-load Columbia Cost Breakdown when V3 tab is activated
 document.addEventListener('DOMContentLoaded', () => {
-    // Check if we're on V3 tab and initialize
-    const v3Tab = document.querySelector('[data-tab="v3"]');
-    if (v3Tab) {
-        v3Tab.addEventListener('click', () => {
+    // Add click listener to ALL elements with data-tab="v3" (both tab buttons and menu items)
+    const v3Tabs = document.querySelectorAll('[data-tab="v3"]');
+    v3Tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
             if (!window.columbiaProcessor.columbiaCostData) {
                 window.columbiaProcessor.initialize();
             }
         });
-    }
+    });
 
     // If V3 tab is already active on load, initialize immediately
     const v3TabContent = document.getElementById('tab-v3');

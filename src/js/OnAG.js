@@ -735,12 +735,13 @@ window.onAGProcessor = new OnAGProcessor();
 
 // Initialize when V9 tab is activated
 document.addEventListener('DOMContentLoaded', () => {
-    const v9Tab = document.querySelector('[data-tab="v9"]');
-    if (v9Tab) {
-        v9Tab.addEventListener('click', () => {
+    // Add click listener to ALL elements with data-tab="v9" (both tab buttons and menu items)
+    const v9Tabs = document.querySelectorAll('[data-tab="v9"]');
+    v9Tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
             window.onAGProcessor.initialize();
         });
-    }
+    });
 
     // If V9 tab is already active on load, initialize immediately
     const v9TabContent = document.getElementById('tab-v9');
