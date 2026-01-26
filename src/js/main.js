@@ -22,8 +22,8 @@ class ExcelFileHandler {
     }
 
     attachEventListeners() {
-        // For V2, V3, V4, V5, V6, V7, V8, V9, V10, V11, V12, and V13, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV)
-        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7' && this.version !== 'v8' && this.version !== 'v9' && this.version !== 'v10' && this.version !== 'v11' && this.version !== 'v12' && this.version !== 'v13') {
+        // For V2-V15, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV or validation rules)
+        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7' && this.version !== 'v8' && this.version !== 'v9' && this.version !== 'v10' && this.version !== 'v11' && this.version !== 'v12' && this.version !== 'v13' && this.version !== 'v14' && this.version !== 'v15') {
             this.setupDropZone(this.obDropZone, this.obFileInput, 'ob');
         }
         this.setupDropZone(this.bcbdDropZone, this.bcbdFileInput, 'bcbd');
@@ -449,6 +449,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.excelHandlerV11 = new ExcelFileHandler('v11');
     window.excelHandlerV12 = new ExcelFileHandler('v12');
     window.excelHandlerV13 = new ExcelFileHandler('v13');
+    window.excelHandlerV14 = new ExcelFileHandler('v14');
+    window.excelHandlerV15 = new ExcelFileHandler('v15');
 
     document.querySelectorAll('.generate-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -492,7 +494,12 @@ document.addEventListener('DOMContentLoaded', () => {
         window.pranaProcessor.initialize();
     }
 
-    console.log('Costing Validation initialized with 13 versions');
+    // Initialize Jack Wolfskin processor when page loads
+    if (window.jackWolfskinProcessor) {
+        window.jackWolfskinProcessor.initialize();
+    }
+
+    console.log('Costing Validation initialized with 15 versions');
 });
 
 async function handleGenerateResults(version) {
@@ -830,6 +837,62 @@ async function handleGenerateResults(version) {
 
         if (window.pranaProcessor) {
             const results = await window.pranaProcessor.processFiles(bcbdFiles);
+            resultsContent.innerHTML = results;
+        }
+        return;
+    }
+
+    // Special handling for V14 - only needs BCBD files (Travis Matthew)
+    if (version === 'v14') {
+        const bcbdFiles = handler.getBCBDFiles();
+
+        if (bcbdFiles.length === 0) {
+            alert('Please upload Buyer CBD files before generating results.');
+            return;
+        }
+
+        console.log(`Generating results for ${version.toUpperCase()}...`);
+        console.log('BCBD Files:', bcbdFiles);
+
+        // Show loading state with animation
+        resultsContent.innerHTML = `
+            <div class="loading-container">
+                <div class="loader"></div>
+                <p class="loading-text">Processing ${bcbdFiles.length} BCBD file(s) with Travis Matthew validation...</p>
+                <p class="loading-subtext">Please wait while we scan the files...</p>
+            </div>
+        `;
+
+        if (window.travisMatthewProcessor) {
+            const results = await window.travisMatthewProcessor.processFiles(bcbdFiles);
+            resultsContent.innerHTML = results;
+        }
+        return;
+    }
+
+    // Special handling for V15 - only needs BCBD files (Jack Wolfskin)
+    if (version === 'v15') {
+        const bcbdFiles = handler.getBCBDFiles();
+
+        if (bcbdFiles.length === 0) {
+            alert('Please upload Buyer CBD files before generating results.');
+            return;
+        }
+
+        console.log(`Generating results for ${version.toUpperCase()}...`);
+        console.log('BCBD Files:', bcbdFiles);
+
+        // Show loading state with animation
+        resultsContent.innerHTML = `
+            <div class="loading-container">
+                <div class="loader"></div>
+                <p class="loading-text">Processing ${bcbdFiles.length} BCBD file(s) with Jack Wolfskin validation...</p>
+                <p class="loading-subtext">Please wait while we scan the files...</p>
+            </div>
+        `;
+
+        if (window.jackWolfskinProcessor) {
+            const results = await window.jackWolfskinProcessor.processFiles(bcbdFiles);
             resultsContent.innerHTML = results;
         }
         return;

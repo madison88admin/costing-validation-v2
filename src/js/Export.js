@@ -648,6 +648,26 @@ class PDFExporter {
     createPranaConfig(fileResults) {
         return createPranaConfig(fileResults);
     }
+
+    /**
+     * Create Travis Matthew (V14) export configuration
+     * Delegates to external configuration file
+     * @param {Array} fileResults - Array of file results from Travis Matthew processor
+     * @returns {Object} - Configuration object for Travis Matthew export
+     */
+    createTravisMatthewConfig(fileResults) {
+        return createTravisMatthewConfig(fileResults);
+    }
+
+    /**
+     * Create Jack Wolfskin (V15) export configuration
+     * Delegates to external configuration file
+     * @param {Array} fileResults - Array of file results from Jack Wolfskin processor
+     * @returns {Object} - Configuration object for Jack Wolfskin export
+     */
+    createJackWolfskinConfig(fileResults) {
+        return createJackWolfskinConfig(fileResults);
+    }
 }
 
 // Initialize global PDF exporter instance

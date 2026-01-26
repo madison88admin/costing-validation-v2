@@ -70,6 +70,12 @@
                         <button class="menu-item" data-tab="v13">
                             <span class="menu-item-text">Prana</span>
                         </button>
+                        <button class="menu-item" data-tab="v14">
+                            <span class="menu-item-text">Travis Matthew</span>
+                        </button>
+                        <button class="menu-item" data-tab="v15">
+                            <span class="menu-item-text">Jack Wolfskin</span>
+                        </button>
                     </div>
                 </div>
                 <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode">
@@ -99,6 +105,8 @@
                 <button class="tab-btn" data-tab="v11" data-short="SKD" data-full="Skida">Skida</button>
                 <button class="tab-btn" data-tab="v12" data-short="VRI" data-full="Vuori">Vuori</button>
                 <button class="tab-btn" data-tab="v13" data-short="PRA" data-full="Prana">Prana</button>
+                <button class="tab-btn" data-tab="v14" data-short="TM" data-full="Travis Matthew">Travis Matthew</button>
+                <button class="tab-btn" data-tab="v15" data-short="JW" data-full="Jack Wolfskin">Jack Wolfskin</button>
             </div>
         </div>
 
@@ -536,6 +544,68 @@
                     <div class="results-content" id="results-v13"></div>
                 </div>
             </div>
+
+            <!-- Tab Content V14 (Travis Matthew) -->
+            <div class="tab-content" id="tab-v14">
+                <div class="upload-section">
+                    <div id="obDropZone-v14" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Travis Matthew Cost Breakdown</h2>
+                            <p class="drop-subtitle">Auto-loaded from CSV</p>
+                            <p class="file-label">OB Data</p>
+                        </div>
+                    </div>
+
+                    <div id="bcbdDropZone-v14" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Drag & Drop Files Here</h2>
+                            <p class="drop-subtitle">or click to browse</p>
+                            <p class="file-label">Buyer CBD File/s</p>
+                            <input type="file" id="bcbdFileInput-v14" accept=".xlsx,.xls,.csv" multiple hidden>
+                            <button class="browse-btn">Browse Files</button>
+                            <div class="file-list" id="bcbdFileList-v14"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generate-section">
+                    <button class="generate-btn" data-version="v14">Generate Results</button>
+                </div>
+
+                <div class="results-section">
+                    <h2 class="results-title">Results</h2>
+                    <div class="results-content" id="results-v14"></div>
+                </div>
+            </div>
+
+            <!-- Tab Content V15 (Jack Wolfskin) -->
+            <div class="tab-content" id="tab-v15">
+                <div class="upload-section">
+                    <div id="obDropZone-v15" class="drop-zone">
+                        <!-- Content will be populated by JackWolfskin.js displayValidationRules() -->
+                    </div>
+
+                    <div id="bcbdDropZone-v15" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Drag & Drop Files Here</h2>
+                            <p class="drop-subtitle">or click to browse</p>
+                            <p class="file-label">Buyer CBD File/s</p>
+                            <input type="file" id="bcbdFileInput-v15" accept=".xlsx,.xls,.csv" multiple hidden>
+                            <button class="browse-btn">Browse Files</button>
+                            <div class="file-list" id="bcbdFileList-v15"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generate-section">
+                    <button class="generate-btn" data-version="v15">Generate Results</button>
+                </div>
+
+                <div class="results-section">
+                    <h2 class="results-title">Results</h2>
+                    <div class="results-content" id="results-v15"></div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -553,6 +623,8 @@
     <script src="js/export/skida_export.js"></script>
     <script src="js/export/vuori_export.js"></script>
     <script src="js/export/prana_export.js"></script>
+    <script src="js/export/travismatthew_export.js"></script>
+    <script src="js/export/jackwolfskin_export.js"></script>
 
     <!-- Main Export Module -->
     <script src="js/Export.js"></script>
@@ -571,6 +643,8 @@
     <script src="js/Skida.js"></script>
     <script src="js/Vuori.js"></script>
     <script src="js/Prana.js"></script>
+    <script src="js/TravisMatthew.js"></script>
+    <script src="js/JackWolfskin.js"></script>
     <script src="js/main.js"></script>
 </body>
 
