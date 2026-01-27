@@ -698,6 +698,16 @@ class PDFExporter {
     createFootAsylumConfig(fileResults) {
         return createFootAsylumConfig(fileResults);
     }
+
+    /**
+     * Create KUHL (V19) export configuration
+     * Delegates to external configuration file
+     * @param {Array} fileResults - Array of file results from KUHL processor
+     * @returns {Object} - Configuration object for KUHL export
+     */
+    createKuhlConfig(fileResults) {
+        return createKuhlConfig(fileResults);
+    }
 }
 
 // Initialize global PDF exporter instance

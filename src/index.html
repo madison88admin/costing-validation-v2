@@ -85,6 +85,9 @@
                         <button class="menu-item" data-tab="v18">
                             <span class="menu-item-text">Foot Asylum</span>
                         </button>
+                        <button class="menu-item" data-tab="v19">
+                            <span class="menu-item-text">KUHL</span>
+                        </button>
                     </div>
                 </div>
                 <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode">
@@ -119,6 +122,7 @@
                 <button class="tab-btn" data-tab="v16" data-short="511" data-full="511">511</button>
                 <button class="tab-btn" data-tab="v17" data-short="RS" data-full="Ride Store">Ride Store</button>
                 <button class="tab-btn" data-tab="v18" data-short="FA" data-full="Foot Asylum">Foot Asylum</button>
+                <button class="tab-btn" data-tab="v19" data-short="KHL" data-full="KUHL">KUHL</button>
             </div>
         </div>
 
@@ -705,6 +709,35 @@
                     <div class="results-content" id="results-v18"></div>
                 </div>
             </div>
+
+            <!-- Tab Content V19 (KUHL) -->
+            <div class="tab-content" id="tab-v19">
+                <div class="upload-section">
+                    <div id="obDropZone-v19" class="drop-zone">
+                        <!-- Content will be populated by Kuhl.js displayValidationRules() -->
+                    </div>
+
+                    <div id="bcbdDropZone-v19" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Drag & Drop Files Here</h2>
+                            <p class="drop-subtitle">or click to browse</p>
+                            <p class="file-label">Buyer CBD File/s</p>
+                            <input type="file" id="bcbdFileInput-v19" accept=".xlsx,.xls,.csv" multiple hidden>
+                            <button class="browse-btn">Browse Files</button>
+                            <div class="file-list" id="bcbdFileList-v19"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generate-section">
+                    <button class="generate-btn" data-version="v19">Generate Results</button>
+                </div>
+
+                <div class="results-section">
+                    <h2 class="results-title">Results</h2>
+                    <div class="results-content" id="results-v19"></div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -727,6 +760,7 @@
     <script src="js/export/511_export.js"></script>
     <script src="js/export/ridestore_export.js"></script>
     <script src="js/export/footasylum_export.js"></script>
+    <script src="js/export/kuhl_export.js"></script>
 
     <!-- Main Export Module -->
     <script src="js/Export.js"></script>
@@ -750,6 +784,7 @@
     <script src="js/511.js"></script>
     <script src="js/RideStore.js"></script>
     <script src="js/FootAsylum.js"></script>
+    <script src="js/Kuhl.js"></script>
     <script src="js/main.js"></script>
 </body>
 
