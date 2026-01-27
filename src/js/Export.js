@@ -678,6 +678,26 @@ class PDFExporter {
     create511Config(fileResults) {
         return create511Config(fileResults);
     }
+
+    /**
+     * Create Ride Store (V17) export configuration
+     * Delegates to external configuration file
+     * @param {Array} fileResults - Array of file results from Ride Store processor
+     * @returns {Object} - Configuration object for Ride Store export
+     */
+    createRideStoreConfig(fileResults) {
+        return createRideStoreConfig(fileResults);
+    }
+
+    /**
+     * Create Foot Asylum (V18) export configuration
+     * Delegates to external configuration file
+     * @param {Array} fileResults - Array of file results from Foot Asylum processor
+     * @returns {Object} - Configuration object for Foot Asylum export
+     */
+    createFootAsylumConfig(fileResults) {
+        return createFootAsylumConfig(fileResults);
+    }
 }
 
 // Initialize global PDF exporter instance

@@ -22,8 +22,8 @@ class ExcelFileHandler {
     }
 
     attachEventListeners() {
-        // For V2-V16, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV or validation rules)
-        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7' && this.version !== 'v8' && this.version !== 'v9' && this.version !== 'v10' && this.version !== 'v11' && this.version !== 'v12' && this.version !== 'v13' && this.version !== 'v14' && this.version !== 'v15' && this.version !== 'v16') {
+        // For V2-V18, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV or validation rules)
+        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7' && this.version !== 'v8' && this.version !== 'v9' && this.version !== 'v10' && this.version !== 'v11' && this.version !== 'v12' && this.version !== 'v13' && this.version !== 'v14' && this.version !== 'v15' && this.version !== 'v16' && this.version !== 'v17' && this.version !== 'v18') {
             this.setupDropZone(this.obDropZone, this.obFileInput, 'ob');
         }
         this.setupDropZone(this.bcbdDropZone, this.bcbdFileInput, 'bcbd');
@@ -452,6 +452,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.excelHandlerV14 = new ExcelFileHandler('v14');
     window.excelHandlerV15 = new ExcelFileHandler('v15');
     window.excelHandlerV16 = new ExcelFileHandler('v16');
+    window.excelHandlerV17 = new ExcelFileHandler('v17');
+    window.excelHandlerV18 = new ExcelFileHandler('v18');
 
     document.querySelectorAll('.generate-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -505,7 +507,17 @@ document.addEventListener('DOMContentLoaded', () => {
         window.processor511.initialize();
     }
 
-    console.log('Costing Validation initialized with 16 versions');
+    // Initialize Ride Store processor when page loads
+    if (window.rideStoreProcessor) {
+        window.rideStoreProcessor.initialize();
+    }
+
+    // Initialize Foot Asylum processor when page loads
+    if (window.footAsylumProcessor) {
+        window.footAsylumProcessor.initialize();
+    }
+
+    console.log('Costing Validation initialized with 18 versions');
 });
 
 async function handleGenerateResults(version) {
@@ -927,6 +939,62 @@ async function handleGenerateResults(version) {
 
         if (window.processor511) {
             const results = await window.processor511.processFiles(bcbdFiles);
+            resultsContent.innerHTML = results;
+        }
+        return;
+    }
+
+    // Special handling for V17 - only needs BCBD files (Ride Store)
+    if (version === 'v17') {
+        const bcbdFiles = handler.getBCBDFiles();
+
+        if (bcbdFiles.length === 0) {
+            alert('Please upload Buyer CBD files before generating results.');
+            return;
+        }
+
+        console.log(`Generating results for ${version.toUpperCase()}...`);
+        console.log('BCBD Files:', bcbdFiles);
+
+        // Show loading state with animation
+        resultsContent.innerHTML = `
+            <div class="loading-container">
+                <div class="loader"></div>
+                <p class="loading-text">Processing ${bcbdFiles.length} BCBD file(s) with Ride Store validation...</p>
+                <p class="loading-subtext">Please wait while we scan the files...</p>
+            </div>
+        `;
+
+        if (window.rideStoreProcessor) {
+            const results = await window.rideStoreProcessor.processFiles(bcbdFiles);
+            resultsContent.innerHTML = results;
+        }
+        return;
+    }
+
+    // Special handling for V18 - only needs BCBD files (Foot Asylum)
+    if (version === 'v18') {
+        const bcbdFiles = handler.getBCBDFiles();
+
+        if (bcbdFiles.length === 0) {
+            alert('Please upload Buyer CBD files before generating results.');
+            return;
+        }
+
+        console.log(`Generating results for ${version.toUpperCase()}...`);
+        console.log('BCBD Files:', bcbdFiles);
+
+        // Show loading state with animation
+        resultsContent.innerHTML = `
+            <div class="loading-container">
+                <div class="loader"></div>
+                <p class="loading-text">Processing ${bcbdFiles.length} BCBD file(s) with Foot Asylum validation...</p>
+                <p class="loading-subtext">Scanning Fabrics section...</p>
+            </div>
+        `;
+
+        if (window.footAsylumProcessor) {
+            const results = await window.footAsylumProcessor.processFiles(bcbdFiles);
             resultsContent.innerHTML = results;
         }
         return;

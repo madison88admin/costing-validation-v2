@@ -79,6 +79,12 @@
                         <button class="menu-item" data-tab="v16">
                             <span class="menu-item-text">511</span>
                         </button>
+                        <button class="menu-item" data-tab="v17">
+                            <span class="menu-item-text">Ride Store</span>
+                        </button>
+                        <button class="menu-item" data-tab="v18">
+                            <span class="menu-item-text">Foot Asylum</span>
+                        </button>
                     </div>
                 </div>
                 <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode">
@@ -111,6 +117,8 @@
                 <button class="tab-btn" data-tab="v14" data-short="TM" data-full="Travis Matthew">Travis Matthew</button>
                 <button class="tab-btn" data-tab="v15" data-short="JW" data-full="Jack Wolfskin">Jack Wolfskin</button>
                 <button class="tab-btn" data-tab="v16" data-short="511" data-full="511">511</button>
+                <button class="tab-btn" data-tab="v17" data-short="RS" data-full="Ride Store">Ride Store</button>
+                <button class="tab-btn" data-tab="v18" data-short="FA" data-full="Foot Asylum">Foot Asylum</button>
             </div>
         </div>
 
@@ -639,6 +647,64 @@
                     <div class="results-content" id="results-v16"></div>
                 </div>
             </div>
+
+            <!-- Tab Content V17 (Ride Store) -->
+            <div class="tab-content" id="tab-v17">
+                <div class="upload-section">
+                    <div id="obDropZone-v17" class="drop-zone">
+                        <!-- Content will be populated by RideStore.js displayValidationRules() -->
+                    </div>
+
+                    <div id="bcbdDropZone-v17" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Drag & Drop Files Here</h2>
+                            <p class="drop-subtitle">or click to browse</p>
+                            <p class="file-label">Buyer CBD File/s</p>
+                            <input type="file" id="bcbdFileInput-v17" accept=".xlsx,.xls,.csv" multiple hidden>
+                            <button class="browse-btn">Browse Files</button>
+                            <div class="file-list" id="bcbdFileList-v17"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generate-section">
+                    <button class="generate-btn" data-version="v17">Generate Results</button>
+                </div>
+
+                <div class="results-section">
+                    <h2 class="results-title">Results</h2>
+                    <div class="results-content" id="results-v17"></div>
+                </div>
+            </div>
+
+            <!-- Tab Content V18 (Foot Asylum) -->
+            <div class="tab-content" id="tab-v18">
+                <div class="upload-section">
+                    <div id="obDropZone-v18" class="drop-zone">
+                        <!-- Content will be populated by FootAsylum.js displayValidationRules() -->
+                    </div>
+
+                    <div id="bcbdDropZone-v18" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Drag & Drop Files Here</h2>
+                            <p class="drop-subtitle">or click to browse</p>
+                            <p class="file-label">Buyer CBD File/s</p>
+                            <input type="file" id="bcbdFileInput-v18" accept=".xlsx,.xls,.csv" multiple hidden>
+                            <button class="browse-btn">Browse Files</button>
+                            <div class="file-list" id="bcbdFileList-v18"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generate-section">
+                    <button class="generate-btn" data-version="v18">Generate Results</button>
+                </div>
+
+                <div class="results-section">
+                    <h2 class="results-title">Results</h2>
+                    <div class="results-content" id="results-v18"></div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -659,6 +725,8 @@
     <script src="js/export/travismatthew_export.js"></script>
     <script src="js/export/jackwolfskin_export.js"></script>
     <script src="js/export/511_export.js"></script>
+    <script src="js/export/ridestore_export.js"></script>
+    <script src="js/export/footasylum_export.js"></script>
 
     <!-- Main Export Module -->
     <script src="js/Export.js"></script>
@@ -680,6 +748,8 @@
     <script src="js/TravisMatthew.js"></script>
     <script src="js/JackWolfskin.js"></script>
     <script src="js/511.js"></script>
+    <script src="js/RideStore.js"></script>
+    <script src="js/FootAsylum.js"></script>
     <script src="js/main.js"></script>
 </body>
 
