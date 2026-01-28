@@ -13,6 +13,7 @@ function createJackWolfskinConfig(fileResults) {
             // Build cell statuses for coloring
             const cellStatuses = fileResult.results.map(item => {
                 return [
+                    'normal', // Sheet Name
                     'normal', // Field name
                     item.isValid ? 'valid' : 'invalid', // BCBD Value
                     item.isValid ? 'valid' : 'invalid' // Status
@@ -21,14 +22,15 @@ function createJackWolfskinConfig(fileResults) {
 
             return {
                 fileName: fileResult.fileName,
-                summary: `Summary: ${validItems} out of ${totalItems} validations passed`,
+                sheetName: fileResult.sheetName,
+                summary: `Sheet: ${fileResult.sheetName} | Summary: ${validItems} out of ${totalItems} validations passed`,
                 results: fileResult.results,
                 cellStatuses: cellStatuses
             };
         }),
         filenamePrefix: 'JackWolfskinValidation_V15',
-        columnWidths: [60, 120, 50],
-        headers: ['Field', 'BCBD Value', 'Status'],
+        columnWidths: [70, 60, 100, 50],
+        headers: ['Sheet Name', 'Field', 'BCBD Value', 'Status'],
         colorRules: {},
         extractRowData: (fileResult) => {
             const rows = [];
@@ -49,6 +51,7 @@ function createJackWolfskinConfig(fileResults) {
                 }
 
                 rows.push([
+                    fileResult.sheetName,
                     item.label,
                     bcbdValue,
                     `${statusIcon} ${statusText}`

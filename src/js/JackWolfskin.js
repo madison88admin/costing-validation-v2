@@ -85,12 +85,17 @@ class JackWolfskinProcessor {
 
             // Process each BCBD file
             for (const file of bcbdFiles) {
-                const fileData = await this.parseBuyerCBDFile(file);
-                const validationResults = this.validateFile(fileData);
-                this.bcbdResults.push({
-                    fileName: file.name,
-                    results: validationResults
-                });
+                const allSheets = await this.parseBuyerCBDFile(file);
+
+                // Process each sheet within the file
+                for (const sheet of allSheets) {
+                    const validationResults = this.validateFile(sheet.data);
+                    this.bcbdResults.push({
+                        fileName: file.name,
+                        sheetName: sheet.sheetName,
+                        results: validationResults
+                    });
+                }
             }
 
             return this.generateResultsHTML(this.bcbdResults);
@@ -102,7 +107,7 @@ class JackWolfskinProcessor {
     }
 
     /**
-     * Parse Buyer CBD Excel file
+     * Parse Buyer CBD Excel file - returns array of sheets with their data
      */
     async parseBuyerCBDFile(file) {
         return new Promise((resolve, reject) => {
@@ -113,12 +118,18 @@ class JackWolfskinProcessor {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
 
-                    // Get the last sheet
-                    const lastSheetName = workbook.SheetNames[workbook.SheetNames.length - 1];
-                    const sheet = workbook.Sheets[lastSheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+                    // Process ALL sheets
+                    const allSheets = [];
+                    for (const sheetName of workbook.SheetNames) {
+                        const sheet = workbook.Sheets[sheetName];
+                        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+                        allSheets.push({
+                            sheetName: sheetName,
+                            data: jsonData
+                        });
+                    }
 
-                    resolve(jsonData);
+                    resolve(allSheets);
                 } catch (error) {
                     reject(error);
                 }
@@ -328,16 +339,27 @@ class JackWolfskinProcessor {
             </div>
         `;
 
-        for (const fileResult of results) {
+        // Group results by filename
+        const fileGroups = {};
+        for (const result of results) {
+            if (!fileGroups[result.fileName]) {
+                fileGroups[result.fileName] = [];
+            }
+            fileGroups[result.fileName].push(result);
+        }
+
+        // Generate HTML for each file
+        for (const [fileName, sheets] of Object.entries(fileGroups)) {
             html += `<div class="file-result-group">`;
 
-            // Add summary
-            const totalItems = fileResult.results.length;
-            const validItems = fileResult.results.filter(r => r.isValid).length;
+            // Calculate total items and valid items across all sheets for this file
+            const totalItems = sheets.reduce((sum, sheet) => sum + sheet.results.length, 0);
+            const validItems = sheets.reduce((sum, sheet) => sum + sheet.results.filter(r => r.isValid).length, 0);
 
+            // Add file summary (shown once per file)
             html += `
                 <div class="file-summary-box">
-                    <strong>File:</strong> ${fileResult.fileName}<br>
+                    <strong>File:</strong> ${fileName}<br>
                     <strong>Summary:</strong> ${validItems} out of ${totalItems} validations passed
                 </div>
             `;
@@ -347,6 +369,7 @@ class JackWolfskinProcessor {
                 <table id="v15ResultsTable" class="results-table">
                     <thead>
                         <tr class="header-labels-row">
+                            <th>Sheet Name</th>
                             <th>Field</th>
                             <th>BCBD Value</th>
                             <th>Status</th>
@@ -355,20 +378,32 @@ class JackWolfskinProcessor {
                     <tbody>
             `;
 
-            for (const item of fileResult.results) {
-                const statusIcon = item.isValid ? '✓' : '✗';
-                const statusColor = item.isValid ? '#065f46' : '#991b1b';
-                const statusText = item.isValid ? 'VALID' : 'INVALID';
+            // Iterate through all sheets for this file
+            for (let sheetIndex = 0; sheetIndex < sheets.length; sheetIndex++) {
+                const sheet = sheets[sheetIndex];
 
-                html += `
-                    <tr style="border-bottom: 1px solid #e0e8f0;">
-                        <td style="padding: 0.875rem 1rem; font-weight: 600;">${item.label}</td>
-                        <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item)}</td>
-                        <td style="padding: 0.875rem 1rem;">
-                            <span style="color: ${statusColor}; font-weight: 600;">${statusIcon} ${statusText}</span>
-                        </td>
-                    </tr>
-                `;
+                for (let i = 0; i < sheet.results.length; i++) {
+                    const item = sheet.results[i];
+                    const statusIcon = item.isValid ? '✓' : '✗';
+                    const statusColor = item.isValid ? '#065f46' : '#991b1b';
+                    const statusText = item.isValid ? 'VALID' : 'INVALID';
+
+                    // Add separator line after the last validation row of each sheet (except the last sheet)
+                    const isLastRowOfSheet = i === sheet.results.length - 1;
+                    const isNotLastSheet = sheetIndex < sheets.length - 1;
+                    const borderStyle = (isLastRowOfSheet && isNotLastSheet) ? '2px solid #3b82f6' : '1px solid #e0e8f0';
+
+                    html += `
+                        <tr style="border-bottom: ${borderStyle};">
+                            <td style="padding: 0.875rem 1rem; font-weight: 600;">${sheet.sheetName}</td>
+                            <td style="padding: 0.875rem 1rem; font-weight: 600;">${item.label}</td>
+                            <td style="padding: 0.875rem 1rem;">${this.formatFieldValue(item)}</td>
+                            <td style="padding: 0.875rem 1rem;">
+                                <span style="color: ${statusColor}; font-weight: 600;">${statusIcon} ${statusText}</span>
+                            </td>
+                        </tr>
+                    `;
+                }
             }
 
             html += `
