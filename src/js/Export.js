@@ -245,8 +245,17 @@ class PDFExporter {
                 }
 
                 // Extract table data using the provided function
-                const rows = extractRowData(fileResult);
-                const cellStatuses = fileResult.cellStatuses || [];
+                const extractedData = extractRowData(fileResult);
+
+                // Handle both formats: array of rows or object with rows and cellStatuses
+                let rows, cellStatuses;
+                if (Array.isArray(extractedData)) {
+                    rows = extractedData;
+                    cellStatuses = fileResult.cellStatuses || [];
+                } else {
+                    rows = extractedData.rows || [];
+                    cellStatuses = extractedData.cellStatuses || fileResult.cellStatuses || [];
+                }
 
                 // Add table using autoTable plugin
                 doc.autoTable({
@@ -727,6 +736,26 @@ class PDFExporter {
      */
     createODLOConfig(fileResults) {
         return createODLOConfig(fileResults);
+    }
+
+    /**
+     * Create Rossignol (V23) export configuration
+     * Delegates to external configuration file
+     * @param {Array} fileResults - Array of file results from Rossignol processor
+     * @returns {Object} - Configuration object for Rossignol export
+     */
+    createRossignolConfig(fileResults) {
+        return createRossignolConfig(fileResults);
+    }
+
+    /**
+     * Create Cotopaxi (V24) export configuration
+     * Delegates to external configuration file
+     * @param {Array} fileResults - Array of file results from Cotopaxi processor
+     * @returns {Object} - Configuration object for Cotopaxi export
+     */
+    createCotopaxiConfig(fileResults) {
+        return createCotopaxiConfig(fileResults);
     }
 }
 
