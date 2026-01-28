@@ -24,10 +24,61 @@ function createFOXConfig(fileResults) {
             const validCount = allResults.filter(r => r.isValid).length;
             const totalCount = allResults.length;
 
+            // Build cell statuses for PDF coloring
+            const cellStatuses = [];
+
+            // Simple validations
+            const simpleResults = [
+                fileResult.results.vendor,
+                fileResult.results.factory,
+                fileResult.results.coo,
+                fileResult.results.overhead,
+                fileResult.results.profitOthers,
+                fileResult.results.overheadCost,
+                fileResult.results.profitCost
+            ];
+
+            for (const item of simpleResults) {
+                cellStatuses.push([
+                    'normal',
+                    'normal',
+                    item.isValid ? 'valid' : 'invalid'
+                ]);
+            }
+
+            // Wastage Percent statuses
+            const wastage = fileResult.results.wastagePercent;
+            if (wastage) {
+                const wastageStatuses = getWastageStatuses(wastage);
+                cellStatuses.push(...wastageStatuses);
+            }
+
+            // Sewing Thread statuses
+            const sewingThread = fileResult.results.sewingThread;
+            if (sewingThread) {
+                const sewingStatuses = getSewingThreadStatuses(sewingThread);
+                cellStatuses.push(...sewingStatuses);
+            }
+
+            // Standard Packaging statuses
+            const standardPackaging = fileResult.results.standardPackaging;
+            if (standardPackaging) {
+                const packagingStatuses = getStandardPackagingStatuses(standardPackaging);
+                cellStatuses.push(...packagingStatuses);
+            }
+
+            // Labor Cost statuses
+            const laborCost = fileResult.results.laborCost;
+            if (laborCost) {
+                const laborStatuses = getLaborCostStatuses(laborCost);
+                cellStatuses.push(...laborStatuses);
+            }
+
             return {
                 fileName: fileResult.fileName,
                 summary: `Validation: ${validCount}/${totalCount} passed`,
-                results: fileResult.results
+                results: fileResult.results,
+                cellStatuses: cellStatuses
             };
         }),
         filenamePrefix: 'FOXValidation_V20',
@@ -94,58 +145,6 @@ function createFOXConfig(fileResults) {
             }
 
             return rows;
-        },
-        getCellStatuses: (fileResult) => {
-            const statuses = [];
-
-            // Simple validations
-            const simpleResults = [
-                fileResult.results.vendor,
-                fileResult.results.factory,
-                fileResult.results.coo,
-                fileResult.results.overhead,
-                fileResult.results.profitOthers,
-                fileResult.results.overheadCost,
-                fileResult.results.profitCost
-            ];
-
-            for (const item of simpleResults) {
-                statuses.push([
-                    'normal',
-                    'normal',
-                    item.isValid ? 'valid' : 'invalid'
-                ]);
-            }
-
-            // Wastage Percent statuses
-            const wastage = fileResult.results.wastagePercent;
-            if (wastage) {
-                const wastageStatuses = getWastageStatuses(wastage);
-                statuses.push(...wastageStatuses);
-            }
-
-            // Sewing Thread statuses
-            const sewingThread = fileResult.results.sewingThread;
-            if (sewingThread) {
-                const sewingStatuses = getSewingThreadStatuses(sewingThread);
-                statuses.push(...sewingStatuses);
-            }
-
-            // Standard Packaging statuses
-            const standardPackaging = fileResult.results.standardPackaging;
-            if (standardPackaging) {
-                const packagingStatuses = getStandardPackagingStatuses(standardPackaging);
-                statuses.push(...packagingStatuses);
-            }
-
-            // Labor Cost statuses
-            const laborCost = fileResult.results.laborCost;
-            if (laborCost) {
-                const laborStatuses = getLaborCostStatuses(laborCost);
-                statuses.push(...laborStatuses);
-            }
-
-            return statuses;
         }
     };
 }

@@ -91,6 +91,9 @@
                         <button class="menu-item" data-tab="v20">
                             <span class="menu-item-text">FOX</span>
                         </button>
+                        <button class="menu-item" data-tab="v21">
+                            <span class="menu-item-text">Haglofs</span>
+                        </button>
                     </div>
                 </div>
                 <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode">
@@ -127,6 +130,7 @@
                 <button class="tab-btn" data-tab="v18" data-short="FA" data-full="Foot Asylum">Foot Asylum</button>
                 <button class="tab-btn" data-tab="v19" data-short="KHL" data-full="KUHL">KUHL</button>
                 <button class="tab-btn" data-tab="v20" data-short="FOX" data-full="FOX">FOX</button>
+                <button class="tab-btn" data-tab="v21" data-short="HGF" data-full="Haglofs">Haglofs</button>
             </div>
         </div>
 
@@ -771,6 +775,35 @@
                     <div class="results-content" id="results-v20"></div>
                 </div>
             </div>
+
+            <!-- Tab Content V21 (Haglofs) -->
+            <div class="tab-content" id="tab-v21">
+                <div class="upload-section">
+                    <div id="obDropZone-v21" class="drop-zone">
+                        <!-- Content will be populated by Haglofs.js displayValidationRules() -->
+                    </div>
+
+                    <div id="bcbdDropZone-v21" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Drag & Drop Files Here</h2>
+                            <p class="drop-subtitle">or click to browse</p>
+                            <p class="file-label">Buyer CBD File/s</p>
+                            <input type="file" id="bcbdFileInput-v21" accept=".xlsx,.xls,.csv" multiple hidden>
+                            <button class="browse-btn">Browse Files</button>
+                            <div class="file-list" id="bcbdFileList-v21"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generate-section">
+                    <button class="generate-btn" data-version="v21">Generate Results</button>
+                </div>
+
+                <div class="results-section">
+                    <h2 class="results-title">Results</h2>
+                    <div class="results-content" id="results-v21"></div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -795,6 +828,7 @@
     <script src="js/export/footasylum_export.js"></script>
     <script src="js/export/kuhl_export.js"></script>
     <script src="js/export/fox_export.js"></script>
+    <script src="js/export/haglofs_export.js"></script>
 
     <!-- Main Export Module -->
     <script src="js/Export.js"></script>
@@ -820,6 +854,7 @@
     <script src="js/FootAsylum.js"></script>
     <script src="js/Kuhl.js"></script>
     <script src="js/FOX.js"></script>
+    <script src="js/Haglofs.js"></script>
     <script src="js/main.js"></script>
 </body>
 
