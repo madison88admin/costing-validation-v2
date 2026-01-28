@@ -277,6 +277,7 @@ class MenuManager {
         this.menuToggle = document.getElementById('menuToggle');
         this.menuDropdown = document.getElementById('menuDropdown');
         this.menuItems = document.querySelectorAll('.menu-item');
+        this.templateSearch = document.getElementById('templateSearch');
         this.init();
     }
 
@@ -301,6 +302,17 @@ class MenuManager {
             });
         });
 
+        // Handle template search
+        if (this.templateSearch) {
+            this.templateSearch.addEventListener('input', (e) => {
+                this.filterTemplates(e.target.value);
+            });
+            // Prevent menu from closing when clicking on search input
+            this.templateSearch.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        }
+
         // Close menu when clicking outside
         document.addEventListener('click', (e) => {
             if (this.menuDropdown &&
@@ -321,6 +333,18 @@ class MenuManager {
         this.updateActiveMenuItem('v1');
     }
 
+    filterTemplates(searchTerm) {
+        const term = searchTerm.toLowerCase().trim();
+        this.menuItems.forEach(item => {
+            const text = item.querySelector('.menu-item-text').textContent.toLowerCase();
+            if (term === '' || text.includes(term)) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+    }
+
     updateActiveMenuItem(tabId) {
         // Remove active class from all menu items
         this.menuItems.forEach(item => {
@@ -336,19 +360,32 @@ class MenuManager {
 
     toggleMenu() {
         if (this.menuDropdown) {
+            const isOpening = !this.menuDropdown.classList.contains('active');
             this.menuDropdown.classList.toggle('active');
+            if (isOpening && this.templateSearch) {
+                // Focus search input when opening menu
+                setTimeout(() => this.templateSearch.focus(), 100);
+            }
         }
     }
 
     closeMenu() {
         if (this.menuDropdown) {
             this.menuDropdown.classList.remove('active');
+            // Clear search and show all items when closing
+            if (this.templateSearch) {
+                this.templateSearch.value = '';
+                this.filterTemplates('');
+            }
         }
     }
 
     openMenu() {
         if (this.menuDropdown) {
             this.menuDropdown.classList.add('active');
+            if (this.templateSearch) {
+                setTimeout(() => this.templateSearch.focus(), 100);
+            }
         }
     }
 }

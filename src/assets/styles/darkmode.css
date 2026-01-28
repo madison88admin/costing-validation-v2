@@ -327,6 +327,10 @@ body.dark-mode .tab-btn {
     border-color: #3d4a5f;
 }
 
+body.dark-mode .tab-btn::after {
+    background: #60a5fa;
+}
+
 body.dark-mode .tab-btn:hover {
     background-color: #353d52;
     color: #d6e0ea;
@@ -336,6 +340,10 @@ body.dark-mode .tab-btn.active {
     background-color: #242b3d;
     color: #d6e0ea;
     border-bottom-color: #242b3d;
+}
+
+body.dark-mode .tab-btn.active::after {
+    background: #d6e0ea;
 }
 
 /* Column Filter Dropdowns Dark Mode */
@@ -431,6 +439,37 @@ body.dark-mode .menu-dropdown::before {
 body.dark-mode .menu-dropdown-header {
     color: #849bba;
     border-bottom-color: #3d4a5f;
+    background: #2d3548;
+}
+
+/* Template Search Input Dark Mode */
+body.dark-mode .template-search-input {
+    background: #1f2533;
+    border-color: #3d4a5f;
+    color: #d6e0ea;
+}
+
+body.dark-mode .template-search-input:focus {
+    border-color: #60a5fa;
+    background: #252b3b;
+    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
+}
+
+body.dark-mode .template-search-input::placeholder {
+    color: #6b7a94;
+}
+
+/* Menu Items Container Dark Mode */
+body.dark-mode .menu-items-container::-webkit-scrollbar-track {
+    background: #252b3b;
+}
+
+body.dark-mode .menu-items-container::-webkit-scrollbar-thumb {
+    background: #4a5568;
+}
+
+body.dark-mode .menu-items-container::-webkit-scrollbar-thumb:hover {
+    background: #6b7a94;
 }
 
 /* Menu Items Dark Mode */

@@ -30,7 +30,10 @@
                         </svg>
                     </button>
                     <div id="menuDropdown" class="menu-dropdown">
-                        <div class="menu-dropdown-header">Templates</div>
+                        <div class="menu-dropdown-header">
+                            <input type="text" id="templateSearch" class="template-search-input" placeholder="Search templates..." autocomplete="off">
+                        </div>
+                        <div class="menu-items-container">
                         <button class="menu-item" data-tab="v1">
                             <span class="menu-item-text">TNF</span>
                         </button>
@@ -103,6 +106,7 @@
                         <button class="menu-item" data-tab="v24">
                             <span class="menu-item-text">Cotopaxi</span>
                         </button>
+                        </div>
                     </div>
                 </div>
                 <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode">
