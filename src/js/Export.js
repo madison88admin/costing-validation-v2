@@ -708,6 +708,16 @@ class PDFExporter {
     createKuhlConfig(fileResults) {
         return createKuhlConfig(fileResults);
     }
+
+    /**
+     * Create FOX (V20) export configuration
+     * Delegates to external configuration file
+     * @param {Array} fileResults - Array of file results from FOX processor
+     * @returns {Object} - Configuration object for FOX export
+     */
+    createFOXConfig(fileResults) {
+        return createFOXConfig(fileResults);
+    }
 }
 
 // Initialize global PDF exporter instance

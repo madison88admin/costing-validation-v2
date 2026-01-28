@@ -22,8 +22,8 @@ class ExcelFileHandler {
     }
 
     attachEventListeners() {
-        // For V2-V19, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV or validation rules)
-        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7' && this.version !== 'v8' && this.version !== 'v9' && this.version !== 'v10' && this.version !== 'v11' && this.version !== 'v12' && this.version !== 'v13' && this.version !== 'v14' && this.version !== 'v15' && this.version !== 'v16' && this.version !== 'v17' && this.version !== 'v18' && this.version !== 'v19') {
+        // For V2-V20, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV or validation rules)
+        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7' && this.version !== 'v8' && this.version !== 'v9' && this.version !== 'v10' && this.version !== 'v11' && this.version !== 'v12' && this.version !== 'v13' && this.version !== 'v14' && this.version !== 'v15' && this.version !== 'v16' && this.version !== 'v17' && this.version !== 'v18' && this.version !== 'v19' && this.version !== 'v20') {
             this.setupDropZone(this.obDropZone, this.obFileInput, 'ob');
         }
         this.setupDropZone(this.bcbdDropZone, this.bcbdFileInput, 'bcbd');
@@ -455,6 +455,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.excelHandlerV17 = new ExcelFileHandler('v17');
     window.excelHandlerV18 = new ExcelFileHandler('v18');
     window.excelHandlerV19 = new ExcelFileHandler('v19');
+    window.excelHandlerV20 = new ExcelFileHandler('v20');
 
     document.querySelectorAll('.generate-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -523,7 +524,12 @@ document.addEventListener('DOMContentLoaded', () => {
         window.kuhlProcessor.initialize();
     }
 
-    console.log('Costing Validation initialized with 19 versions');
+    // Initialize FOX processor when page loads
+    if (window.foxProcessor) {
+        window.foxProcessor.initialize();
+    }
+
+    console.log('Costing Validation initialized with 20 versions');
 });
 
 async function handleGenerateResults(version) {
@@ -1029,6 +1035,34 @@ async function handleGenerateResults(version) {
 
         if (window.kuhlProcessor) {
             const results = await window.kuhlProcessor.processFiles(bcbdFiles);
+            resultsContent.innerHTML = results;
+        }
+        return;
+    }
+
+    // Special handling for V20 - only needs BCBD files (FOX)
+    if (version === 'v20') {
+        const bcbdFiles = handler.getBCBDFiles();
+
+        if (bcbdFiles.length === 0) {
+            alert('Please upload Buyer CBD files before generating results.');
+            return;
+        }
+
+        console.log(`Generating results for ${version.toUpperCase()}...`);
+        console.log('BCBD Files:', bcbdFiles);
+
+        // Show loading state with animation
+        resultsContent.innerHTML = `
+            <div class="loading-container">
+                <div class="loader"></div>
+                <p class="loading-text">Processing ${bcbdFiles.length} BCBD file(s) with FOX validation...</p>
+                <p class="loading-subtext">Scanning for validation fields...</p>
+            </div>
+        `;
+
+        if (window.foxProcessor) {
+            const results = await window.foxProcessor.processFiles(bcbdFiles);
             resultsContent.innerHTML = results;
         }
         return;

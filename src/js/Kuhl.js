@@ -52,14 +52,14 @@ class KuhlProcessor {
                     <div class="burton-cost-item">
                         <div class="burton-item-line"><strong style="color: #2b4a6c;">Trim Section:</strong></div>
                         <div class="burton-item-line" style="margin-left: 1rem;">Column K - Consumption: <strong>3%</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column E - Supplier: <strong>Contains "Local"</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column H - C.I.F.VS FOB %: <strong>0.012%</strong></div>
+                        <div class="burton-item-line" style="margin-left: 1rem;">Column E - Supplier: <strong>Contains "Local" or "Nominated"</strong></div>
+                        <div class="burton-item-line" style="margin-left: 1rem;">Column H - C.I.F.VS FOB %: <strong>0.012%</strong> (if Local) or <strong>15%</strong> (if Nominated)</div>
                     </div>
                     <div class="burton-cost-item">
                         <div class="burton-item-line"><strong style="color: #2b4a6c;">Labelling Section:</strong></div>
                         <div class="burton-item-line" style="margin-left: 1rem;">Column K - Consumption: <strong>3%</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column E - Supplier: <strong>Contains "Local"</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column H - C.I.F.VS FOB %: <strong>0.012%</strong></div>
+                        <div class="burton-item-line" style="margin-left: 1rem;">Column E - Supplier: <strong>Contains "Local" or "Nominated"</strong></div>
+                        <div class="burton-item-line" style="margin-left: 1rem;">Column H - C.I.F.VS FOB %: <strong>0.012%</strong> (if Local) or <strong>15%</strong> (if Nominated)</div>
                     </div>
                     <div class="burton-cost-item">
                         <div class="burton-item-line"><strong style="color: #2b4a6c;">Profit Margin:</strong></div>
@@ -188,24 +188,27 @@ class KuhlProcessor {
     }
 
     /**
-     * Validate C.I.F.VS FOB % (0.012% for Trim)
+     * Validate C.I.F.VS FOB % (0.012% for Local, 0.15 for Nominated)
      */
-    validateCifVsFob(actualValue) {
-        return this.validatePercentage(actualValue, 0.00012); // 0.012% = 0.00012
+    validateCifVsFob(actualValue, isNominated = false) {
+        const expectedValue = isNominated ? 0.15 : 0.00012; // 0.15 (15%) for Nominated, 0.012% for Local
+        return this.validatePercentage(actualValue, expectedValue);
     }
 
     /**
-     * Validate Supplier contains "Local"
+     * Validate Supplier contains "Local" or "Nominated"
      */
     validateSupplierLocal(actualValue) {
         if (actualValue === undefined || actualValue === null || actualValue === '') {
-            return { isValid: false, displayValue: 'Empty', isEmpty: true };
+            return { isValid: false, displayValue: 'Empty', isEmpty: true, isNominated: false };
         }
 
         const strValue = actualValue.toString().trim();
-        const isValid = strValue.toLowerCase().includes('local');
+        const isLocal = strValue.toLowerCase().includes('local');
+        const isNominated = strValue.toLowerCase().includes('nominated');
+        const isValid = isLocal || isNominated;
 
-        return { isValid, displayValue: strValue, isEmpty: false };
+        return { isValid, displayValue: strValue, isEmpty: false, isNominated };
     }
 
     /**
@@ -546,7 +549,7 @@ class KuhlProcessor {
     }
 
     /**
-     * Validate a Trim row (Column K = 3%, Column E contains "Local", Column H = 0.012%)
+     * Validate a Trim row (Column K = 3%, Column E contains "Local" or "Nominated", Column H = 0.012% for Local or 0.15 for Nominated)
      */
     validateTrimRow(row, rowIndex, colE, colH, colK, trimResults) {
         // Validate Column K (Consumption = 3%)
@@ -568,13 +571,15 @@ class KuhlProcessor {
             }
         }
 
-        // Validate Column E (Supplier contains "Local")
+        // Validate Column E (Supplier contains "Local" or "Nominated")
         const supplierValue = row[colE];
+        let isNominated = false;
         if (supplierValue !== undefined && supplierValue !== null && supplierValue !== '') {
             const validation = this.validateSupplierLocal(supplierValue);
             const cellRef = `E${rowIndex + 1}`;
+            isNominated = validation.isNominated;
 
-            console.log(`Trim Supplier ${cellRef}: Value="${supplierValue}" -> ${validation.isValid ? 'VALID' : 'INVALID'}`);
+            console.log(`Trim Supplier ${cellRef}: Value="${supplierValue}" -> ${validation.isValid ? 'VALID' : 'INVALID'} (isNominated: ${isNominated})`);
 
             if (validation.isValid) {
                 trimResults.supplier.validCells.push(cellRef);
@@ -582,18 +587,19 @@ class KuhlProcessor {
                 trimResults.supplier.invalidCells.push({
                     cell: cellRef,
                     value: validation.displayValue,
-                    expected: 'Contains "Local"'
+                    expected: 'Contains "Local" or "Nominated"'
                 });
             }
         }
 
-        // Validate Column H (C.I.F.VS FOB % = 0.012%)
+        // Validate Column H (C.I.F.VS FOB % = 0.012% for Local, 0.15 for Nominated)
         const cifVsFobValue = row[colH];
         if (cifVsFobValue !== undefined && cifVsFobValue !== null && cifVsFobValue !== '') {
-            const validation = this.validateCifVsFob(cifVsFobValue);
+            const validation = this.validateCifVsFob(cifVsFobValue, isNominated);
             const cellRef = `H${rowIndex + 1}`;
+            const expectedValue = isNominated ? '15%' : '0.012%';
 
-            console.log(`Trim CIF vs FOB ${cellRef}: Value="${cifVsFobValue}" -> ${validation.isValid ? 'VALID' : 'INVALID'}`);
+            console.log(`Trim CIF vs FOB ${cellRef}: Value="${cifVsFobValue}" -> ${validation.isValid ? 'VALID' : 'INVALID'} (expected: ${expectedValue})`);
 
             if (validation.isValid) {
                 trimResults.cifVsFob.validCells.push(cellRef);
@@ -601,7 +607,7 @@ class KuhlProcessor {
                 trimResults.cifVsFob.invalidCells.push({
                     cell: cellRef,
                     value: validation.displayValue,
-                    expected: '0.012%'
+                    expected: expectedValue
                 });
             }
         }
@@ -634,29 +640,30 @@ class KuhlProcessor {
     }
 
     /**
-     * Format cells display - valid cells in green, invalid cells in red
+     * Format cells display - valid cells in green, invalid cells in red with expected value
      */
     formatAllCells(validCells, invalidCells) {
-        const parts = [];
+        let html = '';
 
-        // Add valid cells (green)
+        // Add valid cells (green) - inline comma separated
         if (validCells && validCells.length > 0) {
             const validParts = validCells.map(cell =>
                 `<span style="color: #065f46; font-weight: 600;">${cell}</span>`
             );
-            parts.push(...validParts);
+            html += validParts.join(', ');
         }
 
-        // Add invalid cells (red)
+        // Add invalid cells (red) - each on its own line with details
         if (invalidCells && invalidCells.length > 0) {
+            if (html) html += '<br>';
             const invalidParts = invalidCells.map(c =>
-                `<span style="color: #991b1b; font-weight: 600;">${c.cell}</span>`
+                `<span style="color: #991b1b; font-weight: 600;">${c.cell}</span> <span style="font-size: 0.85em; color: #849bba;">(Actual: ${c.value}, Expected: ${c.expected})</span>`
             );
-            parts.push(...invalidParts);
+            html += invalidParts.join('<br>');
         }
 
-        if (parts.length === 0) return '-';
-        return parts.join(', ');
+        if (!html) return '-';
+        return html;
     }
 
     /**
@@ -744,11 +751,11 @@ class KuhlProcessor {
                             <td style="padding: 0.875rem 1rem;">${this.formatAllCells(trim.consumption.validCells, trim.consumption.invalidCells)}</td>
                         </tr>
                         <tr style="border-bottom: 1px solid #e0e8f0;">
-                            <td style="padding: 0.875rem 1rem;">E (Supplier = "Local")</td>
+                            <td style="padding: 0.875rem 1rem;">E (Supplier = "Local" or "Nominated")</td>
                             <td style="padding: 0.875rem 1rem;">${this.formatAllCells(trim.supplier.validCells, trim.supplier.invalidCells)}</td>
                         </tr>
                         <tr style="border-bottom: 1px solid #e0e8f0;">
-                            <td style="padding: 0.875rem 1rem;">H (C.I.F.VS FOB = 0.012%)</td>
+                            <td style="padding: 0.875rem 1rem;">H (C.I.F.VS FOB = 0.012% or 15%)</td>
                             <td style="padding: 0.875rem 1rem;">${this.formatAllCells(trim.cifVsFob.validCells, trim.cifVsFob.invalidCells)}</td>
                         </tr>
                         <tr style="border-bottom: 1px solid #e0e8f0;">
@@ -757,11 +764,11 @@ class KuhlProcessor {
                             <td style="padding: 0.875rem 1rem;">${this.formatAllCells(labelling.consumption.validCells, labelling.consumption.invalidCells)}</td>
                         </tr>
                         <tr style="border-bottom: 1px solid #e0e8f0;">
-                            <td style="padding: 0.875rem 1rem;">E (Supplier = "Local")</td>
+                            <td style="padding: 0.875rem 1rem;">E (Supplier = "Local" or "Nominated")</td>
                             <td style="padding: 0.875rem 1rem;">${this.formatAllCells(labelling.supplier.validCells, labelling.supplier.invalidCells)}</td>
                         </tr>
                         <tr style="border-bottom: 1px solid #e0e8f0;">
-                            <td style="padding: 0.875rem 1rem;">H (C.I.F.VS FOB = 0.012%)</td>
+                            <td style="padding: 0.875rem 1rem;">H (C.I.F.VS FOB = 0.012% or 15%)</td>
                             <td style="padding: 0.875rem 1rem;">${this.formatAllCells(labelling.cifVsFob.validCells, labelling.cifVsFob.invalidCells)}</td>
                         </tr>
                         <tr style="border-bottom: 1px solid #e0e8f0;">
