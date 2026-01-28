@@ -718,6 +718,16 @@ class PDFExporter {
     createFOXConfig(fileResults) {
         return createFOXConfig(fileResults);
     }
+
+    /**
+     * Create ODLO (V22) export configuration
+     * Delegates to external configuration file
+     * @param {Array} fileResults - Array of file results from ODLO processor
+     * @returns {Object} - Configuration object for ODLO export
+     */
+    createODLOConfig(fileResults) {
+        return createODLOConfig(fileResults);
+    }
 }
 
 // Initialize global PDF exporter instance

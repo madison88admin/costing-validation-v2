@@ -94,6 +94,9 @@
                         <button class="menu-item" data-tab="v21">
                             <span class="menu-item-text">Haglofs</span>
                         </button>
+                        <button class="menu-item" data-tab="v22">
+                            <span class="menu-item-text">ODLO</span>
+                        </button>
                     </div>
                 </div>
                 <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode">
@@ -131,6 +134,7 @@
                 <button class="tab-btn" data-tab="v19" data-short="KHL" data-full="KUHL">KUHL</button>
                 <button class="tab-btn" data-tab="v20" data-short="FOX" data-full="FOX">FOX</button>
                 <button class="tab-btn" data-tab="v21" data-short="HGF" data-full="Haglofs">Haglofs</button>
+                <button class="tab-btn" data-tab="v22" data-short="ODL" data-full="ODLO">ODLO</button>
             </div>
         </div>
 
@@ -804,6 +808,35 @@
                     <div class="results-content" id="results-v21"></div>
                 </div>
             </div>
+
+            <!-- Tab Content V22 (ODLO) -->
+            <div class="tab-content" id="tab-v22">
+                <div class="upload-section">
+                    <div id="obDropZone-v22" class="drop-zone">
+                        <!-- Content will be populated by ODLO.js displayValidationRules() -->
+                    </div>
+
+                    <div id="bcbdDropZone-v22" class="drop-zone">
+                        <div class="drop-zone-content">
+                            <h2 class="drop-title">Drag & Drop Files Here</h2>
+                            <p class="drop-subtitle">or click to browse</p>
+                            <p class="file-label">Buyer CBD File/s</p>
+                            <input type="file" id="bcbdFileInput-v22" accept=".xlsx,.xls,.csv" multiple hidden>
+                            <button class="browse-btn">Browse Files</button>
+                            <div class="file-list" id="bcbdFileList-v22"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generate-section">
+                    <button class="generate-btn" data-version="v22">Generate Results</button>
+                </div>
+
+                <div class="results-section">
+                    <h2 class="results-title">Results</h2>
+                    <div class="results-content" id="results-v22"></div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -829,6 +862,7 @@
     <script src="js/export/kuhl_export.js"></script>
     <script src="js/export/fox_export.js"></script>
     <script src="js/export/haglofs_export.js"></script>
+    <script src="js/export/odlo_export.js"></script>
 
     <!-- Main Export Module -->
     <script src="js/Export.js"></script>
@@ -855,6 +889,7 @@
     <script src="js/Kuhl.js"></script>
     <script src="js/FOX.js"></script>
     <script src="js/Haglofs.js"></script>
+    <script src="js/ODLO.js"></script>
     <script src="js/main.js"></script>
 </body>
 

@@ -22,8 +22,8 @@ class ExcelFileHandler {
     }
 
     attachEventListeners() {
-        // For V2-V21, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV or validation rules)
-        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7' && this.version !== 'v8' && this.version !== 'v9' && this.version !== 'v10' && this.version !== 'v11' && this.version !== 'v12' && this.version !== 'v13' && this.version !== 'v14' && this.version !== 'v15' && this.version !== 'v16' && this.version !== 'v17' && this.version !== 'v18' && this.version !== 'v19' && this.version !== 'v20' && this.version !== 'v21') {
+        // For V2-V22, don't setup OB drop zone (Cost Breakdown is auto-loaded from CSV or validation rules)
+        if (this.version !== 'v2' && this.version !== 'v3' && this.version !== 'v4' && this.version !== 'v5' && this.version !== 'v6' && this.version !== 'v7' && this.version !== 'v8' && this.version !== 'v9' && this.version !== 'v10' && this.version !== 'v11' && this.version !== 'v12' && this.version !== 'v13' && this.version !== 'v14' && this.version !== 'v15' && this.version !== 'v16' && this.version !== 'v17' && this.version !== 'v18' && this.version !== 'v19' && this.version !== 'v20' && this.version !== 'v21' && this.version !== 'v22') {
             this.setupDropZone(this.obDropZone, this.obFileInput, 'ob');
         }
         this.setupDropZone(this.bcbdDropZone, this.bcbdFileInput, 'bcbd');
@@ -457,6 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.excelHandlerV19 = new ExcelFileHandler('v19');
     window.excelHandlerV20 = new ExcelFileHandler('v20');
     window.excelHandlerV21 = new ExcelFileHandler('v21');
+    window.excelHandlerV22 = new ExcelFileHandler('v22');
 
     document.querySelectorAll('.generate-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -535,7 +536,12 @@ document.addEventListener('DOMContentLoaded', () => {
         window.haglofsProcessor.initialize();
     }
 
-    console.log('Costing Validation initialized with 21 versions');
+    // Initialize ODLO processor when page loads
+    if (window.odloProcessor) {
+        window.odloProcessor.initialize();
+    }
+
+    console.log('Costing Validation initialized with 22 versions');
 });
 
 async function handleGenerateResults(version) {
@@ -1097,6 +1103,34 @@ async function handleGenerateResults(version) {
 
         if (window.haglofsProcessor) {
             const results = await window.haglofsProcessor.processFiles(bcbdFiles);
+            resultsContent.innerHTML = results;
+        }
+        return;
+    }
+
+    // Special handling for V22 - only needs BCBD files (ODLO)
+    if (version === 'v22') {
+        const bcbdFiles = handler.getBCBDFiles();
+
+        if (bcbdFiles.length === 0) {
+            alert('Please upload Buyer CBD files before generating results.');
+            return;
+        }
+
+        console.log(`Generating results for ${version.toUpperCase()}...`);
+        console.log('BCBD Files:', bcbdFiles);
+
+        // Show loading state with animation
+        resultsContent.innerHTML = `
+            <div class="loading-container">
+                <div class="loader"></div>
+                <p class="loading-text">Processing ${bcbdFiles.length} BCBD file(s) with ODLO validation...</p>
+                <p class="loading-subtext">Checking Category and Garment Maker fields...</p>
+            </div>
+        `;
+
+        if (window.odloProcessor) {
+            const results = await window.odloProcessor.processFiles(bcbdFiles);
             resultsContent.innerHTML = results;
         }
         return;
