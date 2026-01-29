@@ -1,7 +1,40 @@
+/* Dark Mode Transition - Apply to all elements */
+body,
+.header,
+.container,
+.drop-zone,
+.drop-title,
+.drop-subtitle,
+.file-label,
+.file-item,
+.file-item-name,
+.browse-btn,
+.generate-btn,
+.results-content,
+.results-table,
+.results-table td,
+.results-title,
+.tab-btn,
+.menu-dropdown,
+.menu-dropdown-header,
+.menu-item,
+.template-search-input,
+.search-input-expandable,
+.clear-filters-btn,
+.export-btn,
+.loading-text,
+.loading-subtext,
+textarea {
+    transition: background 0.4s ease,
+                background-color 0.4s ease,
+                color 0.4s ease,
+                border-color 0.4s ease,
+                box-shadow 0.4s ease;
+}
+
 /* Dark Mode Styles */
 body.dark-mode {
     background: #1a1f2e;
-    transition: background 0.3s ease;
     font-size: 14px;
 }
 
