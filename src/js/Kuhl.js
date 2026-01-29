@@ -41,8 +41,7 @@ class KuhlProcessor {
         let contentHTML = `
             <div class="burton-cost-container">
                 <div class="burton-cost-header">
-                    <h3>KUHL Validation Rules</h3>
-                    <p class="cost-subtitle">Fabric/Yarn, Trim & Labelling Validation</p>
+
                 </div>
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">

@@ -153,8 +153,7 @@ class FootAsylumProcessor {
         let contentHTML = `
             <div class="burton-cost-container">
                 <div class="burton-cost-header">
-                    <h3>Foot Asylum Validation Rules</h3>
-                    <p class="cost-subtitle">Fabrics & Trims Section Validation</p>
+
                 </div>
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">

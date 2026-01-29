@@ -26,8 +26,7 @@ class RideStoreProcessor {
 
         let html = `
             <div class="burton-cost-container">
-                <h2 class="drop-title">Ride Store Validation Criteria</h2>
-                <p class="drop-subtitle">Expected values to check</p>
+
                 <div class="burton-cost-items">
         `;
 
@@ -306,8 +305,8 @@ class RideStoreProcessor {
                 validCells: validCells,
                 invalidCells: invalidCells,
                 isValid: invalidCells.length === 0 && validCells.length > 0 &&
-                         validCells.every(cell => !cell.gpDetails || cell.gpDetails.allValid) &&
-                         invalidCells.every(cell => !cell.gpDetails || cell.gpDetails.allValid),
+                    validCells.every(cell => !cell.gpDetails || cell.gpDetails.allValid) &&
+                    invalidCells.every(cell => !cell.gpDetails || cell.gpDetails.allValid),
                 sectionFound: validCells.length > 0 || invalidCells.length > 0
             }
         };

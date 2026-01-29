@@ -39,8 +39,6 @@ class FOXProcessor {
         let contentHTML = `
             <div class="burton-cost-container">
                 <div class="burton-cost-header">
-                    <h3>FOX Validation Rules</h3>
-                    <p class="cost-subtitle">Expected values to validate</p>
                 </div>
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">

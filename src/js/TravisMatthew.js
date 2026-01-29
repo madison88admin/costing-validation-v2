@@ -66,8 +66,6 @@ class TravisMatthewProcessor {
         let contentHTML = `
             <div class="burton-cost-container">
                 <div class="burton-cost-header">
-                    <h3>Travis Matthew Cost Breakdown</h3>
-                    <p class="cost-subtitle">Auto-loaded from CSV</p>
                 </div>
                 <div class="burton-cost-items">
         `;

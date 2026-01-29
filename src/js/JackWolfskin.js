@@ -49,8 +49,7 @@ class JackWolfskinProcessor {
         let contentHTML = `
             <div class="burton-cost-container">
                 <div class="burton-cost-header">
-                    <h3>Jack Wolfskin Validation Rules</h3>
-                    <p class="cost-subtitle">Expected values to validate</p>
+
                 </div>
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
@@ -255,7 +254,7 @@ class JackWolfskinProcessor {
             // Check if the cell contains or equals the search value (exact match for "Profit" to avoid matching "Overhead Cost")
             if (cellValue.toLowerCase() === searchValue.toLowerCase() ||
                 (cellValue.toLowerCase().includes(searchValue.toLowerCase()) &&
-                 !cellValue.toLowerCase().includes('overhead'))) {
+                    !cellValue.toLowerCase().includes('overhead'))) {
 
                 const actualValue = row[valueColIndex] ? row[valueColIndex].toString().trim() : '';
                 const actualNum = parseFloat(actualValue);
