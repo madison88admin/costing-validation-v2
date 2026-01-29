@@ -22,7 +22,7 @@
  *      - Trims items → Col I = 3%
  * 7. General Packaging (scan Col D for "General Packaging"):
  *    - Col F = 1
- *    - If VENDOR/COO = PT UWU JUMP INDONESIA → Col I = 5%
+ *    - If VENDOR/COO = PT UWU JUMP INDONESIA → Col I = 0.01%
  *    - If VENDOR/COO = HEADS UP → Col I = 3%
  */
 
@@ -93,7 +93,7 @@ class CotopaxiProcessor {
                         <div class="burton-item-line">• Trims items → Col I = <strong>3%</strong></div>
                         <div class="burton-item-line" style="margin-top: 0.75rem; border-top: 1px solid #ccc; padding-top: 0.5rem;"><strong>General Packaging (scan Col D):</strong></div>
                         <div class="burton-item-line">• Column F = <strong>1</strong></div>
-                        <div class="burton-item-line">• If PT UWU JUMP INDONESIA → Col I = <strong>5%</strong></div>
+                        <div class="burton-item-line">• If PT UWU JUMP INDONESIA → Col I = <strong>0.01%</strong></div>
                         <div class="burton-item-line">• If HEADS UP → Col I = <strong>3%</strong></div>
                     </div>
                 </div>
@@ -571,8 +571,8 @@ class CotopaxiProcessor {
                 let expectedDecimal = 0;
 
                 if (vendorLower.includes('pt uwu jump indonesia')) {
-                    expectedPercent = '5%';
-                    expectedDecimal = 0.05;
+                    expectedPercent = '0.01%';
+                    expectedDecimal = 0.0001;
                 } else if (vendorLower.includes('heads up')) {
                     expectedPercent = '3%';
                     expectedDecimal = 0.03;
