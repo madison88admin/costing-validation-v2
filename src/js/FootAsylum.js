@@ -1,14 +1,27 @@
 /**
  * Foot Asylum (V18) Processing Logic
- * Validates Fabrics section in Buyer CBD files
+ * Validates Fabrics, Trims, and Packaging sections in Buyer CBD files
  *
- * Validation Rules (within Fabrics section):
- * - Column D: Must be TRUE
- * - Column P: Must be "USD"
- * - Column W: Must be exactly 5%
- * - Column AG: Must be exactly 0.5
- * - Column AK: Must be exactly 0.1
- * - Column AL: Must be exactly 10%
+ * Validation Rules (Fabrics section):
+ * - Column D: Must be TRUE (Main Material) - Fixed column
+ * - Column P: Must be "USD" (Supplier Currency) - Fixed column
+ * - Wastage %: Must be exactly 5% - Column detected dynamically from Row 2
+ * - Overhead Cost: Must be exactly 0.5 - Column detected dynamically from Row 2
+ * - Testing Cost: Must be exactly 0.1 - Column detected dynamically from Row 2
+ * - Profit %: Must be exactly 10% - Column detected dynamically from Row 2
+ *
+ * Validation Rules (Trims section):
+ * - Column D: Must be FALSE (Main Material) - Fixed column
+ * - Column P: Must be "USD" (Supplier Currency) - Fixed column
+ * - Wastage %: Must be exactly 3% - Column detected dynamically from Row 2
+ *
+ * Validation Rules (Packaging section):
+ * - Column D: Must be FALSE (Main Material) - Fixed column
+ * - Column P: Must be "USD" (Supplier Currency) - Fixed column
+ * - Wastage %: Must be exactly 3% - Column detected dynamically from Row 2
+ *
+ * Dynamic Column Detection:
+ * The column for Wastage % is detected by scanning Row 2 of each Excel file.
  */
 
 class FootAsylumProcessor {
@@ -64,6 +77,62 @@ class FootAsylumProcessor {
                 expectedDisplay: '10%'
             }
         };
+
+        // Trims section validation rules
+        this.trimsValidationRules = {
+            mainMaterial: {
+                column: 'D',
+                columnIndex: 3,
+                label: 'Main Material',
+                shortLabel: 'D',
+                expectedValue: false,
+                expectedDisplay: 'FALSE'
+            },
+            supplierCurrency: {
+                column: 'P',
+                columnIndex: 15,
+                label: 'Supplier Currency',
+                shortLabel: 'P',
+                expectedValue: 'USD',
+                expectedDisplay: 'USD'
+            },
+            wastage: {
+                column: 'W',
+                columnIndex: 22,
+                label: 'Wastage %',
+                shortLabel: 'W',
+                expectedValue: 0.03,
+                expectedDisplay: '3%'
+            }
+        };
+
+        // Packaging section validation rules (same as Trims)
+        this.packagingValidationRules = {
+            mainMaterial: {
+                column: 'D',
+                columnIndex: 3,
+                label: 'Main Material',
+                shortLabel: 'D',
+                expectedValue: false,
+                expectedDisplay: 'FALSE'
+            },
+            supplierCurrency: {
+                column: 'P',
+                columnIndex: 15,
+                label: 'Supplier Currency',
+                shortLabel: 'P',
+                expectedValue: 'USD',
+                expectedDisplay: 'USD'
+            },
+            wastage: {
+                column: 'W',
+                columnIndex: 22,
+                label: 'Wastage %',
+                shortLabel: 'W',
+                expectedValue: 0.03,
+                expectedDisplay: '3%'
+            }
+        };
     }
 
     /**
@@ -85,29 +154,53 @@ class FootAsylumProcessor {
             <div class="burton-cost-container">
                 <div class="burton-cost-header">
                     <h3>Foot Asylum Validation Rules</h3>
-                    <p class="cost-subtitle">Fabrics Section Validation</p>
+                    <p class="cost-subtitle">Fabrics & Trims Section Validation</p>
                 </div>
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Section:</strong> Fabrics (between "Fabrics (...)" and "Trims (")</div>
+                        <div class="burton-item-line"><strong>FABRICS SECTION</strong> (between "Fabrics (...)" and "Trims (")</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Column D - Main Material:</strong> TRUE</div>
+                        <div class="burton-item-line">Column D - Main Material: TRUE</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Column P - Supplier Currency:</strong> USD</div>
+                        <div class="burton-item-line">Column P - Supplier Currency: USD</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Column W - Wastage %:</strong> 5%</div>
+                        <div class="burton-item-line">Wastage %: 5% (column detected from Row 2)</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Column AG - Overhead Cost:</strong> 0.5</div>
+                        <div class="burton-item-line">Overhead Cost: 0.5 (column detected from Row 2)</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Column AK - Testing Cost:</strong> 0.1</div>
+                        <div class="burton-item-line">Testing Cost: 0.1 (column detected from Row 2)</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Column AL - Profit % / Total FOB:</strong> 10%</div>
+                        <div class="burton-item-line">Profit % / Total FOB: 10% (column detected from Row 2)</div>
+                    </div>
+                    <div class="burton-cost-item" style="margin-top: 12px; border-top: 1px solid #cbd5e1; padding-top: 12px;">
+                        <div class="burton-item-line"><strong>TRIMS SECTION</strong> (between "Trims (...)" and "Packaging")</div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line">Column D - Main Material: FALSE</div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line">Column P - Supplier Currency: USD</div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line">Wastage %: 3% (column detected from Row 2)</div>
+                    </div>
+                    <div class="burton-cost-item" style="margin-top: 12px; border-top: 1px solid #cbd5e1; padding-top: 12px;">
+                        <div class="burton-item-line"><strong>PACKAGING SECTION</strong> (between "Packaging (...)" and "Graphics")</div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line">Column D - Main Material: FALSE</div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line">Column P - Supplier Currency: USD</div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line">Wastage %: 3% (column detected from Row 2)</div>
                     </div>
                 </div>
             </div>
@@ -125,6 +218,76 @@ class FootAsylumProcessor {
             index = index * 26 + column.charCodeAt(i) - 'A'.charCodeAt(0) + 1;
         }
         return index - 1;
+    }
+
+    /**
+     * Convert column index to letter (0=A, 1=B, ..., 25=Z, 26=AA, etc.)
+     */
+    indexToColumn(index) {
+        let column = '';
+        let temp = index + 1;
+        while (temp > 0) {
+            let remainder = (temp - 1) % 26;
+            column = String.fromCharCode(65 + remainder) + column;
+            temp = Math.floor((temp - 1) / 26);
+        }
+        return column;
+    }
+
+    /**
+     * Scan Row 2 to find dynamic column positions for Wastage %, Overhead Cost, Testing Cost, and Profit %
+     * @param {Array} jsonData - Parsed Excel data
+     * @returns {Object} - Object with detected column positions
+     */
+    detectDynamicColumns(jsonData) {
+        const row2 = jsonData[1]; // Row 2 (0-indexed)
+        const dynamicColumns = {
+            wastage: { column: null, columnIndex: null, found: false },
+            overheadCost: { column: null, columnIndex: null, found: false },
+            testingCost: { column: null, columnIndex: null, found: false },
+            profitFOB: { column: null, columnIndex: null, found: false }
+        };
+
+        if (!row2) {
+            console.warn('Row 2 not found in file');
+            return dynamicColumns;
+        }
+
+        // Scan each cell in Row 2
+        for (let i = 0; i < row2.length; i++) {
+            const cellValue = row2[i];
+            if (cellValue === undefined || cellValue === null || cellValue === '') continue;
+
+            const cellText = cellValue.toString().trim().toLowerCase();
+
+            // Check for Wastage %
+            if (cellText === 'wastage %' || cellText === 'wastage%') {
+                dynamicColumns.wastage.column = this.indexToColumn(i);
+                dynamicColumns.wastage.columnIndex = i;
+                dynamicColumns.wastage.found = true;
+            }
+            // Check for Overhead Cost
+            else if (cellText === 'overhead cost' || cellText === 'overhead') {
+                dynamicColumns.overheadCost.column = this.indexToColumn(i);
+                dynamicColumns.overheadCost.columnIndex = i;
+                dynamicColumns.overheadCost.found = true;
+            }
+            // Check for Testing Cost
+            else if (cellText === 'testing cost' || cellText === 'testing') {
+                dynamicColumns.testingCost.column = this.indexToColumn(i);
+                dynamicColumns.testingCost.columnIndex = i;
+                dynamicColumns.testingCost.found = true;
+            }
+            // Check for Profit %
+            else if (cellText === 'profit %' || cellText === 'profit%' || cellText === 'profit % / total fob' || cellText === 'profit %/ total fob') {
+                dynamicColumns.profitFOB.column = this.indexToColumn(i);
+                dynamicColumns.profitFOB.columnIndex = i;
+                dynamicColumns.profitFOB.found = true;
+            }
+        }
+
+        console.log('Detected dynamic columns:', dynamicColumns);
+        return dynamicColumns;
     }
 
     /**
@@ -224,6 +387,84 @@ class FootAsylumProcessor {
     }
 
     /**
+     * Find the Trims section boundaries
+     * @param {Array} jsonData - Parsed Excel data
+     * @returns {Object} - { startRow, endRow, sectionFound }
+     */
+    findTrimsSection(jsonData) {
+        const colA = 0; // Column A index
+        let startRow = -1;
+        let endRow = -1;
+
+        for (let i = 0; i < jsonData.length; i++) {
+            const row = jsonData[i];
+            if (!row || !row[colA]) continue;
+
+            const cellValue = row[colA].toString().trim();
+
+            // Find start: "Trims (" followed by any value and ")"
+            if (startRow === -1) {
+                const trimsMatch = cellValue.match(/^Trims\s*\([^)]+\)/i);
+                if (trimsMatch) {
+                    startRow = i + 1; // Start from the next row
+                    continue;
+                }
+            }
+
+            // Find end: "Packaging"
+            if (startRow !== -1 && cellValue.match(/^Packaging/i)) {
+                endRow = i;
+                break;
+            }
+        }
+
+        return {
+            startRow,
+            endRow,
+            sectionFound: startRow !== -1 && endRow !== -1
+        };
+    }
+
+    /**
+     * Find the Packaging section boundaries
+     * @param {Array} jsonData - Parsed Excel data
+     * @returns {Object} - { startRow, endRow, sectionFound }
+     */
+    findPackagingSection(jsonData) {
+        const colA = 0; // Column A index
+        let startRow = -1;
+        let endRow = -1;
+
+        for (let i = 0; i < jsonData.length; i++) {
+            const row = jsonData[i];
+            if (!row || !row[colA]) continue;
+
+            const cellValue = row[colA].toString().trim();
+
+            // Find start: "Packaging (" followed by any value and ")"
+            if (startRow === -1) {
+                const packagingMatch = cellValue.match(/^Packaging\s*\([^)]+\)/i);
+                if (packagingMatch) {
+                    startRow = i + 1; // Start from the next row
+                    continue;
+                }
+            }
+
+            // Find end: "Graphics"
+            if (startRow !== -1 && cellValue.match(/^Graphics/i)) {
+                endRow = i;
+                break;
+            }
+        }
+
+        return {
+            startRow,
+            endRow,
+            sectionFound: startRow !== -1 && endRow !== -1
+        };
+    }
+
+    /**
      * Validate a single value against expected value
      */
     validateValue(actualValue, rule) {
@@ -234,7 +475,7 @@ class FootAsylumProcessor {
         let isValid = false;
         let displayValue = actualValue.toString();
 
-        // Handle boolean TRUE/FALSE
+        // Handle boolean TRUE
         if (rule.expectedValue === true) {
             if (typeof actualValue === 'boolean') {
                 isValid = actualValue === true;
@@ -242,6 +483,17 @@ class FootAsylumProcessor {
             } else {
                 const strVal = actualValue.toString().toUpperCase().trim();
                 isValid = strVal === 'TRUE';
+                displayValue = strVal;
+            }
+        }
+        // Handle boolean FALSE
+        else if (rule.expectedValue === false) {
+            if (typeof actualValue === 'boolean') {
+                isValid = actualValue === false;
+                displayValue = actualValue ? 'TRUE' : 'FALSE';
+            } else {
+                const strVal = actualValue.toString().toUpperCase().trim();
+                isValid = strVal === 'FALSE';
                 displayValue = strVal;
             }
         }
@@ -266,7 +518,15 @@ class FootAsylumProcessor {
             }
 
             if (!isNaN(numericValue)) {
-                isValid = Math.abs(numericValue - rule.expectedValue) < 0.0001;
+                // Normalize the value: if >= 1, it's stored as percentage (e.g., 10 for 10%)
+                // Convert to decimal for comparison (divide by 100)
+                let normalizedValue = numericValue;
+                if (numericValue >= 1) {
+                    normalizedValue = numericValue / 100;
+                }
+
+                isValid = Math.abs(normalizedValue - rule.expectedValue) < 0.0001;
+
                 // Display as percentage
                 if (numericValue < 1) {
                     displayValue = (numericValue * 100).toFixed(0) + '%';
@@ -294,66 +554,242 @@ class FootAsylumProcessor {
     }
 
     /**
-     * Validate file against rules - returns row-based results
+     * Validate file against rules - returns row-based results for Fabrics, Trims, and Packaging sections
      */
     validateFile(jsonData) {
         const results = {
-            sectionFound: false,
-            startRow: -1,
-            endRow: -1,
-            rows: [] // Array of row validation results
+            detectedColumns: {}, // Store detected column positions for display
+            fabrics: {
+                sectionFound: false,
+                startRow: -1,
+                endRow: -1,
+                rows: [],
+                activeRules: null
+            },
+            trims: {
+                sectionFound: false,
+                startRow: -1,
+                endRow: -1,
+                rows: [],
+                activeRules: null
+            },
+            packaging: {
+                sectionFound: false,
+                startRow: -1,
+                endRow: -1,
+                rows: [],
+                activeRules: null
+            }
         };
 
-        // Find Fabrics section
-        const section = this.findFabricsSection(jsonData);
-        results.sectionFound = section.sectionFound;
-        results.startRow = section.startRow;
-        results.endRow = section.endRow;
+        // First, detect dynamic columns from Row 2
+        const dynamicColumns = this.detectDynamicColumns(jsonData);
+        results.detectedColumns = dynamicColumns;
 
-        if (!section.sectionFound) {
-            return results;
+        // =====================
+        // FABRICS SECTION
+        // =====================
+        const fabricsActiveRules = JSON.parse(JSON.stringify(this.validationRules));
+
+        // Update Wastage column if detected
+        if (dynamicColumns.wastage.found) {
+            fabricsActiveRules.wastage.column = dynamicColumns.wastage.column;
+            fabricsActiveRules.wastage.columnIndex = dynamicColumns.wastage.columnIndex;
+            fabricsActiveRules.wastage.shortLabel = dynamicColumns.wastage.column;
         }
 
-        // Validate each row in the Fabrics section
-        for (let i = section.startRow; i < section.endRow; i++) {
-            const row = jsonData[i];
-            if (!row) continue;
+        // Update Overhead Cost column if detected
+        if (dynamicColumns.overheadCost.found) {
+            fabricsActiveRules.overheadCost.column = dynamicColumns.overheadCost.column;
+            fabricsActiveRules.overheadCost.columnIndex = dynamicColumns.overheadCost.columnIndex;
+            fabricsActiveRules.overheadCost.shortLabel = dynamicColumns.overheadCost.column;
+        }
 
-            // Skip completely empty rows - check if any of the validation columns have data
-            const hasData = Object.values(this.validationRules).some(rule => {
-                const cellValue = row[rule.columnIndex];
-                return cellValue !== undefined && cellValue !== null && cellValue !== '';
-            });
-            if (!hasData) continue;
+        // Update Testing Cost column if detected
+        if (dynamicColumns.testingCost.found) {
+            fabricsActiveRules.testingCost.column = dynamicColumns.testingCost.column;
+            fabricsActiveRules.testingCost.columnIndex = dynamicColumns.testingCost.columnIndex;
+            fabricsActiveRules.testingCost.shortLabel = dynamicColumns.testingCost.column;
+        }
 
-            // Build row result
-            const rowResult = {
-                rowNumber: i + 1, // 1-indexed for display
-                columns: {}
-            };
+        // Update Profit % column if detected
+        if (dynamicColumns.profitFOB.found) {
+            fabricsActiveRules.profitFOB.column = dynamicColumns.profitFOB.column;
+            fabricsActiveRules.profitFOB.columnIndex = dynamicColumns.profitFOB.columnIndex;
+            fabricsActiveRules.profitFOB.shortLabel = dynamicColumns.profitFOB.column;
+        }
 
-            let rowHasAnyData = false;
+        results.fabrics.activeRules = fabricsActiveRules;
 
-            // Validate each column rule for this row
-            for (const [key, rule] of Object.entries(this.validationRules)) {
-                const cellValue = row[rule.columnIndex];
-                const validation = this.validateValue(cellValue, rule);
+        // Find Fabrics section
+        const fabricsSection = this.findFabricsSection(jsonData);
+        results.fabrics.sectionFound = fabricsSection.sectionFound;
+        results.fabrics.startRow = fabricsSection.startRow;
+        results.fabrics.endRow = fabricsSection.endRow;
 
-                rowResult.columns[key] = {
-                    value: validation.displayValue,
-                    isValid: validation.isValid,
-                    isEmpty: validation.isEmpty,
-                    expected: rule.expectedDisplay,
-                    column: rule.column
+        if (fabricsSection.sectionFound) {
+            // Validate each row in the Fabrics section
+            for (let i = fabricsSection.startRow; i < fabricsSection.endRow; i++) {
+                const row = jsonData[i];
+                if (!row) continue;
+
+                const hasData = Object.values(fabricsActiveRules).some(rule => {
+                    const cellValue = row[rule.columnIndex];
+                    return cellValue !== undefined && cellValue !== null && cellValue !== '';
+                });
+                if (!hasData) continue;
+
+                const rowResult = {
+                    rowNumber: i + 1,
+                    columns: {}
                 };
 
-                if (!validation.isEmpty) {
-                    rowHasAnyData = true;
+                let rowHasAnyData = false;
+
+                for (const [key, rule] of Object.entries(fabricsActiveRules)) {
+                    const cellValue = row[rule.columnIndex];
+                    const validation = this.validateValue(cellValue, rule);
+
+                    rowResult.columns[key] = {
+                        value: validation.displayValue,
+                        isValid: validation.isValid,
+                        isEmpty: validation.isEmpty,
+                        expected: rule.expectedDisplay,
+                        column: rule.column
+                    };
+
+                    if (!validation.isEmpty) {
+                        rowHasAnyData = true;
+                    }
+                }
+
+                if (rowHasAnyData) {
+                    results.fabrics.rows.push(rowResult);
                 }
             }
+        }
 
-            if (rowHasAnyData) {
-                results.rows.push(rowResult);
+        // =====================
+        // TRIMS SECTION
+        // =====================
+        const trimsActiveRules = JSON.parse(JSON.stringify(this.trimsValidationRules));
+
+        // Update Wastage column if detected (same column as Fabrics, but different expected value)
+        if (dynamicColumns.wastage.found) {
+            trimsActiveRules.wastage.column = dynamicColumns.wastage.column;
+            trimsActiveRules.wastage.columnIndex = dynamicColumns.wastage.columnIndex;
+            trimsActiveRules.wastage.shortLabel = dynamicColumns.wastage.column;
+        }
+
+        results.trims.activeRules = trimsActiveRules;
+
+        // Find Trims section
+        const trimsSection = this.findTrimsSection(jsonData);
+        results.trims.sectionFound = trimsSection.sectionFound;
+        results.trims.startRow = trimsSection.startRow;
+        results.trims.endRow = trimsSection.endRow;
+
+        if (trimsSection.sectionFound) {
+            // Validate each row in the Trims section
+            for (let i = trimsSection.startRow; i < trimsSection.endRow; i++) {
+                const row = jsonData[i];
+                if (!row) continue;
+
+                const hasData = Object.values(trimsActiveRules).some(rule => {
+                    const cellValue = row[rule.columnIndex];
+                    return cellValue !== undefined && cellValue !== null && cellValue !== '';
+                });
+                if (!hasData) continue;
+
+                const rowResult = {
+                    rowNumber: i + 1,
+                    columns: {}
+                };
+
+                let rowHasAnyData = false;
+
+                for (const [key, rule] of Object.entries(trimsActiveRules)) {
+                    const cellValue = row[rule.columnIndex];
+                    const validation = this.validateValue(cellValue, rule);
+
+                    rowResult.columns[key] = {
+                        value: validation.displayValue,
+                        isValid: validation.isValid,
+                        isEmpty: validation.isEmpty,
+                        expected: rule.expectedDisplay,
+                        column: rule.column
+                    };
+
+                    if (!validation.isEmpty) {
+                        rowHasAnyData = true;
+                    }
+                }
+
+                if (rowHasAnyData) {
+                    results.trims.rows.push(rowResult);
+                }
+            }
+        }
+
+        // =====================
+        // PACKAGING SECTION
+        // =====================
+        const packagingActiveRules = JSON.parse(JSON.stringify(this.packagingValidationRules));
+
+        // Update Wastage column if detected
+        if (dynamicColumns.wastage.found) {
+            packagingActiveRules.wastage.column = dynamicColumns.wastage.column;
+            packagingActiveRules.wastage.columnIndex = dynamicColumns.wastage.columnIndex;
+            packagingActiveRules.wastage.shortLabel = dynamicColumns.wastage.column;
+        }
+
+        results.packaging.activeRules = packagingActiveRules;
+
+        // Find Packaging section
+        const packagingSection = this.findPackagingSection(jsonData);
+        results.packaging.sectionFound = packagingSection.sectionFound;
+        results.packaging.startRow = packagingSection.startRow;
+        results.packaging.endRow = packagingSection.endRow;
+
+        if (packagingSection.sectionFound) {
+            // Validate each row in the Packaging section
+            for (let i = packagingSection.startRow; i < packagingSection.endRow; i++) {
+                const row = jsonData[i];
+                if (!row) continue;
+
+                const hasData = Object.values(packagingActiveRules).some(rule => {
+                    const cellValue = row[rule.columnIndex];
+                    return cellValue !== undefined && cellValue !== null && cellValue !== '';
+                });
+                if (!hasData) continue;
+
+                const rowResult = {
+                    rowNumber: i + 1,
+                    columns: {}
+                };
+
+                let rowHasAnyData = false;
+
+                for (const [key, rule] of Object.entries(packagingActiveRules)) {
+                    const cellValue = row[rule.columnIndex];
+                    const validation = this.validateValue(cellValue, rule);
+
+                    rowResult.columns[key] = {
+                        value: validation.displayValue,
+                        isValid: validation.isValid,
+                        isEmpty: validation.isEmpty,
+                        expected: rule.expectedDisplay,
+                        column: rule.column
+                    };
+
+                    if (!validation.isEmpty) {
+                        rowHasAnyData = true;
+                    }
+                }
+
+                if (rowHasAnyData) {
+                    results.packaging.rows.push(rowResult);
+                }
             }
         }
 
@@ -415,94 +851,204 @@ class FootAsylumProcessor {
         for (const fileResult of results) {
             html += `<div class="file-result-group">`;
 
-            // Calculate validation counts
+            // Calculate validation counts for all sections
             let totalValid = 0;
             let totalInvalid = 0;
 
-            for (const rowResult of fileResult.results.rows) {
+            // Count Fabrics validations
+            for (const rowResult of fileResult.results.fabrics.rows) {
                 for (const [key, cellData] of Object.entries(rowResult.columns)) {
                     if (!cellData.isEmpty) {
-                        if (cellData.isValid) {
-                            totalValid++;
-                        } else {
-                            totalInvalid++;
-                        }
+                        if (cellData.isValid) totalValid++;
+                        else totalInvalid++;
                     }
                 }
             }
 
-            const sectionStatus = fileResult.results.sectionFound
-                ? `<span style="color: #065f46;">Found (rows ${fileResult.results.startRow + 1}-${fileResult.results.endRow})</span>`
-                : `<span style="color: #991b1b;">Not found</span>`;
+            // Count Trims validations
+            for (const rowResult of fileResult.results.trims.rows) {
+                for (const [key, cellData] of Object.entries(rowResult.columns)) {
+                    if (!cellData.isEmpty) {
+                        if (cellData.isValid) totalValid++;
+                        else totalInvalid++;
+                    }
+                }
+            }
+
+            // Count Packaging validations
+            for (const rowResult of fileResult.results.packaging.rows) {
+                for (const [key, cellData] of Object.entries(rowResult.columns)) {
+                    if (!cellData.isEmpty) {
+                        if (cellData.isValid) totalValid++;
+                        else totalInvalid++;
+                    }
+                }
+            }
+
+            const fabricsSectionStatus = fileResult.results.fabrics.sectionFound
+                ? `Found (rows ${fileResult.results.fabrics.startRow + 1}-${fileResult.results.fabrics.endRow})`
+                : `Not found`;
+
+            const trimsSectionStatus = fileResult.results.trims.sectionFound
+                ? `Found (rows ${fileResult.results.trims.startRow + 1}-${fileResult.results.trims.endRow})`
+                : `Not found`;
+
+            const packagingSectionStatus = fileResult.results.packaging.sectionFound
+                ? `Found (rows ${fileResult.results.packaging.startRow + 1}-${fileResult.results.packaging.endRow})`
+                : `Not found`;
+
+            // Build detected columns info
+            const detectedCols = fileResult.results.detectedColumns;
+            let detectedColsText = '';
+            if (detectedCols) {
+                const colInfo = [];
+                if (detectedCols.wastage.found) colInfo.push(`Wastage: ${detectedCols.wastage.column}`);
+                if (detectedCols.overheadCost.found) colInfo.push(`Overhead: ${detectedCols.overheadCost.column}`);
+                if (detectedCols.testingCost.found) colInfo.push(`Testing: ${detectedCols.testingCost.column}`);
+                if (detectedCols.profitFOB.found) colInfo.push(`Profit: ${detectedCols.profitFOB.column}`);
+                if (colInfo.length > 0) {
+                    detectedColsText = colInfo.join(', ');
+                }
+            }
 
             html += `
                 <div class="file-summary-box">
                     <strong>File:</strong> ${fileResult.fileName}<br>
-                    <strong>Fabrics Section:</strong> ${sectionStatus}<br>
-                    <strong>Validations:</strong> ${totalValid} passed, ${totalInvalid} failed
+                    <strong>Fabrics:</strong> ${fabricsSectionStatus} | <strong>Trims:</strong> ${trimsSectionStatus} | <strong>Packaging:</strong> ${packagingSectionStatus}<br>
+                    <strong>Detected Columns:</strong> ${detectedColsText}<br>
+                    <strong>Summary:</strong> ${totalValid} passed, ${totalInvalid} failed
                 </div>
             `;
 
-            if (!fileResult.results.sectionFound) {
+            // Check if we have any data to display
+            const hasFabricsData = fileResult.results.fabrics.sectionFound && fileResult.results.fabrics.rows.length > 0;
+            const hasTrimsData = fileResult.results.trims.sectionFound && fileResult.results.trims.rows.length > 0;
+            const hasPackagingData = fileResult.results.packaging.sectionFound && fileResult.results.packaging.rows.length > 0;
+
+            if (hasFabricsData || hasTrimsData || hasPackagingData) {
+                const fabricsRules = fileResult.results.fabrics.activeRules || this.validationRules;
+                const fabricsRuleKeys = Object.keys(fabricsRules);
+
+                html += `
+                    <table class="results-table">
+                        <thead>
+                            <tr class="header-labels-row">
+                                <th style="width: 80px;">Section</th>
+                                <th style="width: 60px;">Row</th>
+                `;
+
+                // Use Fabrics headers (more columns)
+                for (const key of fabricsRuleKeys) {
+                    const rule = fabricsRules[key];
+                    html += `<th>${rule.label}<br><span style="font-size: 0.75em; font-weight: normal; color: #64748b;">(${rule.column}) ${rule.expectedDisplay}</span></th>`;
+                }
+
+                html += `
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                // Add Fabrics rows
+                if (hasFabricsData) {
+                    for (const rowResult of fileResult.results.fabrics.rows) {
+                        html += `
+                            <tr style="border-bottom: 1px solid #e0e8f0;">
+                                <td style="padding: 0.875rem 1rem; font-weight: 600;">Fabrics</td>
+                                <td style="padding: 0.875rem 1rem; font-weight: 600;">${rowResult.rowNumber}</td>
+                        `;
+
+                        for (const key of fabricsRuleKeys) {
+                            const cellData = rowResult.columns[key];
+                            html += `<td style="padding: 0.875rem 1rem;">${this.formatCellValue(cellData)}</td>`;
+                        }
+
+                        html += `</tr>`;
+                    }
+                }
+
+                // Add Trims rows
+                if (hasTrimsData) {
+                    const trimsRules = fileResult.results.trims.activeRules || this.trimsValidationRules;
+
+                    for (const rowResult of fileResult.results.trims.rows) {
+                        html += `
+                            <tr style="border-bottom: 1px solid #e0e8f0;">
+                                <td style="padding: 0.875rem 1rem; font-weight: 600;">Trims</td>
+                                <td style="padding: 0.875rem 1rem; font-weight: 600;">${rowResult.rowNumber}</td>
+                        `;
+
+                        // For Trims, we only have 3 columns, so fill the rest with dashes
+                        for (const key of fabricsRuleKeys) {
+                            if (trimsRules[key]) {
+                                const cellData = rowResult.columns[key];
+                                html += `<td style="padding: 0.875rem 1rem;">${this.formatCellValue(cellData)}</td>`;
+                            } else {
+                                html += `<td style="padding: 0.875rem 1rem; color: #64748b;">-</td>`;
+                            }
+                        }
+
+                        html += `</tr>`;
+                    }
+                }
+
+                // Add Packaging rows
+                if (hasPackagingData) {
+                    const packagingRules = fileResult.results.packaging.activeRules || this.packagingValidationRules;
+
+                    for (const rowResult of fileResult.results.packaging.rows) {
+                        html += `
+                            <tr style="border-bottom: 1px solid #e0e8f0;">
+                                <td style="padding: 0.875rem 1rem; font-weight: 600;">Packaging</td>
+                                <td style="padding: 0.875rem 1rem; font-weight: 600;">${rowResult.rowNumber}</td>
+                        `;
+
+                        // For Packaging, we only have 3 columns, so fill the rest with dashes
+                        for (const key of fabricsRuleKeys) {
+                            if (packagingRules[key]) {
+                                const cellData = rowResult.columns[key];
+                                html += `<td style="padding: 0.875rem 1rem;">${this.formatCellValue(cellData)}</td>`;
+                            } else {
+                                html += `<td style="padding: 0.875rem 1rem; color: #64748b;">-</td>`;
+                            }
+                        }
+
+                        html += `</tr>`;
+                    }
+                }
+
+                html += `
+                        </tbody>
+                    </table>
+                `;
+            }
+
+            // Show error messages if sections not found
+            if (!fileResult.results.fabrics.sectionFound) {
                 html += `
                     <div style="padding: 1rem; background: #fee; border-radius: 8px; margin-top: 1rem;">
                         <p style="color: #991b1b; font-weight: 600;">Fabrics section not found in file.</p>
-                        <p style="color: #721c24; font-size: 0.9em;">Looking for "Fabrics (...)" in Column A to start and "Trims (" to end.</p>
                     </div>
-                </div>`;
-                continue;
-            }
-
-            if (fileResult.results.rows.length === 0) {
-                html += `
-                    <div style="padding: 1rem; background: #fef3c7; border-radius: 8px; margin-top: 1rem;">
-                        <p style="color: #92400e; font-weight: 600;">No data rows found in Fabrics section.</p>
-                    </div>
-                </div>`;
-                continue;
-            }
-
-            // Build header row with column labels
-            const ruleKeys = Object.keys(this.validationRules);
-
-            html += `
-                <table id="v18ResultsTable" class="results-table">
-                    <thead>
-                        <tr class="header-labels-row">
-                            <th style="width: 60px;">Row</th>
-            `;
-
-            // Add column headers
-            for (const key of ruleKeys) {
-                const rule = this.validationRules[key];
-                html += `<th>${rule.label}<br><span style="font-size: 0.75em; font-weight: normal; color: #64748b;">(${rule.column}) ${rule.expectedDisplay}</span></th>`;
-            }
-
-            html += `
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
-            // Add data rows
-            for (const rowResult of fileResult.results.rows) {
-                html += `
-                    <tr style="border-bottom: 1px solid #e0e8f0;">
-                        <td style="padding: 0.875rem 1rem; font-weight: 600;">${rowResult.rowNumber}</td>
                 `;
-
-                for (const key of ruleKeys) {
-                    const cellData = rowResult.columns[key];
-                    html += `<td style="padding: 0.875rem 1rem;">${this.formatCellValue(cellData)}</td>`;
-                }
-
-                html += `</tr>`;
             }
 
-            html += `
-                    </tbody>
-                </table>
-            </div>`;
+            if (!fileResult.results.trims.sectionFound) {
+                html += `
+                    <div style="padding: 1rem; background: #fee; border-radius: 8px; margin-top: 1rem;">
+                        <p style="color: #991b1b; font-weight: 600;">Trims section not found in file.</p>
+                    </div>
+                `;
+            }
+
+            if (!fileResult.results.packaging.sectionFound) {
+                html += `
+                    <div style="padding: 1rem; background: #fee; border-radius: 8px; margin-top: 1rem;">
+                        <p style="color: #991b1b; font-weight: 600;">Packaging section not found in file.</p>
+                    </div>
+                `;
+            }
+
+            html += `</div>`; // Close file-result-group
         }
 
         return html;
