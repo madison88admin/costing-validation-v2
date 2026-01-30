@@ -201,6 +201,12 @@ class TabManager {
                 const fullText = tab.getAttribute('data-full');
                 if (fullText) {
                     tab.textContent = fullText;
+
+                    // Set header title to the initially active brand
+                    const headerTitle = document.querySelector('.header-title');
+                    if (headerTitle) {
+                        headerTitle.textContent = fullText;
+                    }
                 }
             } else {
                 const shortText = tab.getAttribute('data-short');
@@ -259,6 +265,20 @@ class TabManager {
             const fullText = selectedTab.getAttribute('data-full');
             if (fullText) {
                 selectedTab.textContent = fullText;
+
+                // Animate header title to show selected brand
+                const headerTitle = document.querySelector('.header-title');
+                if (headerTitle) {
+                    headerTitle.classList.add('title-fade-out');
+                    setTimeout(() => {
+                        headerTitle.textContent = fullText;
+                        headerTitle.classList.remove('title-fade-out');
+                        headerTitle.classList.add('title-fade-in');
+                        setTimeout(() => {
+                            headerTitle.classList.remove('title-fade-in');
+                        }, 400);
+                    }, 200);
+                }
             }
         }
 

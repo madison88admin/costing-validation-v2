@@ -90,11 +90,33 @@ body {
 }
 
 .header-title {
-    flex: 1;
+    flex: 1 0 auto;
     text-align: center;
     font-size: 1.05rem;
     font-weight: 700;
     letter-spacing: 0.3px;
+    white-space: nowrap;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.header-title.title-fade-out {
+    opacity: 0;
+    transform: translateY(-8px);
+}
+
+.header-title.title-fade-in {
+    animation: titleSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes titleSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* ===== HEADER ACTIONS (Menu & Dark Mode) ===== */
@@ -133,7 +155,7 @@ body {
 }
 
 .menu-toggle:hover svg {
-    transform: scale(1.1);
+    transform: rotate(180deg) scale(1.1);
 }
 
 /* Menu Dropdown Container */
@@ -352,6 +374,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    white-space: nowrap;
 }
 
 .tab-btn:hover {
