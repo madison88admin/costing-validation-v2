@@ -68,10 +68,10 @@ class HellyHansenProcessor {
         this.hellyHansenCostData.forEach((item, index) => {
             contentHTML += `
                 <div class="burton-cost-item">
-                    <div class="burton-item-line"><strong>${item.item}</strong></div>
-                    <div class="burton-item-line"><strong>CONSM:</strong> ${item.consm}</div>
-                    <div class="burton-item-line"><strong>U/P:</strong> ${item.up}</div>
-                    <div class="burton-item-line"><strong>Amount:</strong> ${item.amount}</div>
+                    <div class="burton-item-line ob-section-header"><strong>${item.item}:</strong></div>
+                    <div class="burton-item-line ob-sub-item">CONSM: <strong>${item.consm}</strong></div>
+                    <div class="burton-item-line ob-sub-item">U/P: <strong>${item.up}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Amount: <strong>${item.amount}</strong></div>
                 </div>
             `;
         });

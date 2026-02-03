@@ -70,31 +70,42 @@ class CotopaxiProcessor {
             <div class="burton-cost-container">
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Cotopaxi Validation Rules:</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Sheet:</strong> Blank Cost Sheet</div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Rule 1 - Vendor / COO:</strong></div>
-                        <div class="burton-item-line">Column D = "VENDOR / COO" → Column E = <strong>PT UWU JUMP INDONESIA</strong> or <strong>HEADS UP</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Rule 2 - Supplier Contact:</strong></div>
-                        <div class="burton-item-line">Column D = "SUPPLIER CONTACT" → Column E = <strong>Madison 88</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Rule 3 - Overhead/Margin/Profit %:</strong></div>
-                        <div class="burton-item-line">Column E = "Overhead/Margin/Profit %:" → Column G = <strong>15% - 20%</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.75rem; border-top: 1px solid #ccc; padding-top: 0.5rem;"><strong>Fabric Section Rules (between FABRIC and Total Fabric Yardage):</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>If VENDOR / COO = PT UWU JUMP INDONESIA:</strong></div>
-                        <div class="burton-item-line">• Yarn + (M88 or Local in Col B) → Col I = <strong>0.15%</strong></div>
-                        <div class="burton-item-line">• Yarn + (NOT M88/Local in Col B) → Col I = <strong>0.5%</strong></div>
-                        <div class="burton-item-line">• Fabric Freight → Col I = <strong>0.4%</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>If VENDOR / COO = HEADS UP:</strong></div>
-                        <div class="burton-item-line">• Fabric items → Col I = <strong>5%</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.75rem; border-top: 1px solid #ccc; padding-top: 0.5rem;"><strong>Trims Section Rules (between TRIMS and Total Trims Cost):</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>If VENDOR / COO = PT UWU JUMP INDONESIA:</strong></div>
-                        <div class="burton-item-line">• Col B = Local/Freight → Col I = <strong>0.012%</strong></div>
-                        <div class="burton-item-line">• Col B = Other → Col I = <strong>0.015%</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>If VENDOR / COO = HEADS UP:</strong></div>
-                        <div class="burton-item-line">• Trims items → Col I = <strong>3%</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.75rem; border-top: 1px solid #ccc; padding-top: 0.5rem;"><strong>General Packaging (scan Col D):</strong></div>
-                        <div class="burton-item-line">• Column F = <strong>1</strong></div>
-                        <div class="burton-item-line">• If PT UWU JUMP INDONESIA → Col I = <strong>0.01%</strong></div>
-                        <div class="burton-item-line">• If HEADS UP → Col I = <strong>3%</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Vendor / COO:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column D = "VENDOR / COO" → Column E = <strong>PT UWU JUMP INDONESIA</strong> or <strong>HEADS UP</strong></div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Supplier Contact:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column D = "SUPPLIER CONTACT" → Column E = <strong>Madison 88</strong></div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Overhead/Margin/Profit %:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column E = "Overhead/Margin/Profit %:" → Column G = <strong>15% - 20%</strong></div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Fabric Section Rules:</strong></div>
+                        <div class="burton-item-line ob-description">Between FABRIC and Total Fabric Yardage</div>
+                        <div class="burton-item-line ob-sub-item"><strong>If VENDOR / COO = PT UWU JUMP INDONESIA:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Yarn + (M88 or Local in Col B) → Col I = <strong>0.15%</strong></div>
+                        <div class="burton-item-line ob-sub-item">Yarn + (NOT M88/Local in Col B) → Col I = <strong>0.5%</strong></div>
+                        <div class="burton-item-line ob-sub-item">Fabric Freight → Col I = <strong>0.4%</strong></div>
+                        <div class="burton-item-line ob-sub-item"><strong>If VENDOR / COO = HEADS UP:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Fabric items → Col I = <strong>5%</strong></div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Trims Section Rules:</strong></div>
+                        <div class="burton-item-line ob-description">Between TRIMS and Total Trims Cost</div>
+                        <div class="burton-item-line ob-sub-item"><strong>If VENDOR / COO = PT UWU JUMP INDONESIA:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Col B = Local/Freight → Col I = <strong>0.012%</strong></div>
+                        <div class="burton-item-line ob-sub-item">Col B = Other → Col I = <strong>0.015%</strong></div>
+                        <div class="burton-item-line ob-sub-item"><strong>If VENDOR / COO = HEADS UP:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Trims items → Col I = <strong>3%</strong></div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>General Packaging:</strong></div>
+                        <div class="burton-item-line ob-description">Scan Col D</div>
+                        <div class="burton-item-line ob-sub-item">Column F = <strong>1</strong></div>
+                        <div class="burton-item-line ob-sub-item">If PT UWU JUMP INDONESIA → Col I = <strong>0.01%</strong></div>
+                        <div class="burton-item-line ob-sub-item">If HEADS UP → Col I = <strong>3%</strong></div>
                     </div>
                 </div>
             </div>

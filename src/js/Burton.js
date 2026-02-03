@@ -93,15 +93,15 @@ class ExcelV2Processor {
         this.burtonCostData.forEach((item, index) => {
             contentHTML += `
                 <div class="burton-cost-item">
-                    <div class="burton-item-line"><strong>${item.description}</strong></div>
-                    ${item.details ? `<div class="burton-item-line"><strong>Details:</strong> ${item.details}</div>` : ''}
-                    <div class="burton-item-line"><strong>Material:</strong> ${item.materialName}</div>
-                    <div class="burton-item-line"><strong>Supplier:</strong> ${item.supplier}</div>
-                    <div class="burton-item-line"><strong>Qty:</strong> ${item.quantity}</div>
-                    <div class="burton-item-line"><strong>Wastage:</strong> ${this.formatToThreeDecimals(item.wastage)}</div>
-                    <div class="burton-item-line"><strong>Unit:</strong> ${item.unit}</div>
-                    <div class="burton-item-line"><strong>Unit Price:</strong> ${this.formatToThreeDecimals(item.unitPrice)}</div>
-                    <div class="burton-item-line"><strong>Total:</strong> ${this.formatToThreeDecimals(item.totalPrice)}</div>
+                    <div class="burton-item-line ob-section-header"><strong>${item.description}:</strong></div>
+                    ${item.details ? `<div class="burton-item-line ob-sub-item">Details: <strong>${item.details}</strong></div>` : ''}
+                    <div class="burton-item-line ob-sub-item">Material: <strong>${item.materialName}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Supplier: <strong>${item.supplier}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Qty: <strong>${item.quantity}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Wastage: <strong>${this.formatToThreeDecimals(item.wastage)}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Unit: <strong>${item.unit}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Unit Price: <strong>${this.formatToThreeDecimals(item.unitPrice)}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Total: <strong>${this.formatToThreeDecimals(item.totalPrice)}</strong></div>
                 </div>
             `;
         });

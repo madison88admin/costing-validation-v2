@@ -50,22 +50,27 @@ class ODLOProcessor {
             <div class="burton-cost-container">
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>ODLO Validation Rules:</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Rule 1 - Category Check:</strong></div>
-                        <div class="burton-item-line">• Find "Category" in Column A → Column B = <strong>Accessories</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Rule 2 - Garment Maker Check:</strong></div>
-                        <div class="burton-item-line">• Find "Garment Maker" in Column A → Column B = <strong>Madison 88 (USD)</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Rule 3 - Trims Check:</strong></div>
-                        <div class="burton-item-line">• Find "TRIMS" in Column A, then find "THD-10005" rows</div>
-                        <div class="burton-item-line">• Validate: Col B, E, F, G values</div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Rule 4 - Column B → G Checks:</strong></div>
-                        <div class="burton-item-line">• Labour Sewing minutes → <strong>0.1</strong></div>
-                        <div class="burton-item-line">• Labour Heat transfer pressing → <strong>0</strong></div>
-                        <div class="burton-item-line">• Labour Seam sealing → <strong>0.4</strong></div>
-                        <div class="burton-item-line">• Knitting minutes → <strong>0.05</strong></div>
-                        <div class="burton-item-line">• Linking minutes → <strong>0.15</strong></div>
-                        <div class="burton-item-line">• Overhead in % → <strong>10% - 15%</strong></div>
-                        <div class="burton-item-line">• Profit in % → <strong>4% - 8%</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Category Check:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Find "Category" in Column A → Column B = <strong>Accessories</strong></div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Garment Maker Check:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Find "Garment Maker" in Column A → Column B = <strong>Madison 88 (USD)</strong></div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Trims Check:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Find "TRIMS" in Column A, then find "THD-10005" rows</div>
+                        <div class="burton-item-line ob-sub-item">Validate: Col B, E, F, G values</div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Column B → G Checks:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Labour Sewing minutes → <strong>0.1</strong></div>
+                        <div class="burton-item-line ob-sub-item">Labour Heat transfer pressing → <strong>0</strong></div>
+                        <div class="burton-item-line ob-sub-item">Labour Seam sealing → <strong>0.4</strong></div>
+                        <div class="burton-item-line ob-sub-item">Knitting minutes → <strong>0.05</strong></div>
+                        <div class="burton-item-line ob-sub-item">Linking minutes → <strong>0.15</strong></div>
+                        <div class="burton-item-line ob-sub-item">Overhead in % → <strong>10% - 15%</strong></div>
+                        <div class="burton-item-line ob-sub-item">Profit in % → <strong>4% - 8%</strong></div>
                     </div>
                 </div>
             </div>

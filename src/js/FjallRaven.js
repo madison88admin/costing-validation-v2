@@ -75,17 +75,17 @@ class FjallRavenProcessor {
         this.fjallRavenCostData.forEach((item, index) => {
             contentHTML += `
                 <div class="burton-cost-item">
-                    <div class="burton-item-line"><strong>${item.product}</strong></div>
-                    <div class="burton-item-line"><strong>Supplier Material Code:</strong> ${item.supplierMaterialCode}</div>
-                    <div class="burton-item-line"><strong>BOM Section:</strong> ${item.bomSection}</div>
-                    <div class="burton-item-line"><strong>Supplier:</strong> ${item.supplier}</div>
-                    <div class="burton-item-line"><strong>Labor Cost:</strong> ${item.laborCost}</div>
-                    <div class="burton-item-line"><strong>Miscellaneous:</strong> ${item.miscellaneous}</div>
-                    <div class="burton-item-line"><strong>Qty:</strong> ${item.qty}</div>
-                    <div class="burton-item-line"><strong>First Cost:</strong> ${item.firstCost}</div>
-                    <div class="burton-item-line"><strong>Price:</strong> ${item.price}</div>
-                    <div class="burton-item-line"><strong>Freight:</strong> ${item.freight}</div>
-                    <div class="burton-item-line"><strong>Waste:</strong> ${item.waste}</div>
+                    <div class="burton-item-line ob-section-header"><strong>${item.product}:</strong></div>
+                    <div class="burton-item-line ob-sub-item">Supplier Material Code: <strong>${item.supplierMaterialCode}</strong></div>
+                    <div class="burton-item-line ob-sub-item">BOM Section: <strong>${item.bomSection}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Supplier: <strong>${item.supplier}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Labor Cost: <strong>${item.laborCost}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Miscellaneous: <strong>${item.miscellaneous}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Qty: <strong>${item.qty}</strong></div>
+                    <div class="burton-item-line ob-sub-item">First Cost: <strong>${item.firstCost}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Price: <strong>${item.price}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Freight: <strong>${item.freight}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Waste: <strong>${item.waste}</strong></div>
                 </div>
             `;
         });

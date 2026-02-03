@@ -176,27 +176,33 @@ class PranaProcessor {
             <div class="burton-cost-container">
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Validation Rules:</strong></div>
-                        <div class="burton-item-line">Scans ALL sheets in the Excel file</div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Section 1 - Fabrics:</strong></div>
-                        <div class="burton-item-line">• Column G Wastage: <strong>5%</strong></div>
-                        <div class="burton-item-line">• Stops at "Fabric Subtotal"</div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Section 2 - Trims, Insulation:</strong></div>
-                        <div class="burton-item-line">• Column G Wastage: <strong>3%</strong></div>
-                        <div class="burton-item-line">• Stops at "Trim, Fills Subtotal"</div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Section 3 - Thread:</strong></div>
-                        <div class="burton-item-line">• Column G Wastage: <strong>3%</strong></div>
-                        <div class="burton-item-line">• Stops at "Thread Subtotal"</div>
-                        <div class="burton-item-line">• <em>Sewing Thread:</em> Col I = <strong>1.00</strong>, Col J = <strong>0.00949</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Section 4 - Labels / Garment Packaging:</strong></div>
-                        <div class="burton-item-line">• Column G Wastage: <strong>3%</strong></div>
-                        <div class="burton-item-line">• Stops at "Labels/Garment Packaging Subtotal"</div>
-                        <div class="burton-item-line">• <em>Special Items (Col B):</em> Col I = <strong>1.00</strong>, Col J = <strong>Unit Price</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Global Checks (Column A):</strong></div>
-                        <div class="burton-item-line">• Overhead: Col K = <strong>0.30049</strong></div>
-                        <div class="burton-item-line">• Profit: Col K = <strong>≤ 0.30</strong></div>
-                        <div class="burton-item-line">• Transit/Transportation: Col K = <strong>0.200499</strong></div>
-                        <div class="burton-item-line">• Finance: Col J = <strong>0</strong>, Col K = <strong>0.15049999</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Fabrics Section:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column G Wastage: <strong>5%</strong></div>
+                        <div class="burton-item-line ob-description">Stops at "Fabric Subtotal"</div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Trims, Insulation Section:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column G Wastage: <strong>3%</strong></div>
+                        <div class="burton-item-line ob-description">Stops at "Trim, Fills Subtotal"</div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Thread Section:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column G Wastage: <strong>3%</strong></div>
+                        <div class="burton-item-line ob-sub-item">Sewing Thread: Col I = <strong>1.00</strong>, Col J = <strong>0.00949</strong></div>
+                        <div class="burton-item-line ob-description">Stops at "Thread Subtotal"</div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Labels / Garment Packaging Section:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column G Wastage: <strong>3%</strong></div>
+                        <div class="burton-item-line ob-sub-item">Special Items (Col B): Col I = <strong>1.00</strong>, Col J = <strong>Unit Price</strong></div>
+                        <div class="burton-item-line ob-description">Stops at "Labels/Garment Packaging Subtotal"</div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Global Checks (Column A):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Overhead: Col K = <strong>0.30049</strong></div>
+                        <div class="burton-item-line ob-sub-item">Profit: Col K = <strong>≤ 0.30</strong></div>
+                        <div class="burton-item-line ob-sub-item">Transit/Transportation: Col K = <strong>0.200499</strong></div>
+                        <div class="burton-item-line ob-sub-item">Finance: Col J = <strong>0</strong>, Col K = <strong>0.15049999</strong></div>
                     </div>
                 </div>
             </div>

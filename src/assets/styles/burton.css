@@ -61,6 +61,20 @@
     margin-bottom: 0;
 }
 
+.burton-item-line.ob-section-header strong {
+    color: #2b4a6c;
+}
+
+.burton-item-line.ob-sub-item {
+    margin-left: 1rem;
+}
+
+.burton-item-line.ob-description {
+    margin-left: 1rem;
+    font-size: 0.85em;
+    color: #7a92ab;
+}
+
 .burton-item-number {
     display: none;
 }
@@ -81,6 +95,14 @@ body.dark-mode .burton-cost-item:hover {
 
 body.dark-mode .burton-item-line {
     color: #e2e8f0;
+}
+
+body.dark-mode .burton-item-line.ob-section-header strong {
+    color: #93c5fd;
+}
+
+body.dark-mode .burton-item-line.ob-description {
+    color: #94a3b8;
 }
 
 /* Scrollbar styling */

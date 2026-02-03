@@ -65,8 +65,6 @@ class TravisMatthewProcessor {
         // Replace the drop zone content with the Travis Matthew Cost data display
         let contentHTML = `
             <div class="burton-cost-container">
-                <div class="burton-cost-header">
-                </div>
                 <div class="burton-cost-items">
         `;
 
@@ -74,7 +72,8 @@ class TravisMatthewProcessor {
         this.travisMatthewCostData.forEach((item, index) => {
             contentHTML += `
                 <div class="burton-cost-item">
-                    <div class="burton-item-line"><strong>${item.label}:</strong> ${item.value}</div>
+                    <div class="burton-item-line ob-section-header"><strong>${item.label}:</strong></div>
+                    <div class="burton-item-line ob-sub-item">Value: <strong>${item.value}</strong></div>
                 </div>
             `;
         });

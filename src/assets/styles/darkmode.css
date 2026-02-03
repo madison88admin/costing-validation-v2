@@ -223,6 +223,10 @@ body.dark-mode .results-table td strong[style*="color: #2b4a6c"] {
     color: #ffffff !important;
 }
 
+body.dark-mode .burton-item-line strong[style*="color: #2b4a6c"] {
+    color: #93c5fd !important;
+}
+
 body.dark-mode .results-table td span[style*="color: #7a92ab"] {
     color: #849bba !important;
 }

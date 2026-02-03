@@ -29,40 +29,37 @@ class HaglofsProcessor {
 
         let contentHTML = `
             <div class="burton-cost-container">
-                <div class="burton-cost-header">
-
-                </div>
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">Supplier (Column A):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column B: <strong>Madison 88</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Supplier (Column A):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column B: <strong>Madison 88</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">Fabric Section (Material / Description → Total Fabric Costs):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column H (Allowance): <strong>5%</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Fabric Section (Material / Description → Total Fabric Costs):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column H (Allowance): <strong>5%</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">Trims Section (2nd Material / Description → Total Trims Costs):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column H (Allowance): <strong>3%</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Trims Section (2nd Material / Description → Total Trims Costs):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column H (Allowance): <strong>3%</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">Packaging Section (3rd Material / Description → Total Packaging Costs):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column H (Allowance): <strong>3%</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Packaging Section (3rd Material / Description → Total Packaging Costs):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column H (Allowance): <strong>3%</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">Generic Packaging (within Packaging Section):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column B: <strong>m88</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column F: <strong>pc</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column G: <strong>1</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column H: <strong>3%</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Generic Packaging (within Packaging Section):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column B: <strong>m88</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column F: <strong>pc</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column G: <strong>1</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column H: <strong>3%</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">Overhead (Column I):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column L: <strong>0.45</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Overhead (Column I):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column L: <strong>0.45</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">Margin (Column I):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column L: <strong>0.30 - 0.90</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Margin (Column I):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column L: <strong>0.30 - 0.90</strong></div>
                     </div>
                 </div>
             </div>

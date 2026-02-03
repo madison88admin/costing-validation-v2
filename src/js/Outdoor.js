@@ -56,17 +56,17 @@ class OutdoorResearchProcessor {
             <div class="burton-cost-container">
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>General Packaging Check</strong></div>
-                        <div class="burton-item-line"><strong>Search:</strong> Column D = "${gp.searchValue}"</div>
+                        <div class="burton-item-line ob-section-header"><strong>General Packaging Check:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Search: Column D = <strong>"${gp.searchValue}"</strong></div>
                         ${gp.checks.map(check =>
-                            `<div class="burton-item-line"><strong>Column ${check.colName}:</strong> ${check.expectedValue}</div>`
+                            `<div class="burton-item-line ob-sub-item">Column ${check.colName}: <strong>${check.expectedValue}</strong></div>`
                         ).join('')}
                     </div>
-                    <div class="burton-cost-item" style="margin-top: 1rem;">
-                        <div class="burton-item-line"><strong>Other Charges Check</strong></div>
-                        <div class="burton-item-line"><strong>Search:</strong> Column D = "${oc.searchValue}"</div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Other Charges Check:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Search: Column D = <strong>"${oc.searchValue}"</strong></div>
                         ${oc.checks.map(check =>
-                            `<div class="burton-item-line"><strong>Column ${check.colName}:</strong> ${check.expectedValue}</div>`
+                            `<div class="burton-item-line ob-sub-item">Column ${check.colName}: <strong>${check.expectedValue}</strong></div>`
                         ).join('')}
                     </div>
                 </div>

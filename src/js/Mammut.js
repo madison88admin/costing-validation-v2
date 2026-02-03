@@ -77,28 +77,28 @@ class MammutProcessor {
             <div class="burton-cost-container">
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Cell Value Checks (Column B -> C)</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Cell Value Checks (Column B → C):</strong></div>
                         ${this.validationRules.cellChecks.map(check =>
-                            `<div class="burton-item-line"><strong>${check.labelValue}:</strong> ${check.expectedValue}</div>`
+                            `<div class="burton-item-line ob-sub-item">${check.labelValue}: <strong>${check.expectedValue}</strong></div>`
                         ).join('')}
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Profit Margin Check (Column N -> T)</strong></div>
-                        <div class="burton-item-line"><strong>Label:</strong> ${pm.labelValue}</div>
-                        <div class="burton-item-line"><strong>Valid Range:</strong> ${pm.minValue.toFixed(2)} - ${pm.maxValue.toFixed(2)}</div>
+                        <div class="burton-item-line ob-section-header"><strong>Profit Margin Check (Column N → T):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Label: <strong>${pm.labelValue}</strong></div>
+                        <div class="burton-item-line ob-sub-item">Valid Range: <strong>${pm.minValue.toFixed(2)} - ${pm.maxValue.toFixed(2)}</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Wastage Check (Column Q)</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Wastage Check (Column Q):</strong></div>
                         ${wc.sections.map(section =>
-                            `<div class="burton-item-line"><strong>${section.label}:</strong> ${(section.expectedValue * 100).toFixed(0)}%</div>`
+                            `<div class="burton-item-line ob-sub-item">${section.label}: <strong>${(section.expectedValue * 100).toFixed(0)}%</strong></div>`
                         ).join('')}
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>CMT Checks (After OTHERS TOTAL)</strong></div>
-                        <div class="burton-item-line"><strong>Exchange Rate (Col K):</strong> ${this.validationRules.cmtChecks.expectedExRate.toFixed(2)}</div>
-                        <div class="burton-item-line"><strong>Currency (Col L):</strong> ${this.validationRules.cmtChecks.expectedCurrency}</div>
+                        <div class="burton-item-line ob-section-header"><strong>CMT Checks (After OTHERS TOTAL):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Exchange Rate (Col K): <strong>${this.validationRules.cmtChecks.expectedExRate.toFixed(2)}</strong></div>
+                        <div class="burton-item-line ob-sub-item">Currency (Col L): <strong>${this.validationRules.cmtChecks.expectedCurrency}</strong></div>
                         ${this.validationRules.cmtChecks.items.map(item =>
-                            `<div class="burton-item-line"><strong>${item.label} (Col H):</strong> ${item.expectedPrice.toFixed(2)}</div>`
+                            `<div class="burton-item-line ob-sub-item">${item.label} (Col H): <strong>${item.expectedPrice.toFixed(2)}</strong></div>`
                         ).join('')}
                     </div>
                 </div>

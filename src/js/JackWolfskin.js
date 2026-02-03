@@ -48,21 +48,21 @@ class JackWolfskinProcessor {
 
         let contentHTML = `
             <div class="burton-cost-container">
-                <div class="burton-cost-header">
-
-                </div>
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Supplier:</strong> Madison88</div>
-                        <div class="burton-item-line" style="font-size: 0.85em; color: #7a92ab;">Column B "Supplier" → Column C value</div>
+                        <div class="burton-item-line ob-section-header"><strong>Supplier:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Value: <strong>Madison88</strong></div>
+                        <div class="burton-item-line ob-description">Column B "Supplier" → Column C value</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Overhead Cost:</strong> 0.35</div>
-                        <div class="burton-item-line" style="font-size: 0.85em; color: #7a92ab;">Column J "Overhead Cost" → Column L value</div>
+                        <div class="burton-item-line ob-section-header"><strong>Overhead Cost:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Value: <strong>0.35</strong></div>
+                        <div class="burton-item-line ob-description">Column J "Overhead Cost" → Column L value</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Profit:</strong> 0.15 - 0.25</div>
-                        <div class="burton-item-line" style="font-size: 0.85em; color: #7a92ab;">Column J "Profit" → Column L value (range)</div>
+                        <div class="burton-item-line ob-section-header"><strong>Profit:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Value: <strong>0.15 - 0.25</strong></div>
+                        <div class="burton-item-line ob-description">Column J "Profit" → Column L value (range)</div>
                     </div>
                 </div>
             </div>

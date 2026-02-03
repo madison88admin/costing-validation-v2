@@ -92,10 +92,10 @@ class SkidaProcessor {
         for (const item of this.validationItems) {
             html += `
                 <div class="burton-cost-item">
-                    <div class="burton-item-line"><strong>${item.category}</strong></div>
-                    <div class="burton-item-line"><strong>Description:</strong> ${item.description}</div>
-                    <div class="burton-item-line"><strong>Unit Cost:</strong> ${item.unitCost}</div>
-                    <div class="burton-item-line"><strong>Quantity:</strong> ${item.quantity}</div>
+                    <div class="burton-item-line ob-section-header"><strong>${item.category}:</strong></div>
+                    <div class="burton-item-line ob-sub-item">Description: <strong>${item.description}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Unit Cost: <strong>${item.unitCost}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Quantity: <strong>${item.quantity}</strong></div>
                 </div>
             `;
         }

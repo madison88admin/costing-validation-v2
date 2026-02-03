@@ -38,52 +38,50 @@ class FOXProcessor {
 
         let contentHTML = `
             <div class="burton-cost-container">
-                <div class="burton-cost-header">
-                </div>
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">Vendor (Column C):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column D: <strong>Madison 88 Ltd</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Vendor (Column C):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column D: <strong>Madison 88 Ltd</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">Factory (Column C):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column D: <strong>PT UWU Jump</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Factory (Column C):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column D: <strong>PT UWU Jump</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">COO (Column C):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column D: <strong>Indonesia</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>COO (Column C):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column D: <strong>Indonesia</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">OVERHEAD (Column K):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column L: <strong>0.40</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>OVERHEAD (Column K):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column L: <strong>0.40</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">PROFIT & OTHERS (Column K):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column L: <strong>0.35 - 0.45</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>PROFIT & OTHERS (Column K):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column L: <strong>0.35 - 0.45</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">FABRIC / UPPER / SHELL (Column A):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column E (Wastage %): <strong>5%</strong> until SUBTOTAL</div>
+                        <div class="burton-item-line ob-section-header"><strong>FABRIC / UPPER / SHELL (Column A):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column E (Wastage %): <strong>5%</strong> until SUBTOTAL</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">Sewing Thread (Column B):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">D (Usage): <strong>1</strong>, E (Wastage): <strong>3%</strong>, H (COST CIF): <strong>0.01</strong>, I (Extended Cost): <strong>0.01</strong>, J (% to Total): <strong>0%</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Sewing Thread (Column B):</strong></div>
+                        <div class="burton-item-line ob-sub-item">D (Usage): <strong>1</strong>, E (Wastage): <strong>3%</strong>, H (COST CIF): <strong>0.01</strong>, I (Extended Cost): <strong>0.01</strong>, J (% to Total): <strong>0%</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">Standard Packaging (Column A):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">D (Usage): <strong>1</strong>, E (Wastage): <strong>3%</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Standard Packaging (Column A):</strong></div>
+                        <div class="burton-item-line ob-sub-item">D (Usage): <strong>1</strong>, E (Wastage): <strong>3%</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">LABOR COST (Column A):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column B: <strong>Knitting</strong>, <strong>Sewing</strong>, <strong>Finishing</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>LABOR COST (Column A):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column B: <strong>Knitting</strong>, <strong>Sewing</strong>, <strong>Finishing</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">OVERHEAD COST (Column A):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column H: <strong>0.40</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>OVERHEAD COST (Column A):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column H: <strong>0.40</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">PROFIT COST (Column A):</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column H: <strong>0.35 - 0.45</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>PROFIT COST (Column A):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column H: <strong>0.35 - 0.45</strong></div>
                     </div>
                 </div>
             </div>

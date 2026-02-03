@@ -131,15 +131,15 @@ class PeakPerformanceProcessor {
             <div class="burton-cost-container">
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Fabric/Yarn Wastage Check</strong></div>
-                        <div class="burton-item-line"><strong>Start:</strong> Find "${fw.startKeyword}" in Column A</div>
-                        <div class="burton-item-line"><strong>Check:</strong> Column J must contain "${fw.expectedValue}"</div>
-                        <div class="burton-item-line"><strong>Stop:</strong> When "${fw.stopKeyword}" is found in Column A</div>
+                        <div class="burton-item-line ob-section-header"><strong>Fabric/Yarn Wastage Check:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Start: Find <strong>"${fw.startKeyword}"</strong> in Column A</div>
+                        <div class="burton-item-line ob-sub-item">Check: Column J must contain <strong>"${fw.expectedValue}"</strong></div>
+                        <div class="burton-item-line ob-sub-item">Stop: When <strong>"${fw.stopKeyword}"</strong> is found in Column A</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Standard Items Check</strong></div>
-                        <div class="burton-item-line"><strong>Items loaded:</strong> ${this.standardItems.length}</div>
-                        <div class="burton-item-line"><strong>Columns:</strong> A (Supplier), B (Item#), C (Part), D (Desc), I (Yield), J (Wastage), K (FOB), L (CIF)</div>
+                        <div class="burton-item-line ob-section-header"><strong>Standard Items Check:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Items loaded: <strong>${this.standardItems.length}</strong></div>
+                        <div class="burton-item-line ob-sub-item">Columns: <strong>A (Supplier), B (Item#), C (Part), D (Desc), I (Yield), J (Wastage), K (FOB), L (CIF)</strong></div>
                     </div>
                 </div>
             </div>

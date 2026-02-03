@@ -152,54 +152,30 @@ class FootAsylumProcessor {
 
         let contentHTML = `
             <div class="burton-cost-container">
-                <div class="burton-cost-header">
-
-                </div>
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>FABRICS SECTION</strong> (between "Fabrics (...)" and "Trims (")</div>
+                        <div class="burton-item-line ob-section-header"><strong>Fabrics Section:</strong></div>
+                        <div class="burton-item-line ob-description">Between "Fabrics (...)" and "Trims ("</div>
+                        <div class="burton-item-line ob-sub-item">Column D - Main Material: <strong>TRUE</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column P - Supplier Currency: <strong>USD</strong></div>
+                        <div class="burton-item-line ob-sub-item">Wastage %: <strong>5%</strong> (column detected from Row 2)</div>
+                        <div class="burton-item-line ob-sub-item">Overhead Cost: <strong>0.5</strong> (column detected from Row 2)</div>
+                        <div class="burton-item-line ob-sub-item">Testing Cost: <strong>0.1</strong> (column detected from Row 2)</div>
+                        <div class="burton-item-line ob-sub-item">Profit % / Total FOB: <strong>10%</strong> (column detected from Row 2)</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line">Column D - Main Material: TRUE</div>
+                        <div class="burton-item-line ob-section-header"><strong>Trims Section:</strong></div>
+                        <div class="burton-item-line ob-description">Between "Trims (...)" and "Packaging"</div>
+                        <div class="burton-item-line ob-sub-item">Column D - Main Material: <strong>FALSE</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column P - Supplier Currency: <strong>USD</strong></div>
+                        <div class="burton-item-line ob-sub-item">Wastage %: <strong>3%</strong> (column detected from Row 2)</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line">Column P - Supplier Currency: USD</div>
-                    </div>
-                    <div class="burton-cost-item">
-                        <div class="burton-item-line">Wastage %: 5% (column detected from Row 2)</div>
-                    </div>
-                    <div class="burton-cost-item">
-                        <div class="burton-item-line">Overhead Cost: 0.5 (column detected from Row 2)</div>
-                    </div>
-                    <div class="burton-cost-item">
-                        <div class="burton-item-line">Testing Cost: 0.1 (column detected from Row 2)</div>
-                    </div>
-                    <div class="burton-cost-item">
-                        <div class="burton-item-line">Profit % / Total FOB: 10% (column detected from Row 2)</div>
-                    </div>
-                    <div class="burton-cost-item" style="margin-top: 12px; border-top: 1px solid #cbd5e1; padding-top: 12px;">
-                        <div class="burton-item-line"><strong>TRIMS SECTION</strong> (between "Trims (...)" and "Packaging")</div>
-                    </div>
-                    <div class="burton-cost-item">
-                        <div class="burton-item-line">Column D - Main Material: FALSE</div>
-                    </div>
-                    <div class="burton-cost-item">
-                        <div class="burton-item-line">Column P - Supplier Currency: USD</div>
-                    </div>
-                    <div class="burton-cost-item">
-                        <div class="burton-item-line">Wastage %: 3% (column detected from Row 2)</div>
-                    </div>
-                    <div class="burton-cost-item" style="margin-top: 12px; border-top: 1px solid #cbd5e1; padding-top: 12px;">
-                        <div class="burton-item-line"><strong>PACKAGING SECTION</strong> (between "Packaging (...)" and "Graphics")</div>
-                    </div>
-                    <div class="burton-cost-item">
-                        <div class="burton-item-line">Column D - Main Material: FALSE</div>
-                    </div>
-                    <div class="burton-cost-item">
-                        <div class="burton-item-line">Column P - Supplier Currency: USD</div>
-                    </div>
-                    <div class="burton-cost-item">
-                        <div class="burton-item-line">Wastage %: 3% (column detected from Row 2)</div>
+                        <div class="burton-item-line ob-section-header"><strong>Packaging Section:</strong></div>
+                        <div class="burton-item-line ob-description">Between "Packaging (...)" and "Graphics"</div>
+                        <div class="burton-item-line ob-sub-item">Column D - Main Material: <strong>FALSE</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column P - Supplier Currency: <strong>USD</strong></div>
+                        <div class="burton-item-line ob-sub-item">Wastage %: <strong>3%</strong> (column detected from Row 2)</div>
                     </div>
                 </div>
             </div>

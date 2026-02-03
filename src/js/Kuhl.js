@@ -40,29 +40,26 @@ class KuhlProcessor {
 
         let contentHTML = `
             <div class="burton-cost-container">
-                <div class="burton-cost-header">
-
-                </div>
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">Fabric/Yarn Section:</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column K - Consumption: <strong>5%</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Fabric/Yarn Section:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column K - Consumption: <strong>5%</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">Trim Section:</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column K - Consumption: <strong>3%</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column E - Supplier: <strong>Contains "Local" or "Nominated"</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column H - C.I.F.VS FOB %: <strong>0.012%</strong> (if Local) or <strong>15%</strong> (if Nominated)</div>
+                        <div class="burton-item-line ob-section-header"><strong>Trim Section:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column K - Consumption: <strong>3%</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column E - Supplier: <strong>Contains "Local" or "Nominated"</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column H - C.I.F.VS FOB %: <strong>0.012%</strong> (if Local) or <strong>15%</strong> (if Nominated)</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">Labelling Section:</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column K - Consumption: <strong>3%</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column E - Supplier: <strong>Contains "Local" or "Nominated"</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column H - C.I.F.VS FOB %: <strong>0.012%</strong> (if Local) or <strong>15%</strong> (if Nominated)</div>
+                        <div class="burton-item-line ob-section-header"><strong>Labelling Section:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column K - Consumption: <strong>3%</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column E - Supplier: <strong>Contains "Local" or "Nominated"</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column H - C.I.F.VS FOB %: <strong>0.012%</strong> (if Local) or <strong>15%</strong> (if Nominated)</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong style="color: #2b4a6c;">Profit Margin:</strong></div>
-                        <div class="burton-item-line" style="margin-left: 1rem;">Column M - Value: <strong>0.60 to 0.95</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Profit Margin:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column M - Value: <strong>0.60 to 0.95</strong></div>
                     </div>
                 </div>
             </div>

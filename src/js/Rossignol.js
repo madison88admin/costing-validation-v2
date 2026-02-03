@@ -44,21 +44,30 @@ class RossignolProcessor {
             <div class="burton-cost-container">
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Rossignol Validation Rules:</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Rule 1 - Vendor Name:</strong></div>
-                        <div class="burton-item-line">Find "VENDOR NAME" in Column D → Column E = <strong>Madison 88</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Rule 2 - Currency:</strong></div>
-                        <div class="burton-item-line">Find "CURRENCY" in Column D → Column E = <strong>USD</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Rule 3 - H2 Check:</strong></div>
-                        <div class="burton-item-line">Cell H2 should be <strong>5% - 10%</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Rule 4 - Factory Margin:</strong></div>
-                        <div class="burton-item-line">Find "FACTORY MARGIN" in Column I → Column J = <strong>0.40 - 0.70</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Rule 5 - Material Category Rows:</strong></div>
-                        <div class="burton-item-line">FABRIC → Column L = <strong>5%</strong></div>
-                        <div class="burton-item-line">TRIM, Accessories, GRAPHIC, Labelling → Column L = <strong>3%</strong></div>
-                        <div class="burton-item-line" style="margin-top: 0.5rem;"><strong>Rule 6 - PACKAGING Rows:</strong></div>
-                        <div class="burton-item-line">If Column D = "Generic Packaging" → G = <strong>m88</strong>, J = <strong>pc</strong>, L = <strong>1</strong></div>
-                        <div class="burton-item-line">Otherwise → Column L = <strong>3%</strong></div>
+                        <div class="burton-item-line ob-section-header"><strong>Vendor Name:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Find "VENDOR NAME" in Column D → Column E = <strong>Madison 88</strong></div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Currency:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Find "CURRENCY" in Column D → Column E = <strong>USD</strong></div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>H2 Check:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Cell H2 should be <strong>5% - 10%</strong></div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Factory Margin:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Find "FACTORY MARGIN" in Column I → Column J = <strong>0.40 - 0.70</strong></div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Material Category Rows:</strong></div>
+                        <div class="burton-item-line ob-sub-item">FABRIC → Column L = <strong>5%</strong></div>
+                        <div class="burton-item-line ob-sub-item">TRIM, Accessories, GRAPHIC, Labelling → Column L = <strong>3%</strong></div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Packaging Rows:</strong></div>
+                        <div class="burton-item-line ob-sub-item">If Column D = "Generic Packaging" → G = <strong>m88</strong>, J = <strong>pc</strong>, L = <strong>1</strong></div>
+                        <div class="burton-item-line ob-sub-item">Otherwise → Column L = <strong>3%</strong></div>
                     </div>
                 </div>
             </div>

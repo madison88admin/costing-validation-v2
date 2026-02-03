@@ -104,12 +104,13 @@ class VuoriProcessor {
         for (const item of this.validationItems) {
             html += `
                 <div class="burton-cost-item">
-                    <div class="burton-item-line"><strong>Material Desc (D):</strong> ${item.materialDesc}</div>
-                    <div class="burton-item-line"><strong>Material Code (E):</strong> ${item.materialCode}</div>
-                    <div class="burton-item-line"><strong>Material Subtype (F):</strong> ${item.materialSubtype}</div>
-                    <div class="burton-item-line"><strong>Construction (G):</strong> ${item.construction}</div>
-                    <div class="burton-item-line"><strong>Supplier Cost (S):</strong> ${item.supplierCost}</div>
-                    <div class="burton-item-line"><strong>Wastage (W):</strong> ${item.wastage}</div>
+                    <div class="burton-item-line ob-section-header"><strong>Material Desc (D):</strong></div>
+                    <div class="burton-item-line ob-sub-item">Value: <strong>${item.materialDesc}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Material Code (E): <strong>${item.materialCode}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Material Subtype (F): <strong>${item.materialSubtype}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Construction (G): <strong>${item.construction}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Supplier Cost (S): <strong>${item.supplierCost}</strong></div>
+                    <div class="burton-item-line ob-sub-item">Wastage (W): <strong>${item.wastage}</strong></div>
                 </div>
             `;
         }

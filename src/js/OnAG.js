@@ -60,26 +60,27 @@ class OnAGProcessor {
             <div class="burton-cost-container">
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>On AG Wastage Validation</strong></div>
-                        <div class="burton-item-line"><strong>Search Column:</strong> A (Section Keywords)</div>
-                        <div class="burton-item-line"><strong>Wastage Column:</strong> J</div>
-                        <div class="burton-item-line"><strong>Stop at:</strong> "Total" in Column I</div>
+                        <div class="burton-item-line ob-section-header"><strong>Wastage Validation:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Search Column: <strong>A</strong> (Section Keywords)</div>
+                        <div class="burton-item-line ob-sub-item">Wastage Column: <strong>J</strong></div>
+                        <div class="burton-item-line ob-sub-item">Stop at: <strong>"Total"</strong> in Column I</div>
                     </div>
                     ${this.validationRules.wastageSections.map(section => `
-                        <div class="burton-cost-item" style="margin-top: 0.5rem;">
-                            <div class="burton-item-line"><strong>${section.label} Wastage:</strong> ${section.wastageExpected}%</div>
-                        </div>
-                    `).join('')}
-                    <div class="burton-cost-item" style="margin-top: 0.5rem;">
-                        <div class="burton-item-line"><strong>Coats Thread (in Material):</strong></div>
-                        <div class="burton-item-line">PX/Unit (Col I): 0.001</div>
-                        <div class="burton-item-line">Wastage (Col J): 2.00%</div>
-                        <div class="burton-item-line">Freight (Col L): 0.0002</div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>${section.label} Wastage:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Expected: <strong>${section.wastageExpected}%</strong></div>
                     </div>
-                    <div class="burton-cost-item" style="margin-top: 0.5rem;">
-                        <div class="burton-item-line"><strong>Process & Cost Checks (Col A -> Col I):</strong></div>
+                    `).join('')}
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Coats Thread (in Material):</strong></div>
+                        <div class="burton-item-line ob-sub-item">PX/Unit (Col I): <strong>0.001</strong></div>
+                        <div class="burton-item-line ob-sub-item">Wastage (Col J): <strong>2.00%</strong></div>
+                        <div class="burton-item-line ob-sub-item">Freight (Col L): <strong>0.0002</strong></div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Process & Cost Checks (Col A → Col I):</strong></div>
                         ${this.validationRules.processCosts.map(item =>
-                            `<div class="burton-item-line">${item.label}: ${item.expectedValue}</div>`
+                            `<div class="burton-item-line ob-sub-item">${item.label}: <strong>${item.expectedValue}</strong></div>`
                         ).join('')}
                     </div>
                 </div>

@@ -26,25 +26,19 @@ class RideStoreProcessor {
 
         let html = `
             <div class="burton-cost-container">
-
                 <div class="burton-cost-items">
-        `;
-
-        // Display validation rules
-        html += `
-            <div class="burton-cost-item">
-                <div class="burton-item-line"><strong>Cell A13:</strong> supplier</div>
-                <div class="burton-item-line"><strong>Cell A14:</strong> Factory</div>
-                <div class="burton-item-line"><strong>Cell A15:</strong> Country of origin</div>
-            </div>
-            <div class="burton-cost-item">
-                <div class="burton-item-line"><strong>Cell B13:</strong> Madison 88 Ltd.</div>
-                <div class="burton-item-line"><strong>Cell B14:</strong> Madison 88 Ltd.</div>
-                <div class="burton-item-line"><strong>Cell B15:</strong> Indonesia</div>
-            </div>
-        `;
-
-        html += `
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Cell Labels (Column A):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Cell A13: <strong>supplier</strong></div>
+                        <div class="burton-item-line ob-sub-item">Cell A14: <strong>Factory</strong></div>
+                        <div class="burton-item-line ob-sub-item">Cell A15: <strong>Country of origin</strong></div>
+                    </div>
+                    <div class="burton-cost-item">
+                        <div class="burton-item-line ob-section-header"><strong>Cell Values (Column B):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Cell B13: <strong>Madison 88 Ltd.</strong></div>
+                        <div class="burton-item-line ob-sub-item">Cell B14: <strong>Madison 88 Ltd.</strong></div>
+                        <div class="burton-item-line ob-sub-item">Cell B15: <strong>Indonesia</strong></div>
+                    </div>
                 </div>
             </div>
         `;

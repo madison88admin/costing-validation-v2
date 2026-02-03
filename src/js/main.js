@@ -190,29 +190,17 @@ class TabManager {
     constructor() {
         this.tabs = document.querySelectorAll('.tab-btn');
         this.tabContents = document.querySelectorAll('.tab-content');
+        this.isFirstSelection = true;
         this.attachEventListeners();
         this.initializeActiveTab();
     }
 
     initializeActiveTab() {
-        // Set the active tab to show full text on page load
+        // No template selected on page load — all tabs show short text
         this.tabs.forEach(tab => {
-            if (tab.classList.contains('active')) {
-                const fullText = tab.getAttribute('data-full');
-                if (fullText) {
-                    tab.textContent = fullText;
-
-                    // Set header title to the initially active brand
-                    const headerTitle = document.querySelector('.header-title');
-                    if (headerTitle) {
-                        headerTitle.textContent = fullText;
-                    }
-                }
-            } else {
-                const shortText = tab.getAttribute('data-short');
-                if (shortText) {
-                    tab.textContent = shortText;
-                }
+            const shortText = tab.getAttribute('data-short');
+            if (shortText) {
+                tab.textContent = shortText;
             }
         });
     }
@@ -242,6 +230,8 @@ class TabManager {
     }
 
     switchTab(tabId) {
+        const isFirst = this.isFirstSelection;
+
         // Reset all tabs to short text and remove active class
         this.tabs.forEach(tab => {
             tab.classList.remove('active');
@@ -253,41 +243,69 @@ class TabManager {
 
         this.tabContents.forEach(content => content.classList.remove('active'));
 
-        // Use more specific selector to get the tab button, not the menu item
+        const blankState = document.getElementById('blankState');
         const selectedTab = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
         const selectedContent = document.getElementById(`tab-${tabId}`);
 
-        if (selectedTab && selectedContent) {
-            selectedTab.classList.add('active');
-            selectedContent.classList.add('active');
+        if (!selectedTab || !selectedContent) return;
 
-            // Set active tab to full text
-            const fullText = selectedTab.getAttribute('data-full');
-            if (fullText) {
-                selectedTab.textContent = fullText;
+        selectedTab.classList.add('active');
 
-                // Animate header title to show selected brand
-                const headerTitle = document.querySelector('.header-title');
-                if (headerTitle) {
-                    headerTitle.classList.add('title-fade-out');
+        // Set active tab to full text + animate header
+        const fullText = selectedTab.getAttribute('data-full');
+        if (fullText) {
+            selectedTab.textContent = fullText;
+            const headerTitle = document.querySelector('.header-title');
+            if (headerTitle) {
+                headerTitle.classList.add('title-fade-out');
+                setTimeout(() => {
+                    headerTitle.textContent = fullText;
+                    headerTitle.classList.remove('title-fade-out');
+                    headerTitle.classList.add('title-fade-in');
                     setTimeout(() => {
-                        headerTitle.textContent = fullText;
-                        headerTitle.classList.remove('title-fade-out');
-                        headerTitle.classList.add('title-fade-in');
-                        setTimeout(() => {
-                            headerTitle.classList.remove('title-fade-in');
-                        }, 400);
-                    }, 200);
-                }
+                        headerTitle.classList.remove('title-fade-in');
+                    }, 400);
+                }, 200);
             }
+        }
+
+        // First selection from blank state: fade it out smoothly
+        if (isFirst && blankState && !blankState.classList.contains('hidden')) {
+            this.isFirstSelection = false;
+
+            // Fade opacity to 0 via inline style — transition handles the smooth fade
+            blankState.style.opacity = '0';
+            blankState.style.pointerEvents = 'none';
+
+            // After fade completes, collapse blank state and reveal content
+            blankState.addEventListener('transitionend', () => {
+                blankState.classList.add('hidden');
+
+                // Set up content as invisible first
+                selectedContent.classList.add('active', 'content-reveal');
+
+                // Force reflow so browser registers the starting state
+                selectedContent.offsetHeight;
+
+                // Trigger the smooth transition to visible
+                selectedContent.classList.add('content-visible');
+
+                selectedContent.addEventListener('transitionend', () => {
+                    selectedContent.classList.remove('content-reveal', 'content-visible');
+                }, { once: true });
+            }, { once: true });
+        } else {
+            // Normal tab switch (not first time)
+            if (blankState) {
+                blankState.classList.add('hidden');
+            }
+            selectedContent.classList.add('active');
         }
 
         // Update menu active state
         if (window.menuManager) {
             window.menuManager.updateActiveMenuItem(tabId);
         }
-
-        console.log(`Switched to ${tabId.toUpperCase()}`);
     }
 }
 
@@ -349,8 +367,7 @@ class MenuManager {
             }
         });
 
-        // Set initial active state
-        this.updateActiveMenuItem('v1');
+        // No initial active state — user must select a template
     }
 
     filterTemplates(searchTerm) {
@@ -381,17 +398,29 @@ class MenuManager {
     toggleMenu() {
         if (this.menuDropdown) {
             const isOpening = !this.menuDropdown.classList.contains('active');
-            this.menuDropdown.classList.toggle('active');
-            if (isOpening && this.templateSearch) {
-                // Focus search input when opening menu
-                setTimeout(() => this.templateSearch.focus(), 100);
+            if (isOpening) {
+                this.openMenu();
+            } else {
+                this.closeMenu();
             }
         }
     }
 
     closeMenu() {
         if (this.menuDropdown) {
+            // Set max-height to actual height so the fold animation is visible
+            this.menuDropdown.style.maxHeight = this.menuDropdown.scrollHeight + 'px';
+            // Force reflow so browser registers the starting height
+            this.menuDropdown.offsetHeight;
             this.menuDropdown.classList.remove('active');
+            // Override to 0 so it folds from actual height, not 520px
+            this.menuDropdown.style.maxHeight = '0';
+
+            // Clean up inline style after transition
+            this.menuDropdown.addEventListener('transitionend', () => {
+                this.menuDropdown.style.maxHeight = '';
+            }, { once: true });
+
             // Clear search and show all items when closing
             if (this.templateSearch) {
                 this.templateSearch.value = '';

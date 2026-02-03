@@ -45,22 +45,22 @@ class LLBEANProcessor {
             <div class="burton-cost-container">
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Cell B5 Keywords Check</strong></div>
-                        <div class="burton-item-line">Must contain: ${this.validationRules.b5Keywords.join(', ')}</div>
+                        <div class="burton-item-line ob-section-header"><strong>Cell B5 Keywords Check:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Must contain: <strong>${this.validationRules.b5Keywords.join(', ')}</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Trims Section - Box Validation</strong></div>
-                        <div class="burton-item-line"><strong>Item:</strong> ${box.item}</div>
-                        <div class="burton-item-line"><strong>Supplier:</strong> ${box.supplier}</div>
-                        <div class="burton-item-line"><strong>Consumption:</strong> ${box.consumption.toFixed(2)}</div>
-                        <div class="burton-item-line"><strong>Unit Price:</strong> $${box.unitPrice.toFixed(2)}</div>
-                        <div class="burton-item-line"><strong>Total Cost:</strong> $${box.totalCost.toFixed(2)}</div>
+                        <div class="burton-item-line ob-section-header"><strong>Trims Section - Box Validation:</strong></div>
+                        <div class="burton-item-line ob-sub-item">Item: <strong>${box.item}</strong></div>
+                        <div class="burton-item-line ob-sub-item">Supplier: <strong>${box.supplier}</strong></div>
+                        <div class="burton-item-line ob-sub-item">Consumption: <strong>${box.consumption.toFixed(2)}</strong></div>
+                        <div class="burton-item-line ob-sub-item">Unit Price: <strong>$${box.unitPrice.toFixed(2)}</strong></div>
+                        <div class="burton-item-line ob-sub-item">Total Cost: <strong>$${box.totalCost.toFixed(2)}</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Total Financial Cost (Column H)</strong></div>
-                        <div class="burton-item-line"><strong>If Beanie:</strong> $${this.validationRules.totalFinancialCost.beanie.toFixed(2)}</div>
-                        <div class="burton-item-line"><strong>If Socks:</strong> $${this.validationRules.totalFinancialCost.socks.toFixed(2)}</div>
-                        <div class="burton-item-line"><strong>If Scarf:</strong> $${this.validationRules.totalFinancialCost.scarf.toFixed(2)}</div>
+                        <div class="burton-item-line ob-section-header"><strong>Total Financial Cost (Column H):</strong></div>
+                        <div class="burton-item-line ob-sub-item">If Beanie: <strong>$${this.validationRules.totalFinancialCost.beanie.toFixed(2)}</strong></div>
+                        <div class="burton-item-line ob-sub-item">If Socks: <strong>$${this.validationRules.totalFinancialCost.socks.toFixed(2)}</strong></div>
+                        <div class="burton-item-line ob-sub-item">If Scarf: <strong>$${this.validationRules.totalFinancialCost.scarf.toFixed(2)}</strong></div>
                     </div>
                 </div>
             </div>

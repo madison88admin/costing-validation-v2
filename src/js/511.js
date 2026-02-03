@@ -73,31 +73,33 @@ class Processor511 {
 
         let contentHTML = `
             <div class="burton-cost-container">
-                <div class="burton-cost-header">
-
-                </div>
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>FACTORY (D7):</strong> PT Ujump Indonesia (E7)</div>
+                        <div class="burton-item-line ob-section-header"><strong>Factory (D7):</strong></div>
+                        <div class="burton-item-line ob-sub-item">E7: <strong>PT Ujump Indonesia</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>COO: (D8):</strong> Indonesia (E8)</div>
+                        <div class="burton-item-line ob-section-header"><strong>COO (D8):</strong></div>
+                        <div class="burton-item-line ob-sub-item">E8: <strong>Indonesia</strong></div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Remarks (E15):</strong></div>
-                        <div class="burton-item-line" style="font-size: 0.85em; color: #7a92ab;">if under style minimum, we will request upcharge, profit includes OH cost</div>
+                        <div class="burton-item-line ob-section-header"><strong>Remarks (E15):</strong></div>
+                        <div class="burton-item-line ob-description">if under style minimum, we will request upcharge, profit includes OH cost</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Fabrics Wastage% (Column J):</strong> 5%</div>
-                        <div class="burton-item-line" style="font-size: 0.85em; color: #7a92ab;">Between "A. FABRICS..." and "TOTAL FABRIC COST"</div>
+                        <div class="burton-item-line ob-section-header"><strong>Fabrics Wastage% (Column J):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Expected: <strong>5%</strong></div>
+                        <div class="burton-item-line ob-description">Between "A. FABRICS..." and "TOTAL FABRIC COST"</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Trims Wastage% (Column J):</strong> 3%</div>
-                        <div class="burton-item-line" style="font-size: 0.85em; color: #7a92ab;">Between "B. TRIMS..." and "TOTAL TRIMS COST"</div>
+                        <div class="burton-item-line ob-section-header"><strong>Trims Wastage% (Column J):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Expected: <strong>3%</strong></div>
+                        <div class="burton-item-line ob-description">Between "B. TRIMS..." and "TOTAL TRIMS COST"</div>
                     </div>
                     <div class="burton-cost-item">
-                        <div class="burton-item-line"><strong>Packaging Wastage% (Column J):</strong> 3%</div>
-                        <div class="burton-item-line" style="font-size: 0.85em; color: #7a92ab;">Between "C. LABELS..." and "TOTAL PACKING COST"</div>
+                        <div class="burton-item-line ob-section-header"><strong>Packaging Wastage% (Column J):</strong></div>
+                        <div class="burton-item-line ob-sub-item">Expected: <strong>3%</strong></div>
+                        <div class="burton-item-line ob-description">Between "C. LABELS..." and "TOTAL PACKING COST"</div>
                     </div>
                 </div>
             </div>
