@@ -8,7 +8,7 @@
 }
 
 html {
-    scrollbar-gutter: stable;
+    scrollbar-gutter: auto;
 }
 
 body {
@@ -334,7 +334,6 @@ body {
 /* ===== SIDEBAR ===== */
 .sidebar {
     width: 250px;
-    min-width: 250px;
     background: #2b4a6c;
     position: fixed;
     left: 0;
@@ -344,8 +343,7 @@ body {
     flex-direction: column;
     overflow: hidden;
     z-index: 999;
-    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .sidebar-header {
@@ -501,7 +499,6 @@ body {
 /* Collapsed sidebar */
 .sidebar.collapsed {
     width: 60px;
-    min-width: 60px;
 }
 
 .sidebar.collapsed .sidebar-title {
@@ -527,8 +524,6 @@ body {
 }
 
 .sidebar.collapsed .sidebar-item {
-    font-size: 0.7rem;
-    font-weight: 700;
     text-align: center;
     padding: 10px 4px;
 }
