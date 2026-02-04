@@ -188,73 +188,98 @@ class ExcelFileHandler {
 // Tab Management
 class TabManager {
     constructor() {
-        this.tabs = document.querySelectorAll('.tab-btn');
+        this.tabs = document.querySelectorAll('.sidebar-item');
         this.tabContents = document.querySelectorAll('.tab-content');
+        this.sidebar = document.getElementById('sidebar');
+        this.sidebarSearch = document.getElementById('sidebarSearch');
+        this.collapseBtn = document.getElementById('sidebarCollapseBtn');
         this.isFirstSelection = true;
         this.attachEventListeners();
-        this.initializeActiveTab();
+        this.setSidebarTop();
     }
 
-    initializeActiveTab() {
-        // No template selected on page load — all tabs show short text
-        this.tabs.forEach(tab => {
-            const shortText = tab.getAttribute('data-short');
-            if (shortText) {
-                tab.textContent = shortText;
-            }
-        });
+    setSidebarTop() {
+        const header = document.querySelector('.header');
+        if (header) {
+            const h = header.offsetHeight;
+            document.documentElement.style.setProperty('--header-height', h + 'px');
+        }
     }
 
     attachEventListeners() {
         this.tabs.forEach(tab => {
             tab.addEventListener('click', () => this.switchTab(tab.dataset.tab));
+        });
 
-            // Add hover listeners to change text
-            tab.addEventListener('mouseenter', () => {
-                const fullText = tab.getAttribute('data-full');
-                if (fullText) {
-                    tab.textContent = fullText;
-                }
-            });
+        // Sidebar search
+        if (this.sidebarSearch) {
+            this.sidebarSearch.addEventListener('input', () => this.filterSidebarItems());
+        }
 
-            tab.addEventListener('mouseleave', () => {
-                // Only collapse if not active
-                if (!tab.classList.contains('active')) {
-                    const shortText = tab.getAttribute('data-short');
-                    if (shortText) {
-                        tab.textContent = shortText;
-                    }
-                }
-            });
+        // Collapse toggle
+        if (this.collapseBtn) {
+            this.collapseBtn.addEventListener('click', () => this.toggleSidebar());
+        }
+
+        // Responsive: show short text on small screens
+        const mq = window.matchMedia('(max-width: 768px)');
+        mq.addEventListener('change', () => this.updateSidebarText());
+    }
+
+    filterSidebarItems() {
+        const query = this.sidebarSearch.value.toLowerCase().trim();
+        this.tabs.forEach(item => {
+            const name = item.getAttribute('data-full').toLowerCase();
+            const short = item.getAttribute('data-short').toLowerCase();
+            if (name.includes(query) || short.includes(query)) {
+                item.classList.remove('hidden');
+            } else {
+                item.classList.add('hidden');
+            }
+        });
+    }
+
+    toggleSidebar() {
+        const isCollapsed = this.sidebar.classList.toggle('collapsed');
+        document.querySelector('.main-content').classList.toggle('sidebar-collapsed', isCollapsed);
+        if (isCollapsed) {
+            this.updateSidebarText();
+        } else {
+            setTimeout(() => this.updateSidebarText(), 150);
+        }
+    }
+
+    updateSidebarText() {
+        const isSmall = window.matchMedia('(max-width: 768px)').matches;
+        const isCollapsed = this.sidebar.classList.contains('collapsed');
+        this.tabs.forEach(tab => {
+            tab.textContent = (isSmall || isCollapsed)
+                ? tab.getAttribute('data-short')
+                : tab.getAttribute('data-full');
         });
     }
 
     switchTab(tabId) {
         const isFirst = this.isFirstSelection;
 
-        // Reset all tabs to short text and remove active class
-        this.tabs.forEach(tab => {
-            tab.classList.remove('active');
-            const shortText = tab.getAttribute('data-short');
-            if (shortText) {
-                tab.textContent = shortText;
-            }
-        });
-
+        // Remove active class from all sidebar items
+        this.tabs.forEach(tab => tab.classList.remove('active'));
         this.tabContents.forEach(content => content.classList.remove('active'));
 
         const blankState = document.getElementById('blankState');
-        const selectedTab = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+        const selectedTab = document.querySelector(`.sidebar-item[data-tab="${tabId}"]`);
         const selectedContent = document.getElementById(`tab-${tabId}`);
 
         if (!selectedTab || !selectedContent) return;
 
         selectedTab.classList.add('active');
 
-        // Set active tab to full text + animate header
+        // Scroll active item into view
+        selectedTab.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+
+        // Animate header title
         const fullText = selectedTab.getAttribute('data-full');
         if (fullText) {
-            selectedTab.textContent = fullText;
             const headerTitle = document.querySelector('.header-title');
             if (headerTitle) {
                 headerTitle.classList.add('title-fade-out');
@@ -273,21 +298,14 @@ class TabManager {
         if (isFirst && blankState && !blankState.classList.contains('hidden')) {
             this.isFirstSelection = false;
 
-            // Fade opacity to 0 via inline style — transition handles the smooth fade
             blankState.style.opacity = '0';
             blankState.style.pointerEvents = 'none';
 
-            // After fade completes, collapse blank state and reveal content
             blankState.addEventListener('transitionend', () => {
                 blankState.classList.add('hidden');
 
-                // Set up content as invisible first
                 selectedContent.classList.add('active', 'content-reveal');
-
-                // Force reflow so browser registers the starting state
                 selectedContent.offsetHeight;
-
-                // Trigger the smooth transition to visible
                 selectedContent.classList.add('content-visible');
 
                 selectedContent.addEventListener('transitionend', () => {
@@ -295,7 +313,6 @@ class TabManager {
                 }, { once: true });
             }, { once: true });
         } else {
-            // Normal tab switch (not first time)
             if (blankState) {
                 blankState.classList.add('hidden');
             }

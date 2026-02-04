@@ -121,45 +121,55 @@
     </header>
 
     <main class="main-content">
-        <!-- Tab Navigation -->
-        <div class="tabs-wrapper">
-            <div class="tabs">
-                <button class="tab-btn" data-tab="v1" data-short="TNF" data-full="The North Face">TNF</button>
-                <button class="tab-btn" data-tab="v2" data-short="BT" data-full="Burton">Burton</button>
-                <button class="tab-btn" data-tab="v3" data-short="COL" data-full="Columbia">Columbia</button>
-                <button class="tab-btn" data-tab="v4" data-short="HH" data-full="Helly Hansen">Helly Hansen</button>
-                <button class="tab-btn" data-tab="v5" data-short="FR" data-full="Fjall Raven">Fjall Raven</button>
-                <button class="tab-btn" data-tab="v6" data-short="LLB" data-full="LLBEAN">LLBEAN</button>
-                <button class="tab-btn" data-tab="v7" data-short="MMT" data-full="Mammut">Mammut</button>
-                <button class="tab-btn" data-tab="v8" data-short="OR" data-full="Outdoor Research">Outdoor
-                    Research</button>
-                <button class="tab-btn" data-tab="v9" data-short="OAG" data-full="On AG">On AG</button>
-                <button class="tab-btn" data-tab="v10" data-short="PP" data-full="Peak Performance">Peak
-                    Performance</button>
-                <button class="tab-btn" data-tab="v11" data-short="SKD" data-full="Skida">Skida</button>
-                <button class="tab-btn" data-tab="v12" data-short="VRI" data-full="Vuori">Vuori</button>
-                <button class="tab-btn" data-tab="v13" data-short="PRA" data-full="Prana">Prana</button>
-                <button class="tab-btn" data-tab="v14" data-short="TM" data-full="Travis Matthew">Travis
-                    Matthew</button>
-                <button class="tab-btn" data-tab="v15" data-short="JW" data-full="Jack Wolfskin">Jack Wolfskin</button>
-                <button class="tab-btn" data-tab="v16" data-short="511" data-full="511">511</button>
-                <button class="tab-btn" data-tab="v17" data-short="RS" data-full="Ride Store">Ride Store</button>
-                <button class="tab-btn" data-tab="v18" data-short="FA" data-full="Foot Asylum">Foot Asylum</button>
-                <button class="tab-btn" data-tab="v19" data-short="KHL" data-full="KUHL">KUHL</button>
-                <button class="tab-btn" data-tab="v20" data-short="FOX" data-full="FOX">FOX</button>
-                <button class="tab-btn" data-tab="v21" data-short="HGF" data-full="Haglofs">Haglofs</button>
-                <button class="tab-btn" data-tab="v22" data-short="ODL" data-full="ODLO">ODLO</button>
-                <button class="tab-btn" data-tab="v23" data-short="RSG" data-full="Rossignol">Rossignol</button>
-                <button class="tab-btn" data-tab="v24" data-short="CTP" data-full="Cotopaxi">Cotopaxi</button>
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <span class="sidebar-title">Templates</span>
+                <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" aria-label="Collapse sidebar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                </button>
             </div>
-        </div>
+            <div class="sidebar-search-wrapper">
+                <input type="text" class="sidebar-search" id="sidebarSearch" placeholder="Search..." autocomplete="off">
+            </div>
+            <nav class="sidebar-nav" id="sidebarNav">
+                <button class="sidebar-item" data-tab="v1" data-short="TNF" data-full="The North Face">The North Face</button>
+                <button class="sidebar-item" data-tab="v2" data-short="BT" data-full="Burton">Burton</button>
+                <button class="sidebar-item" data-tab="v3" data-short="COL" data-full="Columbia">Columbia</button>
+                <button class="sidebar-item" data-tab="v4" data-short="HH" data-full="Helly Hansen">Helly Hansen</button>
+                <button class="sidebar-item" data-tab="v5" data-short="FR" data-full="Fjall Raven">Fjall Raven</button>
+                <button class="sidebar-item" data-tab="v6" data-short="LLB" data-full="LLBEAN">LLBEAN</button>
+                <button class="sidebar-item" data-tab="v7" data-short="MMT" data-full="Mammut">Mammut</button>
+                <button class="sidebar-item" data-tab="v8" data-short="OR" data-full="Outdoor Research">Outdoor Research</button>
+                <button class="sidebar-item" data-tab="v9" data-short="OAG" data-full="On AG">On AG</button>
+                <button class="sidebar-item" data-tab="v10" data-short="PP" data-full="Peak Performance">Peak Performance</button>
+                <button class="sidebar-item" data-tab="v11" data-short="SKD" data-full="Skida">Skida</button>
+                <button class="sidebar-item" data-tab="v12" data-short="VRI" data-full="Vuori">Vuori</button>
+                <button class="sidebar-item" data-tab="v13" data-short="PRA" data-full="Prana">Prana</button>
+                <button class="sidebar-item" data-tab="v14" data-short="TM" data-full="Travis Matthew">Travis Matthew</button>
+                <button class="sidebar-item" data-tab="v15" data-short="JW" data-full="Jack Wolfskin">Jack Wolfskin</button>
+                <button class="sidebar-item" data-tab="v16" data-short="511" data-full="511">511</button>
+                <button class="sidebar-item" data-tab="v17" data-short="RS" data-full="Ride Store">Ride Store</button>
+                <button class="sidebar-item" data-tab="v18" data-short="FA" data-full="Foot Asylum">Foot Asylum</button>
+                <button class="sidebar-item" data-tab="v19" data-short="KHL" data-full="KUHL">KUHL</button>
+                <button class="sidebar-item" data-tab="v20" data-short="FOX" data-full="FOX">FOX</button>
+                <button class="sidebar-item" data-tab="v21" data-short="HGF" data-full="Haglofs">Haglofs</button>
+                <button class="sidebar-item" data-tab="v22" data-short="ODL" data-full="ODLO">ODLO</button>
+                <button class="sidebar-item" data-tab="v23" data-short="RSG" data-full="Rossignol">Rossignol</button>
+                <button class="sidebar-item" data-tab="v24" data-short="CTP" data-full="Cotopaxi">Cotopaxi</button>
+            </nav>
+        </aside>
 
+        <div class="content-area">
         <div class="container">
             <!-- Tab Content V1 -->
             <div class="blank-state" id="blankState">
                 <div class="blank-state-content">
                     <h2>Select a Template</h2>
-                    <p>Choose a brand from the tabs above or the menu to get started.</p>
+                    <p>Choose a brand from the sidebar or the menu to get started.</p>
                 </div>
             </div>
 
@@ -918,6 +928,7 @@
                     <div class="results-content" id="results-v24"></div>
                 </div>
             </div>
+        </div>
         </div>
     </main>
 
