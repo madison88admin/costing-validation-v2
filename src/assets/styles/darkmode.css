@@ -259,12 +259,12 @@ body.dark-mode .loading-text {
 }
 
 body.dark-mode .loader {
-    background: #2d3548;
+    border-right-color: #d6e0ea;
 }
 
-body.dark-mode .loader:before,
-body.dark-mode .loader:after {
-    background: #d6e0ea;
+body.dark-mode .loader::before,
+body.dark-mode .loader::after {
+    border-right-color: #d6e0ea;
 }
 
 body.dark-mode .file-list::-webkit-scrollbar-track,
@@ -542,9 +542,9 @@ body.dark-mode .menu-item:active {
 }
 
 /* Loader Dark Mode */
-body.dark-mode .loader:before,
-body.dark-mode .loader:after {
-    border-color: #d6e0ea;
+body.dark-mode .loader::before,
+body.dark-mode .loader::after {
+    border-right-color: #d6e0ea;
 }
 
 body.dark-mode .loading-text {

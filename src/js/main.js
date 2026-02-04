@@ -642,9 +642,17 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('Costing Validation initialized with 24 versions');
 });
 
+// Ensures the loading animation is shown for at least `ms` milliseconds
+function minDelay(startTime, ms = 2500) {
+    const elapsed = Date.now() - startTime;
+    const remaining = ms - elapsed;
+    return remaining > 0 ? new Promise(r => setTimeout(r, remaining)) : Promise.resolve();
+}
+
 async function handleGenerateResults(version) {
     const handler = window[`excelHandler${version.toUpperCase()}`];
     const resultsContent = document.getElementById(`results-${version}`);
+    const loadStart = Date.now();
 
     // Special handling for V2 - only needs BCBD files (Burton)
     if (version === 'v2') {
@@ -669,6 +677,7 @@ async function handleGenerateResults(version) {
 
         if (window.excelV2Processor) {
             const results = await window.excelV2Processor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -697,6 +706,7 @@ async function handleGenerateResults(version) {
 
         if (window.columbiaProcessor) {
             const results = await window.columbiaProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -725,6 +735,7 @@ async function handleGenerateResults(version) {
 
         if (window.hellyHansenProcessor) {
             const results = await window.hellyHansenProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -753,6 +764,7 @@ async function handleGenerateResults(version) {
 
         if (window.fjallRavenProcessor) {
             const results = await window.fjallRavenProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -781,6 +793,7 @@ async function handleGenerateResults(version) {
 
         if (window.llbeanProcessor) {
             const results = await window.llbeanProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -809,6 +822,7 @@ async function handleGenerateResults(version) {
 
         if (window.mammutProcessor) {
             const results = await window.mammutProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -837,6 +851,7 @@ async function handleGenerateResults(version) {
 
         if (window.outdoorResearchProcessor) {
             const results = await window.outdoorResearchProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -865,6 +880,7 @@ async function handleGenerateResults(version) {
 
         if (window.onAGProcessor) {
             const results = await window.onAGProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -893,6 +909,7 @@ async function handleGenerateResults(version) {
 
         if (window.peakPerformanceProcessor) {
             const results = await window.peakPerformanceProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -921,6 +938,7 @@ async function handleGenerateResults(version) {
 
         if (window.skidaProcessor) {
             const results = await window.skidaProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -949,6 +967,7 @@ async function handleGenerateResults(version) {
 
         if (window.vuoriProcessor) {
             const results = await window.vuoriProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -977,6 +996,7 @@ async function handleGenerateResults(version) {
 
         if (window.pranaProcessor) {
             const results = await window.pranaProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -1005,6 +1025,7 @@ async function handleGenerateResults(version) {
 
         if (window.travisMatthewProcessor) {
             const results = await window.travisMatthewProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -1033,6 +1054,7 @@ async function handleGenerateResults(version) {
 
         if (window.jackWolfskinProcessor) {
             const results = await window.jackWolfskinProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -1061,6 +1083,7 @@ async function handleGenerateResults(version) {
 
         if (window.processor511) {
             const results = await window.processor511.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -1089,6 +1112,7 @@ async function handleGenerateResults(version) {
 
         if (window.rideStoreProcessor) {
             const results = await window.rideStoreProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -1117,6 +1141,7 @@ async function handleGenerateResults(version) {
 
         if (window.footAsylumProcessor) {
             const results = await window.footAsylumProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -1145,6 +1170,7 @@ async function handleGenerateResults(version) {
 
         if (window.kuhlProcessor) {
             const results = await window.kuhlProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -1173,6 +1199,7 @@ async function handleGenerateResults(version) {
 
         if (window.foxProcessor) {
             const results = await window.foxProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -1201,6 +1228,7 @@ async function handleGenerateResults(version) {
 
         if (window.haglofsProcessor) {
             const results = await window.haglofsProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -1229,6 +1257,7 @@ async function handleGenerateResults(version) {
 
         if (window.odloProcessor) {
             const results = await window.odloProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -1257,6 +1286,7 @@ async function handleGenerateResults(version) {
 
         if (window.rossignolProcessor) {
             const results = await window.rossignolProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -1285,6 +1315,7 @@ async function handleGenerateResults(version) {
 
         if (window.cotopaxiProcessor) {
             const results = await window.cotopaxiProcessor.processFiles(bcbdFiles);
+            await minDelay(loadStart);
             resultsContent.innerHTML = results;
         }
         return;
@@ -1315,6 +1346,7 @@ async function handleGenerateResults(version) {
     // Process based on version
     if (version === 'v1' && window.excelV1Processor) {
         const results = await window.excelV1Processor.processFiles(obFiles, bcbdFiles);
+        await minDelay(loadStart);
         resultsContent.innerHTML = results;
     } else {
         // Placeholder for V3
