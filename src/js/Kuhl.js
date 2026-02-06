@@ -6,17 +6,17 @@
  * - Scan Column A for "Fabric/Yarn"
  * - When Column A contains "Fabric/Yarn", check if Column K is 5%
  * - Column A displayed as "Type"
- * - Column K displayed as "Consumption"
+ * - Column K displayed as "Wastage"
  */
 
 class KuhlProcessor {
     constructor() {
         this.bcbdResults = [];
         this.validationRules = {
-            consumption: {
+            wastage: {
                 column: 'K',
                 columnIndex: 10,
-                label: 'Consumption',
+                label: 'Wastage',
                 expectedValue: 0.05,
                 expectedDisplay: '5%'
             }
@@ -43,17 +43,17 @@ class KuhlProcessor {
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
                         <div class="burton-item-line ob-section-header"><strong>Fabric/Yarn Section:</strong></div>
-                        <div class="burton-item-line ob-sub-item">Column K - Consumption: <strong>5%</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column K - Wastage: <strong>5%</strong></div>
                     </div>
                     <div class="burton-cost-item">
                         <div class="burton-item-line ob-section-header"><strong>Trim Section:</strong></div>
-                        <div class="burton-item-line ob-sub-item">Column K - Consumption: <strong>3%</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column K - Wastage: <strong>3%</strong></div>
                         <div class="burton-item-line ob-sub-item">Column E - Supplier: <strong>Contains "Local" or "Nominated"</strong></div>
                         <div class="burton-item-line ob-sub-item">Column H - C.I.F.VS FOB %: <strong>0.012%</strong> (if Local) or <strong>15%</strong> (if Nominated)</div>
                     </div>
                     <div class="burton-cost-item">
                         <div class="burton-item-line ob-section-header"><strong>Labelling Section:</strong></div>
-                        <div class="burton-item-line ob-sub-item">Column K - Consumption: <strong>3%</strong></div>
+                        <div class="burton-item-line ob-sub-item">Column K - Wastage: <strong>3%</strong></div>
                         <div class="burton-item-line ob-sub-item">Column E - Supplier: <strong>Contains "Local" or "Nominated"</strong></div>
                         <div class="burton-item-line ob-sub-item">Column H - C.I.F.VS FOB %: <strong>0.012%</strong> (if Local) or <strong>15%</strong> (if Nominated)</div>
                     </div>
@@ -738,12 +738,12 @@ class KuhlProcessor {
                     <tbody>
                         <tr style="border-bottom: 1px solid #e0e8f0;">
                             <td style="padding: 0.875rem 1rem; font-weight: 600;">Fabric/Yarn</td>
-                            <td style="padding: 0.875rem 1rem;">K (Consumption = 5%)</td>
+                            <td style="padding: 0.875rem 1rem;">K (Wastage = 5%)</td>
                             <td style="padding: 0.875rem 1rem;">${this.formatAllCells(fabricYarn.validCells, fabricYarn.invalidCells)}</td>
                         </tr>
                         <tr style="border-bottom: 1px solid #e0e8f0;">
                             <td style="padding: 0.875rem 1rem; font-weight: 600;" rowspan="3">Trim</td>
-                            <td style="padding: 0.875rem 1rem;">K (Consumption = 3%)</td>
+                            <td style="padding: 0.875rem 1rem;">K (Wastage = 3%)</td>
                             <td style="padding: 0.875rem 1rem;">${this.formatAllCells(trim.consumption.validCells, trim.consumption.invalidCells)}</td>
                         </tr>
                         <tr style="border-bottom: 1px solid #e0e8f0;">
@@ -756,7 +756,7 @@ class KuhlProcessor {
                         </tr>
                         <tr style="border-bottom: 1px solid #e0e8f0;">
                             <td style="padding: 0.875rem 1rem; font-weight: 600;" rowspan="3">Labelling</td>
-                            <td style="padding: 0.875rem 1rem;">K (Consumption = 3%)</td>
+                            <td style="padding: 0.875rem 1rem;">K (Wastage = 3%)</td>
                             <td style="padding: 0.875rem 1rem;">${this.formatAllCells(labelling.consumption.validCells, labelling.consumption.invalidCells)}</td>
                         </tr>
                         <tr style="border-bottom: 1px solid #e0e8f0;">
