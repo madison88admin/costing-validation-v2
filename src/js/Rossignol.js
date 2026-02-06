@@ -245,7 +245,8 @@ class RossignolProcessor {
                     sequence: cellB,
                     value: actualValue,
                     isValid: isValid,
-                    rowNumber: i + 1
+                    rowNumber: i + 1,
+                    isEmpty: actualValue === 'Empty'
                 });
             }
         }
@@ -264,6 +265,10 @@ class RossignolProcessor {
             }];
         }
 
+        // Filter out empty entries for display, but keep them for validation
+        const nonEmptyEntries = entries.filter(e => !e.isEmpty);
+        const emptyCount = entries.filter(e => e.isEmpty).length;
+
         // Return single combined result
         return [{
             name: `${categoryName} Rows`,
@@ -276,7 +281,8 @@ class RossignolProcessor {
             checkColumn: 'L',
             isFabricCombined: true,
             categoryName: categoryName,
-            fabricEntries: entries
+            fabricEntries: nonEmptyEntries,
+            emptyCount: emptyCount
         }];
     }
 
@@ -369,7 +375,8 @@ class RossignolProcessor {
                         hasGenericPackaging: false,
                         value: cellLValue,
                         isValid: isLValid,
-                        rowNumber: i + 1
+                        rowNumber: i + 1,
+                        isEmpty: cellLValue === 'Empty'
                     });
                 }
             }
@@ -389,6 +396,10 @@ class RossignolProcessor {
             }];
         }
 
+        // Filter out empty entries for display (non-generic packaging with empty L value)
+        const nonEmptyEntries = entries.filter(e => e.hasGenericPackaging || !e.isEmpty);
+        const emptyCount = entries.filter(e => !e.hasGenericPackaging && e.isEmpty).length;
+
         // Return single combined result
         return [{
             name: 'PACKAGING Rows',
@@ -400,7 +411,8 @@ class RossignolProcessor {
             markerColumn: 'A',
             checkColumn: 'D,G,J,L',
             isPackagingCombined: true,
-            packagingEntries: entries
+            packagingEntries: nonEmptyEntries,
+            emptyCount: emptyCount
         }];
     }
 
@@ -569,9 +581,13 @@ class RossignolProcessor {
                             } else {
                                 // No Generic Packaging - show Column L value with 3% validation
                                 const color = entry.isValid ? '#065f46' : '#991b1b';
-                                return `<span style="color: ${color}; font-weight: 600;">PACKAGING ${entry.sequence} ${entry.value}</span>`;
+                                return `<span style="color: ${color}; font-weight: 600;">PACKAGING ${entry.sequence} &nbsp;&nbsp;&nbsp; ${entry.value}</span>`;
                             }
                         });
+                        // Add empty count summary if there are empty rows
+                        if (check.emptyCount > 0) {
+                            lines.push(`<span style="color: #6b7280; font-style: italic;">(${check.emptyCount} empty rows not shown)</span>`);
+                        }
                         valueHTML = lines.join('<br>');
                         // Show expected value in Expected column
                         expectedHTML = `<span style="color: #849bba;">${check.expected}</span>`;
@@ -580,11 +596,15 @@ class RossignolProcessor {
                         const catName = check.categoryName || 'FABRIC';
                         const lines = check.fabricEntries.map(entry => {
                             if (entry.isValid) {
-                                return `<span style="color: #065f46; font-weight: 600;">${catName} ${entry.sequence} ${entry.value}</span>`;
+                                return `<span style="color: #065f46; font-weight: 600;">${catName} ${entry.sequence} &nbsp;&nbsp;&nbsp; ${entry.value}</span>`;
                             } else {
-                                return `<span style="color: #991b1b; font-weight: 600;">${catName} ${entry.sequence} ${entry.value}</span>`;
+                                return `<span style="color: #991b1b; font-weight: 600;">${catName} ${entry.sequence} &nbsp;&nbsp;&nbsp; ${entry.value}</span>`;
                             }
                         });
+                        // Add empty count summary if there are empty rows
+                        if (check.emptyCount > 0) {
+                            lines.push(`<span style="color: #6b7280; font-style: italic;">(${check.emptyCount} empty rows not shown)</span>`);
+                        }
                         valueHTML = lines.join('<br>');
                         // Show expected value in Expected column
                         expectedHTML = `<span style="color: #849bba;">${check.expected}</span>`;
