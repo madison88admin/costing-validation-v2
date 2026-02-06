@@ -4,39 +4,20 @@
  *
  * Validation Logic:
  * 1. Find sheet named "Blank Cost Sheet"
- * 2. Scan column D for "VENDOR / COO" → Check column E same row for "PT UWU JUMP INDONESIA" or "HEADS UP"
- * 3. Scan column D for "SUPPLIER CONTACT" → Check column E same row for "Madison 88"
- * 4. Scan column E for "Overhead/Margin/Profit %:" → Check column G same row for 15% - 20%
- * 5. Fabric Section (between FABRIC header and "Total Fabric Yardage"):
- *    - If VENDOR/COO = PT UWU JUMP INDONESIA:
- *      - Yarn + M88/Local in Col B → Col I = 0.15%
- *      - Yarn + NOT M88/Local in Col B → Col I = 0.5%
- *      - Fabric Freight → Col I = 0.4%
- *    - If VENDOR/COO = HEADS UP:
- *      - Fabric items → Col I = 5%
- * 6. Trims Section (between TRIMS header and "Total Trims Cost" in Col G):
- *    - If VENDOR/COO = PT UWU JUMP INDONESIA:
- *      - Col B = Local/Freight → Col I = 0.012%
- *      - Col B = Other → Col I = 0.015%
- *    - If VENDOR/COO = HEADS UP:
- *      - Trims items → Col I = 3%
- * 7. General Packaging (scan Col D for "General Packaging"):
+ * 2. Scan column D for "SUPPLIER CONTACT" → Check column E same row for "Madison 88"
+ * 3. Scan column E for "Overhead/Margin/Profit %:" → Check column G same row for 15% - 20%
+ * 4. Fabric Section (between FABRIC header and "Total Fabric Yardage"):
+ *    - All fabric items → Col I = 5%
+ * 5. Trims Section (between TRIMS header and "Total Trims Cost" in Col G):
+ *    - All trims items → Col I = 3%
+ * 6. General Packaging (scan Col D for "General Packaging"):
  *    - Col F = 1
- *    - If VENDOR/COO = PT UWU JUMP INDONESIA → Col I = 0.01%
- *    - If VENDOR/COO = HEADS UP → Col I = 3%
+ *    - Col I = 3%
  */
 
 class CotopaxiProcessor {
     constructor() {
         this.validationRules = [
-            {
-                name: 'Vendor / COO',
-                markerColumn: 3, // Column D (0-indexed)
-                marker: 'vendor / coo',
-                checkColumn: 4, // Column E
-                expected: ['PT UWU JUMP INDONESIA', 'HEADS UP'],
-                type: 'multiple'
-            },
             {
                 name: 'Supplier Contact',
                 markerColumn: 3, // Column D
@@ -70,10 +51,6 @@ class CotopaxiProcessor {
             <div class="burton-cost-container">
                 <div class="burton-cost-items">
                     <div class="burton-cost-item">
-                        <div class="burton-item-line ob-section-header"><strong>Vendor / COO:</strong></div>
-                        <div class="burton-item-line ob-sub-item">Column D = "VENDOR / COO" → Column E = <strong>PT UWU JUMP INDONESIA</strong> or <strong>HEADS UP</strong></div>
-                    </div>
-                    <div class="burton-cost-item">
                         <div class="burton-item-line ob-section-header"><strong>Supplier Contact:</strong></div>
                         <div class="burton-item-line ob-sub-item">Column D = "SUPPLIER CONTACT" → Column E = <strong>Madison 88</strong></div>
                     </div>
@@ -84,28 +61,18 @@ class CotopaxiProcessor {
                     <div class="burton-cost-item">
                         <div class="burton-item-line ob-section-header"><strong>Fabric Section Rules:</strong></div>
                         <div class="burton-item-line ob-description">Between FABRIC and Total Fabric Yardage</div>
-                        <div class="burton-item-line ob-sub-item"><strong>If VENDOR / COO = PT UWU JUMP INDONESIA:</strong></div>
-                        <div class="burton-item-line ob-sub-item">Yarn + (M88 or Local in Col B) → Col I = <strong>0.15%</strong></div>
-                        <div class="burton-item-line ob-sub-item">Yarn + (NOT M88/Local in Col B) → Col I = <strong>0.5%</strong></div>
-                        <div class="burton-item-line ob-sub-item">Fabric Freight → Col I = <strong>0.4%</strong></div>
-                        <div class="burton-item-line ob-sub-item"><strong>If VENDOR / COO = HEADS UP:</strong></div>
-                        <div class="burton-item-line ob-sub-item">Fabric items → Col I = <strong>5%</strong></div>
+                        <div class="burton-item-line ob-sub-item">All fabric items → Col I = <strong>5%</strong></div>
                     </div>
                     <div class="burton-cost-item">
                         <div class="burton-item-line ob-section-header"><strong>Trims Section Rules:</strong></div>
                         <div class="burton-item-line ob-description">Between TRIMS and Total Trims Cost</div>
-                        <div class="burton-item-line ob-sub-item"><strong>If VENDOR / COO = PT UWU JUMP INDONESIA:</strong></div>
-                        <div class="burton-item-line ob-sub-item">Col B = Local/Freight → Col I = <strong>0.012%</strong></div>
-                        <div class="burton-item-line ob-sub-item">Col B = Other → Col I = <strong>0.015%</strong></div>
-                        <div class="burton-item-line ob-sub-item"><strong>If VENDOR / COO = HEADS UP:</strong></div>
-                        <div class="burton-item-line ob-sub-item">Trims items → Col I = <strong>3%</strong></div>
+                        <div class="burton-item-line ob-sub-item">All trims items → Col I = <strong>3%</strong></div>
                     </div>
                     <div class="burton-cost-item">
                         <div class="burton-item-line ob-section-header"><strong>General Packaging:</strong></div>
                         <div class="burton-item-line ob-description">Scan Col D</div>
                         <div class="burton-item-line ob-sub-item">Column F = <strong>1</strong></div>
-                        <div class="burton-item-line ob-sub-item">If PT UWU JUMP INDONESIA → Col I = <strong>0.01%</strong></div>
-                        <div class="burton-item-line ob-sub-item">If HEADS UP → Col I = <strong>3%</strong></div>
+                        <div class="burton-item-line ob-sub-item">Col I = <strong>3%</strong></div>
                     </div>
                 </div>
             </div>
@@ -200,18 +167,6 @@ class CotopaxiProcessor {
     validateSheet(jsonData) {
         const results = [];
 
-        // First, determine the VENDOR / COO value
-        let vendorCOO = '';
-        for (let rowIndex = 0; rowIndex < jsonData.length; rowIndex++) {
-            const row = jsonData[rowIndex];
-            if (!row) continue;
-            const colD = row[3] ? String(row[3]).trim().toLowerCase() : '';
-            if (colD.includes('vendor / coo')) {
-                vendorCOO = row[4] ? String(row[4]).trim() : '';
-                break;
-            }
-        }
-
         // Validate each rule by scanning for the marker
         for (const rule of this.validationRules) {
             const result = {
@@ -244,11 +199,6 @@ class CotopaxiProcessor {
                     // Validate based on type
                     if (rule.type === 'exact') {
                         result.isValid = actualValue.toLowerCase() === rule.expected.toLowerCase();
-                    } else if (rule.type === 'multiple') {
-                        // Check if actual value matches any of the expected values
-                        result.isValid = rule.expected.some(exp =>
-                            actualValue.toLowerCase() === exp.toLowerCase()
-                        );
                     } else if (rule.type === 'range') {
                         // Parse percentage value (handle both "20%" and 0.20 formats)
                         let numValue = parseFloat(actualValue.replace('%', ''));
@@ -276,28 +226,28 @@ class CotopaxiProcessor {
             results.push(result);
         }
 
-        // Validate Fabric section based on VENDOR / COO
-        const fabricResults = this.validateFabricSection(jsonData, vendorCOO);
+        // Validate Fabric section (5% for all items)
+        const fabricResults = this.validateFabricSection(jsonData);
         results.push(...fabricResults);
 
-        // Validate Trims section based on VENDOR / COO
-        const trimsResults = this.validateTrimsSection(jsonData, vendorCOO);
+        // Validate Trims section (3% for all items)
+        const trimsResults = this.validateTrimsSection(jsonData);
         results.push(...trimsResults);
 
-        // Validate General Packaging based on VENDOR / COO
-        const packagingResults = this.validateGeneralPackaging(jsonData, vendorCOO);
+        // Validate General Packaging (3%)
+        const packagingResults = this.validateGeneralPackaging(jsonData);
         results.push(...packagingResults);
 
         return results;
     }
 
     /**
-     * Validate the Fabric section based on VENDOR / COO value
+     * Validate the Fabric section
      * Scans from "FABRIC" header row until "Total Fabric Yardage" in column D
+     * All fabric items should have Col I = 5%
      */
-    validateFabricSection(jsonData, vendorCOO) {
+    validateFabricSection(jsonData) {
         const results = [];
-        const vendorLower = vendorCOO.toLowerCase();
 
         // Find the FABRIC header row (column A)
         let fabricStartRow = -1;
@@ -337,99 +287,39 @@ class CotopaxiProcessor {
             return results;
         }
 
-        // Process based on VENDOR / COO
-        if (vendorLower.includes('pt uwu jump indonesia')) {
-            // PT UWU JUMP INDONESIA rules
-            for (let rowIndex = fabricStartRow + 1; rowIndex < fabricEndRow; rowIndex++) {
-                const row = jsonData[rowIndex];
-                if (!row) continue;
+        // All fabric items should have Col I = 5%
+        for (let rowIndex = fabricStartRow + 1; rowIndex < fabricEndRow; rowIndex++) {
+            const row = jsonData[rowIndex];
+            if (!row) continue;
 
-                const colA = row[0] ? String(row[0]).trim().toLowerCase() : '';
-                const colB = row[1] ? String(row[1]).trim().toLowerCase() : '';
-                const colI = row[8]; // Column I (0-indexed as 8)
+            const colA = row[0] ? String(row[0]).trim().toLowerCase() : '';
+            const colI = row[8]; // Column I (0-indexed as 8)
 
-                // Rule: Yarn with M88 or Local in column B → Column I should be 0.15%
-                if (colA === 'yarn') {
-                    const supplierValue = row[1] ? String(row[1]).trim() : '';
-                    if (colB.includes('m88') || colB.includes('local')) {
-                        const result = this.createFabricResult(
-                            'Yarn (M88/Local)',
-                            '0.15%',
-                            colI,
-                            0.0015,
-                            rowIndex + 1,
-                            supplierValue
-                        );
-                        results.push(result);
-                    } else {
-                        // Yarn without M88 or Local → Column I should be 0.5%
-                        const result = this.createFabricResult(
-                            'Yarn (Non-M88/Local)',
-                            '0.5%',
-                            colI,
-                            0.005,
-                            rowIndex + 1,
-                            supplierValue
-                        );
-                        results.push(result);
-                    }
-                }
+            // Skip empty rows or the header row itself
+            if (!colA || colA === 'fabric') continue;
 
-                // Rule: Fabric Freight → Column I should be 0.4%
-                if (colA === 'fabric freight') {
-                    const supplierValue = row[1] ? String(row[1]).trim() : '';
-                    const result = this.createFabricResult(
-                        'Fabric Freight',
-                        '0.4%',
-                        colI,
-                        0.004,
-                        rowIndex + 1,
-                        supplierValue
-                    );
-                    results.push(result);
-                }
-            }
-        } else if (vendorLower.includes('heads up')) {
-            // HEADS UP rules - scan for Fabric in column A → Column I should be 5%
-            for (let rowIndex = fabricStartRow + 1; rowIndex < fabricEndRow; rowIndex++) {
-                const row = jsonData[rowIndex];
-                if (!row) continue;
-
-                const colA = row[0] ? String(row[0]).trim().toLowerCase() : '';
-                const colI = row[8]; // Column I (0-indexed as 8)
-
-                // Any row with "Fabric" in column A (but not the header)
-                if (colA === 'fabric' || (colA && colA !== 'fabric freight' && colA.includes('fabric'))) {
-                    // Skip if it's just the header row
-                    continue;
-                }
-
-                // For HEADS UP, check non-empty rows for the 5% rule
-                if (colA && colA !== '' && colA !== 'fabric') {
-                    const supplierValue = row[1] ? String(row[1]).trim() : '';
-                    const result = this.createFabricResult(
-                        `Fabric Item (${row[0]})`,
-                        '5%',
-                        colI,
-                        0.05,
-                        rowIndex + 1,
-                        supplierValue
-                    );
-                    results.push(result);
-                }
-            }
+            const supplierValue = row[1] ? String(row[1]).trim() : '';
+            const result = this.createFabricResult(
+                `Fabric Item (${row[0]})`,
+                '5%',
+                colI,
+                0.05,
+                rowIndex + 1,
+                supplierValue
+            );
+            results.push(result);
         }
 
         return results;
     }
 
     /**
-     * Validate the Trims section based on VENDOR / COO value
+     * Validate the Trims section
      * Scans from "TRIMS" header row in column A
+     * All trims items should have Col I = 3%
      */
-    validateTrimsSection(jsonData, vendorCOO) {
+    validateTrimsSection(jsonData) {
         const results = [];
-        const vendorLower = vendorCOO.toLowerCase();
 
         // Find the TRIMS header row (column A)
         let trimsStartRow = -1;
@@ -470,84 +360,40 @@ class CotopaxiProcessor {
             return results;
         }
 
-        // Process based on VENDOR / COO
-        if (vendorLower.includes('pt uwu jump indonesia')) {
-            // PT UWU JUMP INDONESIA rules
-            for (let rowIndex = trimsStartRow + 1; rowIndex < trimsEndRow; rowIndex++) {
-                const row = jsonData[rowIndex];
-                if (!row) continue;
+        // All trims items should have Col I = 3%
+        for (let rowIndex = trimsStartRow + 1; rowIndex < trimsEndRow; rowIndex++) {
+            const row = jsonData[rowIndex];
+            if (!row) continue;
 
-                const colA = row[0] ? String(row[0]).trim() : '';
-                const colALower = colA.toLowerCase();
-                const colB = row[1] ? String(row[1]).trim().toLowerCase() : '';
-                const colI = row[8]; // Column I (0-indexed as 8)
+            const colA = row[0] ? String(row[0]).trim() : '';
+            const colALower = colA.toLowerCase();
+            const colI = row[8]; // Column I (0-indexed as 8)
 
-                // Skip empty rows or header-like rows
-                if (!colA || colALower === 'trims') continue;
+            // Skip empty rows or header-like rows
+            if (!colA || colALower === 'trims') continue;
 
-                const supplierValue = row[1] ? String(row[1]).trim() : '';
+            const supplierValue = row[1] ? String(row[1]).trim() : '';
 
-                // Rule: If column B contains "Local" or "freight" → Column I should be 0.012%
-                if (colB.includes('local') || colB.includes('freight')) {
-                    const result = this.createFabricResult(
-                        `Trims: ${colA} (Local/Freight)`,
-                        '0.012%',
-                        colI,
-                        0.00012,
-                        rowIndex + 1,
-                        supplierValue
-                    );
-                    results.push(result);
-                } else if (colB) {
-                    // Column B has other value → Column I should be 0.015%
-                    const result = this.createFabricResult(
-                        `Trims: ${colA}`,
-                        '0.015%',
-                        colI,
-                        0.00015,
-                        rowIndex + 1,
-                        supplierValue
-                    );
-                    results.push(result);
-                }
-            }
-        } else if (vendorLower.includes('heads up')) {
-            // HEADS UP rules - check column A items → Column I should be 3%
-            for (let rowIndex = trimsStartRow + 1; rowIndex < trimsEndRow; rowIndex++) {
-                const row = jsonData[rowIndex];
-                if (!row) continue;
-
-                const colA = row[0] ? String(row[0]).trim() : '';
-                const colALower = colA.toLowerCase();
-                const colI = row[8]; // Column I (0-indexed as 8)
-
-                // Skip empty rows or header-like rows
-                if (!colA || colALower === 'trims') continue;
-
-                const supplierValue = row[1] ? String(row[1]).trim() : '';
-
-                const result = this.createFabricResult(
-                    `Trims: ${colA}`,
-                    '3%',
-                    colI,
-                    0.03,
-                    rowIndex + 1,
-                    supplierValue
-                );
-                results.push(result);
-            }
+            const result = this.createFabricResult(
+                `Trims: ${colA}`,
+                '3%',
+                colI,
+                0.03,
+                rowIndex + 1,
+                supplierValue
+            );
+            results.push(result);
         }
 
         return results;
     }
 
     /**
-     * Validate General Packaging based on VENDOR / COO value
-     * Scans column D for "General Packaging", checks column F = 1, column I based on vendor
+     * Validate General Packaging
+     * Scans column D for "General Packaging", checks column F = 1, column I = 3%
      */
-    validateGeneralPackaging(jsonData, vendorCOO) {
+    validateGeneralPackaging(jsonData) {
         const results = [];
-        const vendorLower = vendorCOO.toLowerCase();
 
         // Scan column D for "General Packaging"
         for (let rowIndex = 0; rowIndex < jsonData.length; rowIndex++) {
@@ -577,29 +423,16 @@ class CotopaxiProcessor {
                     supplier: ''
                 });
 
-                // Check Column I based on VENDOR / COO
-                let expectedPercent = '';
-                let expectedDecimal = 0;
-
-                if (vendorLower.includes('pt uwu jump indonesia')) {
-                    expectedPercent = '0.01%';
-                    expectedDecimal = 0.0001;
-                } else if (vendorLower.includes('heads up')) {
-                    expectedPercent = '3%';
-                    expectedDecimal = 0.03;
-                }
-
-                if (expectedPercent) {
-                    const result = this.createFabricResult(
-                        'General Packaging (%)',
-                        expectedPercent,
-                        colI,
-                        expectedDecimal,
-                        rowIndex + 1,
-                        ''
-                    );
-                    results.push(result);
-                }
+                // Check Column I = 3%
+                const result = this.createFabricResult(
+                    'General Packaging (%)',
+                    '3%',
+                    colI,
+                    0.03,
+                    rowIndex + 1,
+                    ''
+                );
+                results.push(result);
 
                 break; // Found General Packaging, stop scanning
             }
