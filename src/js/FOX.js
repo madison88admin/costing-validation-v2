@@ -9,7 +9,7 @@
  * - Column K "OVERHEAD" -> Column L should be 0.40
  * - Column K "PROFIT & OTHERS" -> Column L should be 0.35-0.45
  * - Column A "FABRIC / UPPER / SHELL" -> Column E (Wastage%) should be 5% until Column H "SUBTOTAL"
- * - Column B "Sewing Thread" (within FABRIC/UPPER/SHELL section) -> D=1, E=3%, H=0.01, I=0.01, J=0%
+ * - Column B "Sewing Thread" (within FABRIC/UPPER/SHELL section) -> D=1, E=3%, H=0.01
  * - Column A "Standard Packaging" -> D=1, E=3%
  * - Column A "LABOR COST" -> Column B should have Knitting, Sewing, Finishing
  * - Column A "OVERHEAD COST" -> Column H should be 0.40
@@ -65,7 +65,7 @@ class FOXProcessor {
                     </div>
                     <div class="burton-cost-item">
                         <div class="burton-item-line ob-section-header"><strong>Sewing Thread (Column B):</strong></div>
-                        <div class="burton-item-line ob-sub-item">D (Usage): <strong>1</strong>, E (Wastage): <strong>3%</strong>, H (COST CIF): <strong>0.01</strong>, I (Extended Cost): <strong>0.01</strong>, J (% to Total): <strong>0%</strong></div>
+                        <div class="burton-item-line ob-sub-item">D (Usage): <strong>1</strong>, E (Wastage): <strong>3%</strong>, H (COST CIF): <strong>0.01</strong></div>
                     </div>
                     <div class="burton-cost-item">
                         <div class="burton-item-line ob-section-header"><strong>Standard Packaging (Column A):</strong></div>
@@ -182,8 +182,6 @@ class FOXProcessor {
         const colD = this.columnToIndex('D');
         const colE = this.columnToIndex('E');
         const colH = this.columnToIndex('H');
-        const colI = this.columnToIndex('I');
-        const colJ = this.columnToIndex('J');
         const colK = this.columnToIndex('K');
         const colL = this.columnToIndex('L');
 
@@ -332,7 +330,7 @@ class FOXProcessor {
         results.wastagePercent = this.validateWastagePercent(jsonData, colA, colB, colE, colH);
 
         // Validate Sewing Thread within FABRIC / UPPER / SHELL section
-        results.sewingThread = this.validateSewingThread(jsonData, colA, colB, colD, colE, colH, colI, colJ);
+        results.sewingThread = this.validateSewingThread(jsonData, colA, colB, colD, colE, colH);
 
         // Validate Standard Packaging rows
         results.standardPackaging = this.validateStandardPackaging(jsonData, colA, colD, colE);
@@ -415,7 +413,7 @@ class FOXProcessor {
                 label: 'Sewing Thread',
                 labelCell: '-',
                 valueCell: '-',
-                expectedValue: 'D=1, E=3%, H=0.01, I=0.01, J=0%',
+                expectedValue: 'D=1, E=3%, H=0.01',
                 isValid: false,
                 notFound: true,
                 validFields: [],
@@ -579,10 +577,10 @@ class FOXProcessor {
 
     /**
      * Validate Sewing Thread within FABRIC / UPPER / SHELL section
-     * Checks: D (Usage) = 1, E (Wastage) = 3%, H (COST CIF) = 0.01, I (Extended Cost) = 0.01, J (% to Total) = 0%
+     * Checks: D (Usage) = 1, E (Wastage) = 3%, H (COST CIF) = 0.01
      * Supports multiple Sewing Thread rows in a single file
      */
-    validateSewingThread(jsonData, colA, colB, colD, colE, colH, colI, colJ) {
+    validateSewingThread(jsonData, colA, colB, colD, colE, colH) {
         let sectionStartRow = -1;
 
         // Step 1: Find the row where Column A contains FABRIC, UPPER, or SHELL
@@ -630,7 +628,7 @@ class FOXProcessor {
                 label: 'Sewing Thread',
                 labelCell: '-',
                 valueCell: '-',
-                expectedValue: 'D=1, E=3%, H=0.01, I=0.01, J=0%',
+                expectedValue: 'D=1, E=3%, H=0.01',
                 isValid: false,
                 notFound: true,
                 validFields: [],
@@ -683,27 +681,6 @@ class FOXProcessor {
             } else {
                 invalidFields.push({ cell: `H${rowNum}`, field: 'COST CIF', value: colHDisplay, expected: '0.01' });
             }
-
-            // Check Column I (Extended Cost) = 0.01
-            const colIValue = getNumeric(row[colI]);
-            const colIDisplay = colIValue !== null ? colIValue.toString() : 'Empty';
-            if (colIValue !== null && Math.abs(colIValue - 0.01) < 0.0001) {
-                validFields.push({ cell: `I${rowNum}`, field: 'Extended Cost', value: colIDisplay });
-            } else {
-                invalidFields.push({ cell: `I${rowNum}`, field: 'Extended Cost', value: colIDisplay, expected: '0.01' });
-            }
-
-            // Check Column J (% to Total) = 0% (0)
-            let colJValue = getNumeric(row[colJ]);
-            if (colJValue !== null && colJValue > 1) {
-                colJValue = colJValue / 100; // Convert from percentage
-            }
-            const colJDisplay = colJValue !== null ? (colJValue * 100).toFixed(2) + '%' : 'Empty';
-            if (colJValue !== null && Math.abs(colJValue) < 0.0001) {
-                validFields.push({ cell: `J${rowNum}`, field: '% to Total', value: colJDisplay });
-            } else {
-                invalidFields.push({ cell: `J${rowNum}`, field: '% to Total', value: colJDisplay, expected: '0%' });
-            }
         }
 
         const allValid = invalidFields.length === 0;
@@ -713,7 +690,7 @@ class FOXProcessor {
             label: 'Sewing Thread',
             labelCell: sewingThreadRows.map(r => `B${r + 1}`).join(', '),
             valueCell: `Row${sewingThreadRows.length > 1 ? 's' : ''} ${rowsLabel}`,
-            expectedValue: 'D=1, E=3%, H=0.01, I=0.01, J=0%',
+            expectedValue: 'D=1, E=3%, H=0.01',
             isValid: allValid,
             notFound: false,
             validFields: validFields,
