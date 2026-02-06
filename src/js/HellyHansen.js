@@ -197,6 +197,8 @@ class HellyHansenProcessor {
                         data.countryOfOrigin = 'INDO';
                     } else if (cellValue.includes('CHINA')) {
                         data.countryOfOrigin = 'CHINA';
+                    } else if (cellValue.includes('CEBU')) {
+                        data.countryOfOrigin = 'CEBU';
                     }
                     break;
                 }
@@ -258,7 +260,14 @@ class HellyHansenProcessor {
                 if (csvItem.item === 'FINANCIAL AND OVERHEAD COST') {
                     console.log('buyerData.countryOfOrigin:', buyerData.countryOfOrigin);
                     console.log('Comparison result:', buyerData.countryOfOrigin === 'INDO');
-                    const expectedValue = buyerData.countryOfOrigin === 'INDO' ? '0.40' : '0.30';
+                    let expectedValue;
+                    if (buyerData.countryOfOrigin === 'INDO') {
+                        expectedValue = '0.40';
+                    } else if (buyerData.countryOfOrigin === 'CEBU') {
+                        expectedValue = '0.50';
+                    } else {
+                        expectedValue = '0.30';
+                    }
                     console.log('Expected value set to:', expectedValue);
                     results.push({
                         itemName: csvItem.item,
@@ -327,8 +336,8 @@ class HellyHansenProcessor {
             } else {
                 // Item not found - check if it's a special row
                 const isSpecial = csvItem.item === 'FINANCIAL AND OVERHEAD COST' ||
-                                 csvItem.item === 'MARGIN / PROFIT' ||
-                                 csvItem.item === 'Local transportation / documentation';
+                    csvItem.item === 'MARGIN / PROFIT' ||
+                    csvItem.item === 'Local transportation / documentation';
 
                 results.push({
                     itemName: csvItem.item,
