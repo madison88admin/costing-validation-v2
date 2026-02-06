@@ -1,11 +1,11 @@
 /**
- * Create Ride Store (V17) export configuration
- * @param {Array} fileResults - Array of file results from Ride Store processor
- * @returns {Object} - Configuration object for Ride Store export
+ * Create RideStore (V17) export configuration
+ * @param {Array} fileResults - Array of file results from RideStore processor
+ * @returns {Object} - Configuration object for RideStore export
  */
 function createRideStoreConfig(fileResults) {
     return {
-        title: 'Ride Store Validation Results - V17',
+        title: 'RideStore Validation Results - V17',
         fileResults: fileResults.map(fileResult => {
             if (fileResult.error) {
                 return {

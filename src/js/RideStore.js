@@ -1,5 +1,5 @@
 /**
- * Ride Store Cost Breakdown Processor
+ * RideStore Cost Breakdown Processor
  * Validates BCBD files against predefined validation rules
  */
 
@@ -506,7 +506,7 @@ class RideStoreProcessor {
         if (!results || results.length === 0) {
             return `
                 <div style="text-align: center; padding: 2rem; color: #2b4a6c;">
-                    <p style="font-size: 1.3em; margin-bottom: 10px;">Ride Store Validation Ready</p>
+                    <p style="font-size: 1.3em; margin-bottom: 10px;">RideStore Validation Ready</p>
                     <p>Upload Buyer CBD files to validate.</p>
                 </div>
             `;

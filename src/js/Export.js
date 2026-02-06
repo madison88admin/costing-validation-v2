@@ -689,10 +689,10 @@ class PDFExporter {
     }
 
     /**
-     * Create Ride Store (V17) export configuration
+     * Create RideStore (V17) export configuration
      * Delegates to external configuration file
-     * @param {Array} fileResults - Array of file results from Ride Store processor
-     * @returns {Object} - Configuration object for Ride Store export
+     * @param {Array} fileResults - Array of file results from RideStore processor
+     * @returns {Object} - Configuration object for RideStore export
      */
     createRideStoreConfig(fileResults) {
         return createRideStoreConfig(fileResults);

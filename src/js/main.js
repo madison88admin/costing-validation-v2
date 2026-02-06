@@ -481,7 +481,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.processor511.initialize();
     }
 
-    // Initialize Ride Store processor when page loads
+    // Initialize RideStore processor when page loads
     if (window.rideStoreProcessor) {
         window.rideStoreProcessor.initialize();
     }
@@ -971,7 +971,7 @@ async function handleGenerateResults(version) {
         return;
     }
 
-    // Special handling for V17 - only needs BCBD files (Ride Store)
+    // Special handling for V17 - only needs BCBD files (RideStore)
     if (version === 'v17') {
         const bcbdFiles = handler.getBCBDFiles();
 
@@ -987,7 +987,7 @@ async function handleGenerateResults(version) {
         resultsContent.innerHTML = `
             <div class="loading-container">
                 <div class="loader"></div>
-                <p class="loading-text">Processing ${bcbdFiles.length} BCBD file(s) with Ride Store validation...</p>
+                <p class="loading-text">Processing ${bcbdFiles.length} BCBD file(s) with RideStore validation...</p>
                 <p class="loading-subtext">Please wait while we scan the files...</p>
             </div>
         `;

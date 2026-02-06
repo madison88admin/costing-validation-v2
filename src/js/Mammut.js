@@ -615,12 +615,13 @@ class MammutProcessor {
             if (profitMargin.found) {
                 const pmActual = profitMargin.numericValue !== null ? this.formatNumber(profitMargin.actualValue) : profitMargin.actualValue;
                 const valueColor = profitMargin.isValid ? '#065f46' : '#991b1b';
+                const expectedRange = `${profitMargin.minValue.toFixed(2)} - ${profitMargin.maxValue.toFixed(2)}`;
 
                 html += `
                     <tr style="border-bottom: 1px solid #e0e8f0;">
                         <td style="padding: 0.875rem 1rem; font-weight: 600;">PROFIT MARGIN</td>
                         <td style="padding: 0.875rem 1rem; text-align: left;">
-                            <span style="color: ${valueColor}; font-weight: 600;">${pmActual}</span>
+                            <span style="color: ${valueColor}; font-weight: 600;">${pmActual}</span>${!profitMargin.isValid ? ` <span style="font-size: 0.85em; color: #849bba;">(Expected: ${expectedRange})</span>` : ''}
                         </td>
                     </tr>
                 `;

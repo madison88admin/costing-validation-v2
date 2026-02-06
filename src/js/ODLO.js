@@ -8,7 +8,7 @@
  * 3. Check for TRIMS section in column A, find THD-10005 rows and validate columns B, E, F, G
  * 4. Column B validations (check Column G for expected values):
  *    - Labour Sewing minutes → 0.1
- *    - Labour Heat transfer pressing → 0
+ *    - Labour Heat transfer pressing → 0.2
  *    - Labour Seam sealing → 0.4
  *    - Knitting minutes → 0.05
  *    - Linking minutes → 0.15
@@ -65,7 +65,7 @@ class ODLOProcessor {
                     <div class="burton-cost-item">
                         <div class="burton-item-line ob-section-header"><strong>Column B → G Checks:</strong></div>
                         <div class="burton-item-line ob-sub-item">Labour Sewing minutes → <strong>0.1</strong></div>
-                        <div class="burton-item-line ob-sub-item">Labour Heat transfer pressing → <strong>0</strong></div>
+                        <div class="burton-item-line ob-sub-item">Labour Heat transfer pressing → <strong>0.2</strong></div>
                         <div class="burton-item-line ob-sub-item">Labour Seam sealing → <strong>0.4</strong></div>
                         <div class="burton-item-line ob-sub-item">Knitting minutes → <strong>0.05</strong></div>
                         <div class="burton-item-line ob-sub-item">Linking minutes → <strong>0.15</strong></div>
@@ -196,7 +196,7 @@ class ODLOProcessor {
     validateColumnBRules(jsonData) {
         const rules = [
             { name: 'Labour Sewing minutes', marker: 'labour sewing minutes', expected: '0.1', type: 'exact' },
-            { name: 'Labour Heat transfer pressing', marker: 'labour heat transfer pressing', expected: '0', type: 'exact' },
+            { name: 'Labour Heat transfer pressing', marker: 'labour heat transfer pressing', expected: '0.2', type: 'exact' },
             { name: 'Labour Seam sealing', marker: 'labour seam sealing', expected: '0.4', type: 'exact' },
             { name: 'Knitting minutes', marker: 'knitting minutes', expected: '0.05', type: 'exact' },
             { name: 'Linking minutes', marker: 'linking minutes', expected: '0.15', type: 'exact' },
